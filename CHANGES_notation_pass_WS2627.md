@@ -91,29 +91,10 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 
 ## 19 ICA
-- [ ] **New frame** *Notation in this Chapter*: $\vec x$ random vector of $n$ sensors ($x_i$ = component, not sample), $\vec s=(s_1..s_m)^T$ sources ($m$ sources, later $m=n$), $\mat A,\mat W$, realizations $\vec x(1..T)$, $E\{\cdot\}$ ≈ sample average, $\tilde{\vec x}$, $\hat{\vec s}$, $y=\vec w^T\vec x$ projection (not a label).
-- [ ] "from now on $m=n$ (square $\mat A$)"; "observed realizations $\vec x(1),\dots,\vec x(T)$".
-- [ ] Decorrelation: $E\{\vec x\}=\vec 0$; $\hat{\vec s}=\tilde{\vec x}$; rotated $\hat{\vec x}\to\vec x'$; whitening note "unit-variance sources $E\{\vec s\vec s^T\}=\mat I$ assumed".
-- [ ] "is **typically** more Gaussian"; entropy $H(x)=-\int p\log p$; Lagrangian functional $J\to\mathcal L(p)$ (J = negentropy); moments $k$-th.
-- [ ] Algorithm: $\vec w_i^T\tilde{\vec x}$; $\mat W=(\vec w_1,\dots,\vec w_n)^T$; output $\hat{\vec s}=\mat W\tilde{\vec x}$ "(up to scale, sign and order)"; kurtosis of $\vec w^T\tilde{\vec x}$; MI $\vec y=(y_1..y_n)^T$.
 
 ## 20 Model Assessment
-- [ ] **New frame** *Notation in this Chapter*: $\mathcal D$ training set of size $n$ (elsewhere $S,m$), $y=F(\vec x)$ true label, $h$ hypothesis, $\hat y=h(\vec x)$, $g(\vec x;\mathcal D)$, $E_{\mathcal D}$, $\theta,\phi_n$, $m$ = NFL iterations / CV folds.
-- [ ] Off-training-set error: $y_i\in\{-1,+1\}$, define $e$, $h$, $\hat y=h(\vec x)$, $p_k(\cdot|\mathcal D)$, Kronecker $\delta$.
-- [ ] "precision **or** specificity".
-- [ ] Regression bias: $(E_{\mathcal D}\{g(\vec x;\mathcal D)\}-F(\vec x))^2$; $\vec x$ fixed, expectation over training sets.
-- [ ] Classification: $p(y=+1)=p(y=-1)=\frac12$; $y_B\to\hat y^*(\vec x)$; trained decision $\hat y(\vec x;\mathcal D)=+1$ if $g\ge\frac12$ else $-1$; $p(\hat y(\vec x;\mathcal D)\ne\hat y^*(\vec x))$ (3×); "density of $g$ over random training sets (fixed $\vec x$)"; $\mathrm{Var}_{\mathcal D}[g]$; $\Phi(t)$ = upper tail of the standard normal.
-- [ ] **Error fix** case split: second case "if $F(\vec x)\ge0.5$".
-- [ ] Jackknife: "sample estimates" (not ML/CLT); **error fix** new bullet "jackknife estimate $\mu_{PS}$ approx. normal with variance $\sigma^2_{PS}/n$"; bias label $\mathrm{bias}_{\text{jack},i}$, $\mathrm{bias}_{\text{jack}}=\frac1n\sum_i$.
-- [ ] Bootstrap: $\hat\theta^{(b)}=\phi_n(X^{(b)})$, $b=1..B$; tends to "the ideal bootstrap estimate ($B\to\infty$)".
-- [ ] Cross-validation: "$m$ = number of folds"; note validation vs. test set ("if the held-out fold is used to stop training or select parameters, it acts as a validation set; final error on separate test data").
 
 ## 21 AdaBoost
-- [ ] **New frame** *Notation in this Chapter*: $\mathcal D$ with $N$ samples (elsewhere $S,m$), $i$ sample index, $m=1..M$ boosting iteration, $y_i\in\{-1,+1\}$, $G_m\in\{-1,+1\}$, $f_M=\sum\beta_mG_m$, $\hat y=G(\vec x)=\mathrm{sign}(f_M(\vec x))$, $w_i^{(m)}$, $I(\cdot)$.
-- [ ] Boosting: generic classifier $G(\vec x)\in\{-1,+1\}$; final $\hat y=G(\vec x)=\mathrm{sign}(\sum\alpha_mG_m)$.
-- [ ] **Error fixes** algorithm box: `w_i =\gets 1/N` → `w_i \gets 1/N`; loop `\until{m = M}` → `\until{m > M}` (all $M$ rounds); "using weights $w_1..w_N$"; $G_m(\vec x_i)$ bold; output $\hat y$.
-- [ ] Exponential loss: $\{\beta_m,\vec\gamma_m\}_{m=1}^M$; argmin over the weak-classifier family; $f_0\equiv0$ ($w_i^{(1)}=1$); weight scaling irrelevant; $\alpha_m=2\beta_m$ so $\hat y=\mathrm{sign}(f_M)$; $\{-1,+1\}$.
-- [ ] Face detection: integral image $ii(u,v)=\sum_{u'\le u,v'\le v}i(u',v')$ (figure `integral_image.pstex_t` $(x,y)\to(u,v)$); feature $\phi_j(\vec x)$, $j$ feature index; note Viola–Jones uses $G_j\in\{0,1\}$ (face iff $\sum\alpha_mG_m\ge\frac12\sum\alpha_m$); TPR and FPR defined.
 
 ---
 
@@ -416,6 +397,44 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* already in notes; remaining "pixel" → voxel (2×).
 - [x] Gradient: typo $\psi_j^{-1}$ fixed; summation index $l$ in denominator; voxel sum index $i'$; $\bar{\vec R}=(\bar R_0..\bar R_{n-1})^T$, $\mat D=\mathrm{diag}(\bar\psi_i^{-1})$, $\mat H=[\mat D+\mat\Psi_\beta^{-1}]^{-1}$.
       *Notes:* already in notes; bias-field gradient and update $\hat{\vect\beta}=\mat H\bar{\vect R}$ re-derived: correct. Empty "Result using an extended model:" completed.
+- [x] **New frame** *Notation in this Chapter*: $\vec x$ random vector of $n$ sensors ($x_i$ = component, not sample), $\vec s=(s_1..s_m)^T$ sources ($m$ sources, later $m=n$), $\mat A,\mat W$, realizations $\vec x(1..T)$, $E\{\cdot\}$ ≈ sample average, $\tilde{\vec x}$, $\hat{\vec s}$, $y=\vec w^T\vec x$ projection (not a label).
+      *Notes:* already in notes.
+- [x] "from now on $m=n$ (square $\mat A$)"; "observed realizations $\vec x(1),\dots,\vec x(T)$".
+      *Notes:* added "from now on $m=n$" at the square-$\mat A$ assumption; realizations already in the notation list.
+- [x] Decorrelation: $E\{\vec x\}=\vec 0$; $\hat{\vec s}=\tilde{\vec x}$; rotated $\hat{\vec x}\to\vec x'$; whitening note "unit-variance sources $E\{\vec s\vec s^T\}=\mat I$ assumed".
+      *Notes:* already in notes; duplicated whitening formula removed; reference to the (non-existent) "Discriminant Analysis I" fixed. Whitening and $\mat R$-rotation derivations checked.
+- [x] "is **typically** more Gaussian"; entropy $H(x)=-\int p\log p$; Lagrangian functional $J\to\mathcal L(p)$ (J = negentropy); moments $k$-th.
+      *Notes:* already in notes; moment written $n$-th (formula uses $n$). Max-entropy proof checked ($\lambda_0,\lambda_1,\lambda_2$ give the Gaussian).
+- [x] Algorithm: $\vec w_i^T\tilde{\vec x}$; $\mat W=(\vec w_1,\dots,\vec w_n)^T$; output $\hat{\vec s}=\mat W\tilde{\vec x}$ "(up to scale, sign and order)"; kurtosis of $\vec w^T\tilde{\vec x}$; MI $\vec y=(y_1..y_n)^T$.
+      *Notes:* already in notes; added "(up to scale, sign and order)"; kurtosis maximization now on whitened $\tilde{\vect x}$; sub-/supergaussian examples now carry their kurtosis sign.
+- [x] **New frame** *Notation in this Chapter*: $\mathcal D$ training set of size $n$ (elsewhere $S,m$), $y=F(\vec x)$ true label, $h$ hypothesis, $\hat y=h(\vec x)$, $g(\vec x;\mathcal D)$, $E_{\mathcal D}$, $\theta,\phi_n$, $m$ = NFL iterations / CV folds.
+      *Notes:* notes use $y=f^*(\vect x)$ for the target (not $F$, which is the log-odds in Ch. 3); body text now uses $f^*$ consistently (11 places), classification target $f^*(\vect x)=p(y=+1\mid\vect x)$.
+- [x] Off-training-set error: $y_i\in\{-1,+1\}$, define $e$, $h$, $\hat y=h(\vec x)$, $p_k(\cdot|\mathcal D)$, Kronecker $\delta$.
+      *Notes:* already in notes ($F\to f^*$).
+- [x] "precision **or** specificity".
+      *Notes:* already in notes.
+- [x] Regression bias: $(E_{\mathcal D}\{g(\vec x;\mathcal D)\}-F(\vec x))^2$; $\vec x$ fixed, expectation over training sets.
+      *Notes:* already in notes; add-and-subtract derivation checked.
+- [x] Classification: $p(y=+1)=p(y=-1)=\frac12$; $y_B\to\hat y^*(\vec x)$; trained decision $\hat y(\vec x;\mathcal D)=+1$ if $g\ge\frac12$ else $-1$; $p(\hat y(\vec x;\mathcal D)\ne\hat y^*(\vec x))$ (3×); "density of $g$ over random training sets (fixed $\vec x$)"; $\mathrm{Var}_{\mathcal D}[g]$; $\Phi(t)$ = upper tail of the standard normal.
+      *Notes:* already in notes; Gaussian boundary-error formula checked for both cases.
+- [x] **Error fix** case split: second case "if $F(\vec x)\ge0.5$".
+      *Notes:* already in notes.
+- [x] Jackknife: "sample estimates" (not ML/CLT); **error fix** new bullet "jackknife estimate $\mu_{PS}$ approx. normal with variance $\sigma^2_{PS}/n$"; bias label $\mathrm{bias}_{\text{jack},i}$, $\mathrm{bias}_{\text{jack}}=\frac1n\sum_i$.
+      *Notes:* already in notes; both jackknife examples (mean, variance) checked.
+- [x] Bootstrap: $\hat\theta^{(b)}=\phi_n(X^{(b)})$, $b=1..B$; tends to "the ideal bootstrap estimate ($B\to\infty$)".
+      *Notes:* done: $\hat\theta^{(b)}=\phi_n(X^{(b)})$, sums over $b$; "does not change the prior" rewritten.
+- [x] Cross-validation: "$m$ = number of folds"; note validation vs. test set ("if the held-out fold is used to stop training or select parameters, it acts as a validation set; final error on separate test data").
+      *Notes:* already in notes; dangling colon fixed.
+- [x] **New frame** *Notation in this Chapter*: $\mathcal D$ with $N$ samples (elsewhere $S,m$), $i$ sample index, $m=1..M$ boosting iteration, $y_i\in\{-1,+1\}$, $G_m\in\{-1,+1\}$, $f_M=\sum\beta_mG_m$, $\hat y=G(\vec x)=\mathrm{sign}(f_M(\vec x))$, $w_i^{(m)}$, $I(\cdot)$.
+      *Notes:* already in notes; added $f_0\equiv0$ and $\alpha_m=2\beta_m$.
+- [x] Boosting: generic classifier $G(\vec x)\in\{-1,+1\}$; final $\hat y=G(\vec x)=\mathrm{sign}(\sum\alpha_mG_m)$.
+      *Notes:* already in notes.
+- [x] **Error fixes** algorithm box: `w_i =\gets 1/N` → `w_i \gets 1/N`; loop `\until{m = M}` → `\until{m > M}` (all $M$ rounds); "using weights $w_1..w_N$"; $G_m(\vec x_i)$ bold; output $\hat y$.
+      *Notes:* already in notes.
+- [x] Exponential loss: $\{\beta_m,\vec\gamma_m\}_{m=1}^M$; argmin over the weak-classifier family; $f_0\equiv0$ ($w_i^{(1)}=1$); weight scaling irrelevant; $\alpha_m=2\beta_m$ so $\hat y=\mathrm{sign}(f_M)$; $\{-1,+1\}$.
+      *Notes:* already in notes; added the missing step solving for $\beta_m=\frac12\log\frac{1-\mathsf{err}_m}{\mathsf{err}_m}$ and $w_i^{(1)}=1$. Weight update identity checked.
+- [x] Face detection: integral image $ii(u,v)=\sum_{u'\le u,v'\le v}i(u',v')$ (figure `integral_image.pstex_t` $(x,y)\to(u,v)$); feature $\phi_j(\vec x)$, $j$ feature index; note Viola–Jones uses $G_j\in\{0,1\}$ (face iff $\sum\alpha_mG_m\ge\frac12\sum\alpha_m$); TPR and FPR defined.
+      *Notes:* done: $II(u,v)=\sum I(u',v')$ (pixel coordinates no longer clash with the window $\vect x$), feature $\phi_j(\vect x)$, note on the Viola–Jones $\{0,1\}$ variant, TPR/FPR named; "3 basis operations" → four look-ups.
 
 ## Additional fixes found during the notes pass (not in the list above)
 
@@ -429,3 +448,5 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Ch. 6 Norms: "sparcity" typo; unit-ball note rewritten (shape of the ball explains why $L_1$ favours sparse solutions); "residual zero" holds for the optimal solution.
 - [x] Ch. 7 Perceptron convergence proof: misclassification condition now uses $(\alpha_0^{(k-1)},\vect\alpha^{(k-1)})$ (the parameters before the $k$-th update), zero initialization stated (needed for both inductions), $\|(y_i,y_i\vect x_i^T)\|^2\le1+R^2$ made explicit, theorem states "at most $k$ updates" for separable data with margin $\rho$, $\|\vect\alpha^*\|_2$. Decision function $F\to f$ (log-odds clash). Student note: the theorem gives an upper bound, not the exact number.
 - [x] Ch. 11 KKT: conditions stated at the optimal points $(\vect x^*,\vect\lambda^*,\vect\nu^*)$ with $\nabla_{\vect x}\mathcal L$ (stars and gradient variable were undefined); typos "minumum", "vetor", "intialize", "and and", "Langrange".
+- [x] Ch. 13–16: missing-space typesetting ("Anyscalar", "thesign", "haveunit", "apermutation", "thestatistical", "theentire", "thereduction", "thealignment", "thebias-variance", "byminimizing", "themargin", "byViola", …): space before `\textbf` restored (28 places); "colums" → "columns".
+- [x] Ch. 17 No-Free-Lunch: statement rewritten ($f$ cost function, $A$ search algorithm, $c_m$ cost values of the first $m$ visited points).
