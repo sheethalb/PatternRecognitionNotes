@@ -61,18 +61,10 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 ## 06 Discriminant Analysis
 - [x] *Discriminant Analysis*: "discriminative" → **generative** modeling (posterior via $p(y)p(\vec x|y)$); summation index $y'$.
-- [ ] Gaussian classifier: "joint covariance" → "shared (pooled) covariance"; decisions with true parameters = $\hat y^*$; components $x_j$; "Nearest Neighbor" → "nearest class mean" (also conclusions, caption, lessons; figure `lda_nearest_neighbor.pstex_t`: $\hat\mu$).
-- [ ] *Feature Transform*: "positive **definite**"; $d_{i,i}\to\lambda_i$, $\mat D=\mathrm{diag}(\lambda_i)$.
 - [x] LDA algorithm: $\hat{\vec\mu}_y=\frac1{m_y}\sum_{i:y_i=y}\vec x_i$ ($m_y$ defined); $\hat{\mat\Sigma}$ uses $\hat{\vec\mu}_{y_i}$; $\phi(\vec x)=\mat D^{-1/2}\mat U^T\vec x$; decisions $\hat y$ using $\phi(\hat{\vec\mu}_y)$, note plug-in $\hat y$ approximates $\hat y^*$; 2-class slide "$y\in\{0,1\}$, equal priors".
 
 ## 07 Discriminant Analysis II
 
-- [ ] Fisher: "$y\in\{1,2\}$"; sums $\sum_{i:y_i=k}$, $m_k=|\{i:y_i=k\}|$; "$\vec\mu_k,\mat S_k$ are sample estimates"; $\Sigma_{\text{inter}}$/$\Sigma_{\text{intra}}$ related to $\mat S_B$/$\mat S_W$.
-- [ ] PCA components "uncorrelated" (not independent); columns of $\mat X$ "linearly independent".
-- [ ] adidas / Notes on Regression: $\hat y=\mathrm{sgn}(\dots)$ + reminder $y\in\{-1,+1\}$.
-- [ ] Linear regression: augmented $\tilde{\vec x}_i=(\vec x_i^T,1)^T$, $\vec\theta^T\tilde{\vec x}_i$.
-- [ ] Ridge: $\vec\theta\sim\mathcal N(\vec 0,\tau^2\mat I)$, intercept not in the prior; likelihood "$y_i\sim\mathcal N(\dots)$, i.e. $p(y_i|\vec x_i,\vec\alpha)=\dots$", prior "i.e. $p(\alpha_j)=\dots$".
-- [ ] **Error fix** MAP derivation: $\argmax_{\vec\alpha}p(\vec\alpha|S)=\argmax\{p(\vec\alpha)\prod_i p(y_i|\vec x_i,\vec\alpha)\}=\dots$ (prior once, $\vec x_i$ in the residual); summary slide likewise with $(\mat X\vec\theta-\vec y)$, $\vec\theta=(\vec\alpha^T,\alpha_0)^T$, "intercept not penalized".
 
 ## 08 Norms
 - [ ] **New frame** *Notation in this Chapter*: $\mat A\leftrightarrow\mat X$, $\vec x\leftrightarrow\vec\theta$, $\vec b\leftrightarrow\vec y$; $\hat{\vec x}$ estimate, $\vec x_0$ true value; $\vec r$ residual; $\phi$ penalty.
@@ -351,6 +343,22 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* already in notes.
 - [x] Figure `perceptron.pstex_t`: $\alpha_i\to\theta_i$, $\sum\theta_i x_i=\vec\theta^T\vec x$, $1/(1+e^{-\vec\theta^T\vec x})$.
       *Notes:* N/A for notes: no perceptron figure in Ch. 4.
+- [x] Gaussian classifier: "joint covariance" → "shared (pooled) covariance"; decisions with true parameters = $\hat y^*$; components $x_j$; "Nearest Neighbor" → "nearest class mean" (also conclusions, caption, lessons; figure `lda_nearest_neighbor.pstex_t`: $\hat\mu$).
+      *Notes:* already in notes. Also: Mahalanobis distance now defined as the square root (the $\frac12$ quadratic form is half its square, same argmin); identity-covariance bullet now says "in addition" (equal priors needed).
+- [x] *Feature Transform*: "positive **definite**"; $d_{i,i}\to\lambda_i$, $\mat D=\mathrm{diag}(\lambda_i)$.
+      *Notes:* already in notes.
+- [x] Fisher: "$y\in\{1,2\}$"; sums $\sum_{i:y_i=k}$, $m_k=|\{i:y_i=k\}|$; "$\vec\mu_k,\mat S_k$ are sample estimates"; $\Sigma_{\text{inter}}$/$\Sigma_{\text{intra}}$ related to $\mat S_B$/$\mat S_W$.
+      *Notes:* added: $y\in\{1,2\}$, $m_k$, "sample estimates"; $\Sigma_{\text{inter}}=\frac14\mat S_\mathsf B$, $\Sigma_{\text{intra}}=\frac1m\mat S_\mathsf W$ for two classes (now defined). Normalisation made consistent ($R(\vect r)$ is scale-invariant, $\vect r^*\propto\mat S_\mathsf W^{-1}(\vect\mu_1-\vect\mu_2)$); axis $\vect a^*\to\vect r^*$.
+- [x] PCA components "uncorrelated" (not independent); columns of $\mat X$ "linearly independent".
+      *Notes:* already in notes; wording of the Gaussian remark cleaned up.
+- [x] adidas / Notes on Regression: $\hat y=\mathrm{sgn}(\dots)$ + reminder $y\in\{-1,+1\}$.
+      *Notes:* already in notes (Linear Regression: $\hat y=\mathrm{sgn}(\cdot)$, $y\in\{-1,+1\}$); adidas section has no formula. "Notes on Regression" intro rewritten (regression = continuous target).
+- [x] Linear regression: augmented $\tilde{\vec x}_i=(\vec x_i^T,1)^T$, $\vec\theta^T\tilde{\vec x}_i$.
+      *Notes:* already in notes.
+- [x] Ridge: $\vec\theta\sim\mathcal N(\vec 0,\tau^2\mat I)$, intercept not in the prior; likelihood "$y_i\sim\mathcal N(\dots)$, i.e. $p(y_i|\vec x_i,\vec\alpha)=\dots$", prior "i.e. $p(\alpha_j)=\dots$".
+      *Notes:* prior now on $\vect\alpha$ only (no prior on the intercept), consistent with $p(\alpha_j)$, $j=1..d$; ridge objective notes that $\alpha_0$ would be penalized as written and $\lambda>0$ is stated; lasso likewise.
+- [x] **Error fix** MAP derivation: $\argmax_{\vec\alpha}p(\vec\alpha|S)=\argmax\{p(\vec\alpha)\prod_i p(y_i|\vec x_i,\vec\alpha)\}=\dots$ (prior once, $\vec x_i$ in the residual); summary slide likewise with $(\mat X\vec\theta-\vec y)$, $\vec\theta=(\vec\alpha^T,\alpha_0)^T$, "intercept not penalized".
+      *Notes:* checked: notes have prior once and $\vect x_i$ in the residual; summary step relabelled "the same in matrix notation".
 
 ## Additional fixes found during the notes pass (not in the list above)
 
@@ -360,3 +368,4 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Ch. 3 gradient: duplicated sentence "where $x_{i,j}$ is …" removed.
 - [x] Ch. 3 lifting figures: caption coefficients $w_i\to\alpha_i$; 2-D caption "the plane $z=r^2$" with $z=x_1^2+x_2^2$ and $r$ defined.
 - [x] Build: undefined `\Nu` (rank-reduced LDA) → $\mat N$; math in section titles wrapped in `\texorpdfstring`; `\choose`-stacked vectors → `pmatrix`; empty `\textbf{}`. Build has 0 errors and 0 warnings (with biber).
+- [x] Ch. 5 title "Discriminative Analysis" → "Discriminant Analysis"; odd Gaussian example ("availability of apples") replaced; rank-reduced LDA intro "N dim" → $d$-dimensional; "computationally prohibited" → "prohibitive"; prototypes sentence fixed.

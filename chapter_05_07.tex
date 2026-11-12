@@ -132,7 +132,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
   \end{itemize}
   \newpage
 
-\section{Discriminative Analysis}
+\section{Discriminant Analysis}
 
  \textbf{Discriminant analysis} methods are \textbf{generative modeling} methods: they model the prior $p(y)$ and the class-conditional density $p(\vect x\mid y)$ and obtain the posterior through Bayes' rule.\autocite{hastie2009,bishop2006}
   
@@ -142,7 +142,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
   LDA is a generative method despite its name, since it models the joint probability of the data and class.\footnote{https://stats.stackexchange.com/questions/411824/linear-discriminant-analysis-generative-or-discriminative}
   
   \subsection{Gaussian Classifier}
-   We call the Bayesian classifier \textbf{Gaussian}, if the class conditional density $p(\vect x|y)$ is Gaussian,(for eg. the availability of apples is gaussian in nature throughout the year) i.\,e.
+   We call the Bayesian classifier \textbf{Gaussian}, if the class conditional density $p(\vect x|y)$ is Gaussian (e.\,g.\ the weight and size of apples of one variety), i.\,e.
 
   \begin{eqnarray*}
      p(\vect x | y) &=& \mathcal {N} (\vect x ;\vect {\mu}_y, \mat\Sigma_y) \\
@@ -169,11 +169,11 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
       of the feature vector $\vect x$. 
     \item If all classes share the same covariance, the decision boundary is \textbf{linear} in the components $x_j$ of the feature vector $\vect x$. 
     \item If all covariance matrices are diagonal matrices, then we get a \textbf{Naive Bayes} classifier.
-    \item If all classes share the same (pooled) covariance matrix $\mat\Sigma$ and priors are identical, the optimal (Bayes) decision minimizes the \textbf{Mahalanobis distance}
+    \item If all classes share the same (pooled) covariance matrix $\mat\Sigma$ and priors are identical, the optimal (Bayes) decision minimizes the \textbf{Mahalanobis distance} $\sqrt{(\vect x-\vect\mu_y)^T\mat\Sigma^{-1}(\vect x-\vect\mu_y)}$, or equivalently half its square
       \begin{eqnarray*}
         \hat y^* &=& \argmin_{y} \frac{1}{2} (\vect x-\vect\mu_y)^T\mat\Sigma^{-1}(\vect x-\vect\mu_y)
       \end{eqnarray*}
-    \item If all covariance matrices are the identity matrix, we get the \textbf{nearest class mean} classifier based on the $L_2$-norm:
+    \item If, in addition, all covariance matrices are the identity matrix, we get the \textbf{nearest class mean} classifier based on the $L_2$-norm:
       \begin{eqnarray*}
         \hat y^* &=& \argmin_{y} \frac{1}{2} (\vect x-\vect\mu_y)^T(\vect x-\vect\mu_y)
       \end{eqnarray*}
@@ -287,7 +287,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
   \textbf{Conclusions:}\\
   \begin{itemize}
     \item If all classes share the \textbf{same prior},  the decision rule is the \textbf{nearest class mean} decision rule, where transformed mean vectors serve as prototypes.
-    protoypes : refer to the mean of the clusters, could be scalar or vector depending on the samples x.
+    Prototypes: the (transformed) class means, one per class.
     \item The feature transform $\phi$ does not change the dimension of features.
   \end{itemize}
    \textbf{2 classes} $y\in\{0,1\}$: insights from geometrical analysis of sphered data. the most common case is to have only two classes, so throughout the document, we focus on 2 class cases. It is clear from the slides, that in the 2 class case, the angle can tell us if the sample belongs to one class or the other. so just 1D information can seperate the samples in a 2 class case. 
@@ -341,7 +341,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
   
   \subsection{Rank Reduced Linear Discriminant Analysis}
 
-In this section we explore what happens when further reducing the dimensions and using LDA. previously we spoke about how $(K-1)$ dimension sub-space is sufficient to distinguish between $(K)$ classes, so make that $L$ now. as explained in the video, we want to maximize the spread of this $L$ dim sub-space. it means when we project this large N dim features to $L$ dim sub-space , it should retain the max information. This can be done using PCA, since that is what PCA does. \\
+In this section we explore what happens when further reducing the dimensions and using LDA. previously we spoke about how $(K-1)$ dimension sub-space is sufficient to distinguish between $(K)$ classes, so make that $L$ now. as explained in the video, we want to maximize the spread of this $L$ dim sub-space. it means when we project the $d$-dimensional features to the $L$-dimensional subspace , it should retain the max information. This can be done using PCA, since that is what PCA does. \\
 Note: refer to the intro to PR classes for PCA or many resources available online. 
 
 \begin{center}
@@ -466,7 +466,8 @@ Now we compute the \textbf{partial derivatives}:
 
 \textbf{Original method}
 		\begin{itemize}
-			\item Project samples $\vect{x}_i$ onto a straight line with direction $\vect{r}$, $\lVert \vect{r} \rVert_2 = 1$:
+			\item Two classes $y\in\{1,2\}$; $m_k=|\{i:y_i=k\}|$ samples in class $k$.
+			\item Project samples $\vect{x}_i$ onto a straight line with direction $\vect{r}$ (only the direction matters: $R(\vect r)$ below does not change if $\vect r$ is scaled):
 			      \begin{displaymath}
 				      x_i^{\mathrm{proj}} = \vect{x}_i^T \vect{r}
 			      \end{displaymath}
@@ -481,7 +482,7 @@ Now we compute the \textbf{partial derivatives}:
 	\textbf{Finding $\vect{r}^*$}
 
 	\begin{enumerate}
-		\item Mean and scatter matrix for each class:
+		\item Mean and scatter matrix for each class (sample estimates):
 		      {\small
 		      \begin{eqnarray*}
 			      \vect{\mu}_k &=& \frac{1}{m_k} \sum_{i:\, y_i = k} \vect{x}_i \\
@@ -538,20 +539,21 @@ Now we compute the \textbf{partial derivatives}:
 		      }
 		\item \textbf{Note}: $\mat{S}_\mathsf{B} \vect{r}^*$ is always in the direction of $\vect{\mu}_1 - \vect{\mu}_2$; \\
 		      no need to compute the eigenvalues and eigenvectors of $\mat{S}_\mathsf{W}^{-1} \mat{S}_\mathsf{B}$! \\
-		      The direction of $\vect{r}^*$ is:
+		      The direction of $\vect{r}^*$ is (any scaling, e.\,g.\ to $\|\vect r^*\|_2=1$, gives the same projection axis):
 		      {\small
 		      \begin{displaymath}
-			      \vect{r}^* = \mat{S}_\mathsf{W}^{-1} (\vect{\mu}_1 - \vect{\mu}_2)
+			      \vect{r}^* \propto \mat{S}_\mathsf{W}^{-1} (\vect{\mu}_1 - \vect{\mu}_2)
 		      \end{displaymath}
 		      }	      
 	\end{enumerate}
 	
 	\begin{itemize}
-		\item Usually the total linear mapping for LDA is computed dimension by dimension through the maximization of the Rayleigh ratio for each projection axis $\vect a^*$:
+		\item Usually the total linear mapping for LDA is computed dimension by dimension through the maximization of the Rayleigh ratio for each projection axis $\vect r^*$:
 		      \begin{eqnarray*}
-			      \vect a^* &=& \argmax_{\vect a}\ \frac{\vect a^T \mat \Sigma_{\mbox{inter}} \vect a}{\vect a^T \mat \Sigma_{\mbox{intra}} \vect a}
+			      \vect r^* &=& \argmax_{\vect r}\ \frac{\vect r^T \mat \Sigma_{\mbox{inter}} \vect r}{\vect r^T \mat \Sigma_{\mbox{intra}} \vect r}
 		      \end{eqnarray*}
-		\item The solution is a generalized eigenvalue problem: $\vect a$ is the eigenvector of
+		      where $\mat\Sigma_{\mbox{inter}}$ is the covariance of the class means (between-class, as in rank-reduced LDA) and $\mat\Sigma_{\mbox{intra}}=\frac1m\sum_k\mat S_k$ the pooled within-class covariance. For two classes $\mat\Sigma_{\mbox{inter}}=\frac14\mat S_\mathsf B$ and $\mat\Sigma_{\mbox{intra}}=\frac1m\mat S_\mathsf W$; constant factors do not change the maximizer, so this is the Fisher criterion above.
+		\item The solution is a generalized eigenvalue problem: $\vect r^*$ is the eigenvector of
 		      $$\mat \Sigma_{\mbox{intra}} ^{-1} \mat \Sigma_{\mbox{inter}}$$
 		      that belongs to the largest eigenvalue.
 	\end{itemize}
@@ -582,9 +584,9 @@ In a nutshell, we recognize the fishers problem is solved by finding the eigenva
 	\begin{itemize}
 		\item PCA does not require a classified set of feature vectors  (in contrast to LDA). 
 		\item PCA transformed features are approximately normally distributed (central limit theorem).
-		\item Components of PCA transformed features are mutually uncorrelated. *Independent and uncorrelated if gaussian distribution. 
+		\item Components of PCA transformed features are mutually uncorrelated (if the features are jointly Gaussian, uncorrelated components are also independent). 
 		\item There exist many other methods for dimensionality reduction, e.\,g.,  Sammon transform, independent component analysis. 
-		\item Usually the estimation of transforms is computationally prohibited
+		\item Usually the estimation of (non-linear) transforms is computationally prohibitive.
 		\item \textbf{Johnson-Lindenstrauss lemma}: If vectors are projected onto a randomly selected subspace of suitably high dimension, then the distances between the vectors are approximately preserved.
 	\end{itemize}
 	
@@ -596,7 +598,7 @@ Refer to the slides for more detailed information. The key takeaway is to unders
 Details in the slides, but the key takeaway is to understand how PCA is used for shape modeling. it can be easily understood that the mean of all the features represents the average shape of the organ, and PCA helps us to understand the amount of variation seen in the data. 
 
 \subsection{Notes on Regression}
-We remember that regression is basically trying to estimate a sample, not just understanding which class it belongs to. In the example of apples vs pears, we are trying to estimate the shape, size, weight of the apple using the knowledge of probabilities, prior class information about how apples are usually shaped, weigh, etc.\autocite{hastie2009,bishop2006}
+In regression we predict a continuous target value $y\in\real$ from the features $\vect x$ (e.\,g.\ the weight of an apple from its size and colour), instead of only a class label. Linear regression can also be used for classification by regressing on the labels $y\in\{-1,+1\}$ and taking the sign, as shown next.\autocite{hastie2009,bishop2006}
 
 \subsubsection{Linear Regression}
 In the two class situation, we set $y\in \{-1,+1\}$ and use the decision rule:
@@ -669,7 +671,8 @@ A regression formula based on L2 norm and the regularizer is also an L2 norm. re
 	\end{displaymath}
 	\textbf{Notes:}
 	\begin{itemize}
-		\item The term $\lambda \mat{I}$ adds a positive constant $\lambda$ to the diagonal elements.
+		\item The term $\lambda \mat{I}$ ($\lambda>0$) adds a positive constant $\lambda$ to the diagonal elements.
+		\item Written as above, the intercept $\alpha_0$ (last component of $\vect\theta$) is penalized as well; see the last note for how this is avoided in practice.
 		\item The problem is non-singular even if $\mat{X}^T \mat{X}$ is not of full rank. 
 		\item This was the main motivation of ridge regression when it was first introduced in statistics in 1970.
 		\item The ridge solutions are not equivariant under scaling of the inputs: 
@@ -683,11 +686,10 @@ A regression formula based on L2 norm and the regularizer is also an L2 norm. re
 	\end{itemize}
 \textbf{Statistical approach:} parameters $\alpha_j$ are random variables 
 	\begin{itemize}
-		\item It is extended by a prior distribution on the parameter vector $\vect\theta$:
+		\item It is extended by a prior distribution on the weight vector $\vect\alpha$ (no prior on the intercept $\alpha_0$, so it is not penalized):
 		      \begin{displaymath}
-			      \vect \theta \sim {\cal N}(\vect 0, \tau^2 \mat I)
+			      \vect \alpha \sim {\cal N}(\vect 0, \tau^2 \mat I)
 		      \end{displaymath}
-		      (in practice the intercept $\alpha_0$ is excluded from the prior/penalty, see below)
 		\item Suppose
 		      \begin{displaymath}
 			      \forall 1 \le i \le m: \quad y_i
@@ -711,7 +713,7 @@ A regression formula based on L2 norm and the regularizer is also an L2 norm. re
 			      &=& \argmax_{\vect{\alpha}} \Bigg\{ - \frac{1}{2 \tau^2} \sum_{j=1}^d \alpha_j^2 - \frac{1}{2 \sigma^2} \sum_{i=1}^m (y_i - \vect{\alpha}^T \vect{x}_i - \alpha_0)^2 \Bigg\} \\ 
 			      &=& \argmin_{\vect{\alpha}} \Bigg\{ \frac{\sigma^2}{\tau^2} \sum_{j=1}^d \alpha_j^2 + \sum_{i=1}^m (y_i - \vect{\alpha}^T \vect{x}_i - \alpha_0)^2 \Bigg\}
 		      \end{eqnarray*}
-    		\item {Maximizing the posterior probability of $\vect{\alpha}$ for given $\sigma^2$ and $\tau^2$:} 
+    		\item {The same in matrix notation:} 
 		      {\footnotesize
 		      \begin{displaymath}
 			      \argmax_{\vect{\alpha}} p(\vect{\alpha}|S)
@@ -733,6 +735,7 @@ A different kind of regression that is based on L1 norm regularizer.
 	\begin{displaymath}
 		\widehat{\vect \theta} = \argmin_{\vect\theta} \|\mat{X}\vect \theta-\vect y\|^2_2 + \lambda \cdot \|\vect \theta\|_1
 	\end{displaymath}
+	(As for ridge regression, the intercept is usually excluded from the penalty, i.\,e.\ $\lambda\|\vect\alpha\|_1$.)
 	The lasso is used to compute a sparse solution of the system of linear equations, i.\,e.\ the number of non-zero elements in $\vect \theta$ shall be small.
 	
 \subsection{Lessons Learned}
