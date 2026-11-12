@@ -14,7 +14,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 ### 2) Notes contradict their own notation (symbol overloading)
 
 - [ ] $y$: neuron outputs vs targets.
-- [ ] $\vect\mu'_y$: transformed true mean vs pooled transform of estimate.
 - [ ] $\vect r$: Fisher direction vs residual vs LP bound variable.
 - [ ] Tilde notation overloaded (projected scalar / augmented vector / centred matrix).
 - [ ] Index $i$ overloaded (component vs sample vs iteration index); reviewer request: use $j,k$ for components; keep iteration index stable (uses $j$ in EM).
@@ -311,3 +310,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $J$: Fisher score vs functional derivative vs negentropy.
       *Done:* Fisher score already $\vec u_{\vec\theta}(\vec x)$ (p. 85). Max-entropy derivation (ICA, p. 109): $\delta J/\delta p\to\delta\mathcal L/\delta p$, matching the functional $\mathcal L(p)$ defined just above. $J$ now only denotes negentropy; bold $\mat J_{\mathcal L}$ (Laplacian SVM selection matrix) is a matrix and unaffected.
+
+- [x] $\vect\mu'_y$: transformed true mean vs pooled transform of estimate.
+      *Done:* class-specific transform (p. 36): intermediate names $\vect\mu'_y,\mat\Sigma'_y$ removed, the density is written directly as $\mathcal N(\vect x';\mat D_y^{-1/2}\mat U_y^T\vect\mu_y,\mat I)$. $\vect\mu'_y=\phi(\hat{\vect\mu}_y)$ (LDA, pooled transform of the estimate) is now the only meaning.
