@@ -32,7 +32,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 ## Open decisions (not yet changed)
 - [ ] $p(\cdot)$ vs. $P(\cdot)$ for probabilities (ask professor); if switched, also revisit random-variable notation ($P(Y=y)$).
-- [ ] Ch. 07: claim "PCA features approx. Gaussian (CLT)" is questionable content.
 - [ ] Figure labels were edited in `texfig_c/*.pstex_t`; regenerating figures from `texfig/*.fig` on the lab server would restore the old labels.
 
 ---
@@ -377,6 +376,8 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* decided 12 Nov: log-intensity $Y_i\to v_i$, $\vect Y\to\vect v$ (36+11 places); footnote maps to Wells et al. (1996) notation ($Y_i$, $\Gamma_i$).
 - [x] Ch. 14: soft-margin box constraint $0\le\lambda_i\le\mu$ never derived.
       *Notes:* SVM II: full step-by-step derivation added (Lagrangian sorted by primal variable, three stationarity conditions, $\eta_i=\mu-\lambda_i\ge0$), plus the complete soft-margin dual problem and interpretation.
+- [x] Ch. 07: claim "PCA features approx. Gaussian (CLT)" is questionable content.
+      *Notes:* resolved via review 2 (A03): claim was wrong; replaced by "PCA does not make data Gaussian; jointly Gaussian features stay jointly Gaussian".
 
 ## Additional fixes found during the notes pass (not in the list above)
 
@@ -394,3 +395,53 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Ch. 17 No-Free-Lunch: statement rewritten ($f$ cost function, $A$ search algorithm, $c_m$ cost values of the first $m$ visited points).
 - [x] Ch. 4 Naive Bayes: tied diagonal $q_{j,j}=q$ (component index $j$); "$x1 and x2$" → $x_1$ and $x_2$; "mutual independency" → conditional independence given the class.
 - [x] Layout: long footnote URLs break (`xurl`); ridge likelihood split over two lines; quadratic log-ratio block set in `\small` (no visible overflow left).
+
+---
+
+## Review 2: `PatternRecognitionNotes_Corrections.md` (12 Nov 2026), each item verified before changing
+
+Verdicts: **valid** = checked and applied; **partly valid** = applied in corrected form; **not valid** = the notes were already right or the claim is wrong; **already done** = covered by earlier fixes; **not applied** = optional style/teaching suggestion, left for a later pass.
+
+### A. Mathematical corrections
+- [x] **A01** Rank-reduced LDA, rows only unit-norm. **Valid** (with only row-norm constraints every row can take the dominant eigenvector). Objective now $\max\mathrm{tr}(\mat\Phi\mat\Sigma_{\text{inter}}\mat\Phi^T)$ s.t. $\mat\Phi\mat\Phi^T=\mat I_L$; derivation with a symmetric multiplier matrix $\mat N$, diagonalized by an orthogonal change of basis → $\mat\Sigma_{\text{inter}}\mat\Phi^T=\mat\Phi^T\mat\Lambda'$, objective $=\sum\lambda'_i$; rank remark; "PCA of whitened class centroids".
+- [x] **A02** Centroid subspace "is $(K-1)$-dimensional". **Valid**: now "at most $\min(d,K-1)$" (2 places) and the orthogonal-complement sentence qualified.
+- [x] **A03** "PCA features approx. Gaussian (CLT)". **Valid**: replaced; also "uncorrelated ≠ independent unless jointly Gaussian". Resolves the open decision on this claim.
+- [x] **A04** Compressed sensing "recovered mostly always". **Valid**: now "under suitable conditions (RIP / null-space property) exact recovery from noiseless measurements"; noisy variant added.
+- [x] **A05** "functions need to be convex to be optimized". **Valid**: rewritten (non-convex can be optimized; convexity makes local = global); norm-vs-penalty sentence corrected.
+- [x] **A06** Hard-margin "solution is unique". **Partly valid**: the reviewer's suggestion that the intercept may not be unique is too cautious for the hard margin; notes now say $\vect\alpha$ is unique (strictly convex) and $\alpha_0$ is fixed by the active constraints for separable data with both classes.
+- [x] **A07** Dual "bounded below" with "positive definite". **Valid** (the sentence is quoted from Bishop): now positive semidefinite → concave dual, well-defined maximization; remark on Bishop's wording.
+- [x] **A08** Sigmoid kernel not PSD. **Already done** (12 Nov: $\kappa,c$ and the PSD note in both chapters).
+- [x] **A09** "$\gamma=1/\sigma$". **Not valid**: the notes say $\gamma=1/\sigma^2$, which is correct for $e^{-\|\vect x-\vect x'\|^2/\sigma^2}$. No change.
+- [x] **A10** ICA "identify $\mat A$ uniquely". **Valid**: now "up to permutation and non-zero scaling (sign), at most one Gaussian source".
+- [x] **A11** Whitened uniform "uniform on a square". **Valid** (clarity): "on a rotated square in general".
+- [x] **A12** "Variance generally dominates bias in classification!". **Partly valid**: kept as a labelled heuristic (it is a textbook rule of thumb), with the statement that it is not a theorem.
+- [x] **A13** Jackknife pseudovalues "treated as independent". **Valid** (qualify): "treated as if independent; they are actually dependent; works for smooth statistics".
+- [x] **A14** Cross-validation. **Valid**: CV estimate = (size-weighted) average over folds; best CV score optimistic when used for selection → test data or nested CV; preprocessing fitted on training folds only; early-stopping split from the training part.
+
+### B. Derivations and explanations
+- [x] **B01** Gaussian discriminant summary. **Valid**: Lessons Learned now name LDA ($\mat A=\mat 0$) / QDA and the nearest-mean case. (Reviewer's own note that the p. 22 coefficients are correct: confirmed, no change.)
+- [x] **B02** Sign convention $\vect\theta^T\vect x=-F(\vect x)$. **Already done** (definition under Fig. 13 and the note in the log-likelihood section).
+- [x] **B03** Matrix Newton step. **Valid**: added $\nabla=\mat X^T(\vect y-\vect p)$, Hessian $-\mat X^T\mat W\mat X$, IRLS update, invertibility and separable-data caveat (derivation checked).
+- [x] **B04** Ridge intercept with centering. **Valid**: center inputs and targets; $\alpha_0=\bar y-\vect\alpha^T\bar{\vect x}$ in original coordinates.
+- [x] **B05** Functional vs. geometric margin. **Valid**: short paragraph added in SVM I (why "$\ge1$" is w.l.o.g.). The soft-margin $\lambda_i$ case table was **already done** (SVM II).
+- [x] **B06** EM argument order of $Q$. **Not valid**: the notes already use one order consistently ($Q(\text{old};\text{new})$); "EM does not decrease the likelihood, no global guarantee" is already stated.
+- [x] **B07** Executable CV workflow / numerical example. **Not applied** (optional); the key points are in A14.
+- [x] **B08** "Assumptions / What this means" sentences throughout. **Not applied** (style pass); the main assumptions were added where errors were fixed.
+
+### C. Notation
+- [x] **C01** $\hat y^*$ vs. $\hat y$. **Already done** (course convention, Ch. 2).
+- [x] **C02** Logistic 0/1 coding. **Already done**.
+- [x] **C03** Sample / class / fold counts. **Already done**: Model Assessment notation box defines $m$ = folds and $n$ = samples locally.
+- [x] **C04** $\phi$ vs. $\mat\Phi$. **Already done**: each is defined where used.
+- [x] **C05** Scatter vs. covariance. **Already done**: $\mat\Sigma_{\text{intra}}=\frac1m\mat S_\mathsf W$, $\mat\Sigma_{\text{inter}}=\frac14\mat S_\mathsf B$ (two classes) stated in Ch. 5.
+- [x] **C06** SVM / kernel parameters. **Already done** ($\mu$ = $C$ noted; $\gamma=1/\sigma^2$).
+- [x] **C07** Norm vs. squared norm; $L_0$. **Already done** ($L_0$ "not a norm" stated; least squares minimizes the norm alone).
+
+### D. Presentation
+- [x] **D01** Remove "refer to slides" / "not important for exam". **Not applied**: these remarks point to slide figures the notes do not contain; needs a separate content pass.
+- [x] **D02** More numerical examples. **Not applied** (optional).
+- [x] **D03** Separate theorem / heuristic. **Partly done** via A04, A08, A10, A12, A13.
+- [x] **D04** Style ("independency" etc.). **Done** for "independency" → "independence"; rest left for a copy-edit pass.
+
+### E. Reviewer's own "do not change" list
+- [x] p. 22 $\alpha_0$ factor, p. 22 equal-covariance constant, p. 23 binomial pmf: **confirmed correct**, unchanged.

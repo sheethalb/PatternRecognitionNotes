@@ -165,7 +165,7 @@ Latent means hidden.
     &=& E\{ h_1(y_1) \} \, E\{ h_2(y_2) \}
   \end{eqnarray*}
    
-  These extra moment conditions allow us to identify the elements of $\mat A$ uniquely. 
+  These extra moment conditions allow us to identify $\mat A$, but only up to a permutation and a non-zero scaling (including the sign) of its columns, and only if at most one source is Gaussian (see the ambiguities below). 
 
  \textbf {Case of Gaussian distribution:}
   
@@ -251,7 +251,7 @@ Latent means hidden.
 
   \textbf{Properties of the whitened observations:}
   \begin{itemize}
-    \item Joint pdf of $\widetilde{\vect x}$ is uniform on a square.
+    \item Joint pdf of $\widetilde{\vect x}$ is uniform on a square, but on a \emph{rotated} square in general (not aligned with the coordinate axes).
     \item Components are determined except for rotation.
     \item Problem of recovering $\mat{\widetilde A}$ is much simpler.
   \end{itemize}
@@ -858,7 +858,7 @@ An important concept for machine learning and pattern recognition.
   \end{itemize}
          
 
- \textbf {Variance generally dominates bias in classification!}
+ \textbf{Heuristic:} in classification, reducing the variance is often more effective than reducing the bias. This is not a theorem: the effect of bias and variance on the error depends on where the average boundary lies relative to the Bayes boundary, and neither term dominates universally.
   
   \def\covA{\mat{\Sigma}_i = \left(\begin{matrix} \sigma^2_{i1} & \sigma_{i12} \\ \sigma_{i12} & \sigma^2_{i2} \end{matrix}\right)}
   \def\covB{\mat{\Sigma}_i = \left(\begin{matrix} \sigma^2_{i1} & 0            \\ 0            & \sigma^2_{i2} \end{matrix}\right)}
@@ -898,7 +898,7 @@ Resampling for Estimating Statistics
   \end{itemize}
  \textbf {Jackknife Principle:}
   \begin{itemize}
-    \item The pseudovalues $\PS_i(X)$ are treated as independent random variables with mean $\theta$.
+    \item The pseudovalues $\PS_i(X)$ are \emph{treated as if} they were independent random variables with mean $\theta$. (They are computed from overlapping leave-one-out sets and are actually dependent; the approximation works for sufficiently smooth statistics.)
     \item The jackknife estimate $\mu_{\PS}$ is approximately normal with variance $\sigma^2_{\PS}/n$.
     \item The estimators for the mean $\mu_{\PS}$ and variance $\sigma_{\PS}^2$ of the pseudovalues are the sample estimates:
       \begin{eqnarray*}
@@ -980,11 +980,13 @@ Interestingly:\\
         \item The other $m-1$ sets are used for training.
         \item Each set is used once as held-out set.
       \end{itemize}
-    \item Note: if the held-out fold is used to stop training or to select parameters, it acts as a \textbf{validation} set; the final error should be reported on separate \textbf{test} data.
+    \item The CV estimate is the average error over the $m$ held-out folds (weighted by fold size if folds differ in size).
+    \item Note: if the held-out fold is used to stop training or to select parameters, it acts as a \textbf{validation} set and the best CV score is optimistic; the final error should be reported on separate \textbf{test} data (or with nested cross-validation).
+    \item All data-dependent preprocessing (standardization, PCA, feature selection, \dots) must be fitted on the training folds only, not on the full data set.
     \item In the \textbf{extreme case of $m=n$}, we obtain a jackknife estimate of the classification accuracy.
   \end{itemize}
 
-  The classifier is trained until a minimum validation error is reached (good generalization vs.\ overfitting).
+  For early stopping, the classifier is trained until a minimum error on a validation split (taken from the training part) is reached (good generalization vs.\ overfitting); the held-out evaluation fold must not be used for this.
    
 \subsection{Lessons Learned}
 

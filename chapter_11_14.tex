@@ -431,6 +431,8 @@ The \textbf{predicted label} of a feature vector $\vect x$ is
         y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) \geq 1
       \end{displaymath}
   \end{itemize}
+  \textbf{Functional vs.\ geometric margin:} $y_i(\vect\alpha^T\vect x_i+\alpha_0)$ is the \emph{functional} margin of sample $i$; it changes if $(\vect\alpha,\alpha_0)$ is rescaled. The \emph{geometric} margin $y_i(\vect\alpha^T\vect x_i+\alpha_0)/\|\vect\alpha\|_2$ (signed distance) does not. We can therefore fix the scale by requiring a functional margin of at least $1$ for every sample, without loss of generality; then the geometric margin is $1/\|\vect\alpha\|_2$ on each side.
+
   The  \textbf{maximization} of the margin $2/\|\vect\alpha\|_2$ corresponds to the following optimization problem with linear constraints:
   \begin{center}
         $\begin{aligned}
@@ -459,7 +461,7 @@ The \textbf{predicted label} of a feature vector $\vect x$ is
     \item Convex optimization problem 
     \item Efficient algorithms for solving the convex optimization problem (interior point method) 
     \item Standard libraries can be used for minimization 
-    \item Solution is unique
+    \item The optimal $\vect\alpha$ is unique (strictly convex objective); for separable data with samples of both classes, $\alpha_0$ is then fixed by the active constraints
   \end{itemize}
 
 \subsection{Soft Margin Problem}
@@ -790,12 +792,14 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
   \begin{align*}
     \mathcal L(\vect\alpha,\alpha_0,\vect\xi,\vect\lambda,\vect\eta)
     &= \frac12\vect\alpha^T\vect\alpha + \mu\sum_i\xi_i - \sum_i\eta_i\xi_i - \sum_i\lambda_i\big(y_i(\vect\alpha^T\vect x_i+\alpha_0)-1+\xi_i\big)\\
-    &= \frac12\vect\alpha^T\vect\alpha - \Big(\sum_i\lambda_i y_i\vect x_i\Big)^T\vect\alpha - \alpha_0\sum_i\lambda_i y_i + \sum_i\lambda_i + \sum_i(\mu-\eta_i-\lambda_i)\,\xi_i~.
+    &= \frac12\vect\alpha^T\vect\alpha - \Big(\sum_i\lambda_i y_i\vect x_i\Big)^T\vect\alpha - \alpha_0\sum_i\lambda_i y_i\\
+    &\quad + \sum_i\lambda_i + \sum_i(\mu-\eta_i-\lambda_i)\,\xi_i~.
   \end{align*}
   }
   Now insert the three stationarity conditions (Partial derivatives I--III):
   \begin{itemize}
-    \item $\vect\alpha=\sum_i\lambda_i y_i\vect x_i$: the first two terms give $\frac12\vect\alpha^T\vect\alpha-\vect\alpha^T\vect\alpha=-\frac12\vect\alpha^T\vect\alpha=-\frac12\sum_i\sum_j\lambda_i\lambda_j y_iy_j\,\vect x_i^T\vect x_j$,
+    \item $\vect\alpha=\sum_i\lambda_i y_i\vect x_i$: the first two terms give
+      \[ \tfrac12\vect\alpha^T\vect\alpha-\vect\alpha^T\vect\alpha=-\tfrac12\vect\alpha^T\vect\alpha=-\tfrac12\sum_i\sum_j\lambda_i\lambda_j y_iy_j\,\vect x_i^T\vect x_j~,\]
     \item $\sum_i\lambda_i y_i=0$: the $\alpha_0$ term vanishes,
     \item $\mu-\eta_i-\lambda_i=0$: every $\xi_i$ term vanishes.
   \end{itemize}
@@ -830,7 +834,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
   over $d$ variables, into the dual problem, which has $m$ variables.
   For a fixed set of basis functions whose number $d$ is smaller than the number $m$ of data points, the move to the dual problem appears disadvantageous. 
   However, it allows the model to be reformulated using kernels, and so the maximum margin classifier can be applied efficiently to feature spaces whose dimensionality exceeds the number of data points, including infinite feature spaces.
-  The kernel formulation also makes clear the role of the constraint that the kernel function $k(\vect{x},\vect{x}')$ be positive definite, because this ensures that the Lagrangian function $\mathcal L_\text{D}$ is bounded below, giving rise to a well-defined optimization problem.
+  The kernel formulation also makes clear the role of the constraint that the kernel function $k(\vect{x},\vect{x}')$ be positive semidefinite: then the kernel matrix is positive semidefinite, the dual objective $\mathcal L_\text{D}$ is concave, and its maximization over the feasible set is a well-defined convex problem. (Bishop words this as ``bounded below''; for the maximized dual it is concavity / boundedness from above that matters.)
 
   For convex optimization problems with differentiable objective and constraint functions, the duality gap is zero, if the KKT conditions are satisfied. Especially the \textbf{complementary slackness} condition is interesting for us:
   \begin{displaymath}

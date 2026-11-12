@@ -71,7 +71,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
    \begin{itemize}
      \item Reduction of the parameter space
        \begin{itemize}
-         \item Introduction of independency assumptions
+         \item Introduction of independence assumptions
            (from complete dependency to conditional independence given the class)
          \item Parameter tying
        \end{itemize}
@@ -317,8 +317,8 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
   \end{itemize}
     \textbf{$K$ classes:} insights from geometrical analysis of sphered data. This is the multi-class case, better to understand as well. naturally derive from the previous case. in a $(K)$ class case, a $(K-1)$ dimension subspace can separate the samples between the $(K)$ classes. any other information is extra and not needed. 
   \begin{itemize}
-    \item Class centroids span $(K-1)$-dimensional subspace. 
-    \item Relative differences are not affected by coordinates in the $(d-K+1)$-dimensional subspace that is orthogonal to the  $(K-1)$-dimensional subspace spanned by class centroids.
+    \item The centered class centroids span a subspace whose dimension is \textbf{at most} $\min(d,\,K-1)$; it is smaller if the class means are affinely dependent. 
+    \item Relative differences are not affected by coordinates in the orthogonal complement of the subspace spanned by the centered class centroids (dimension $d-K+1$ if the centroids span $K-1$ dimensions).
   \end{itemize}
     \textbf{Objective:} \\
   Will we gain an advantage if we transform features by $$\phi: \real^d\rightarrow \real^k$$ in higher $(k>d)$ or lower dimensional $(k<d)$ spaces? This is something to think about and explored in detail in the next chapters. 
@@ -328,7 +328,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
     \item Relationship between Bayesian classifier, Gaussian classifier, and nearest class mean classifier. 
     \item Mahalanobis distance 
     \item Linear Discriminant Analysis is a regularized nearest class mean classifier 
-    \item Class centroids span $(K-1)$-dimensional subspace 
+    \item Class centroids span a subspace of dimension at most $\min(d,K-1)$ 
   \end{itemize}
   
   \subsection{Comprehensive Questions}
@@ -359,19 +359,13 @@ Note: refer to the intro to PR classes for PCA or many resources available onlin
 	results in the highest spread of projected features:
 	
 	\begin{displaymath}
-		\mat{\Phi}^* = \argmax_{\mat{\Phi}} \left(
+		\mat{\Phi}^* = \argmax_{\mat{\Phi}} \;
 		\frac{1}{K}
 		\sum_{y=1}^K (\mat{\Phi}\vect {\mu}'_y - \mat {\Phi}\bar{\vect \mu}' )^T
-		(\mat{\Phi}\vect {\mu}'_y - \mat {\Phi}\bar{\vect \mu}' ) +
-		\sum_{i=1}^{L} \nu_i (\| \mat{\Phi}_i \|_2^2 - 1)
-		\right)
+		(\mat{\Phi}\vect {\mu}'_y - \mat {\Phi}\bar{\vect \mu}' )
+		\quad\text{subject to}\quad \mat\Phi\mat\Phi^T=\mat I_L~,
 	\end{displaymath}
-	where we applied the \textbf{Lagrange multiplier} method to allow for the maximization of the spread subject to
-	\begin{displaymath}
-		\| \mat {\Phi}_i \|_2^2 = 1 ~, \quad i = 1, \ldots, L ~.
-	\end{displaymath}	%
-	Here $\| \mat{\Phi}_i \|_2^2$ denotes the squared $L_2$ norm of the $i$-th row vector of $\mat{\Phi}$, \\
-	$\nu_i$ are the Lagrange multipliers, and $\bar{\vect\mu}' = \frac{1}{K}\sum_{y=1}^K\vect\mu'_y$.\\
+	i.\,e.\ the $L$ rows of $\mat\Phi$ are \textbf{orthonormal} projection directions, and $\bar{\vect\mu}' = \frac{1}{K}\sum_{y=1}^K\vect\mu'_y$. (Unit-norm rows alone are not enough: then every row could pick the same, dominant direction.) This is PCA of the \emph{whitened class centroids}, not of all feature vectors: it maximizes the between-class spread.\\
 	Note: the derivation is not straight fwd. look at intro to PR to understand the derivation. have to use fundamentals of linear algebra approach. derivation is not important for exam. 
 	
 	\subsection{Excursus: Optimization with Constraints}
@@ -401,43 +395,30 @@ Note: refer to the intro to PR classes for PCA or many resources available onlin
 			      \frac{\partial \mbox{tr}( \mat X \mat B \mat X^T)}{\partial \mat X} = \mat X\mat B^T +\mat X\mat B
 		      \end{displaymath}
 	\end{enumerate}
-For our \textbf{optimization problem} this implies:
-
+For our \textbf{optimization problem} we first rewrite the objective:
 	\begin{eqnarray*}
-		& & \frac{\partial}{\partial{\mat{\Phi}}}
-		\left\{
-		\frac{1}{K} \sum_{y=1}^K (\mat{\Phi} \vect{\mu}'_y - \mat{\Phi} \bar{\vect{\mu}}' )^T
-		(\mat{\Phi} \vect{\mu}'_y - \mat{\Phi} \bar{\vect{\mu}}' )  +
-		\sum_{i=1}^{L} \nu_i (\| \mat{\Phi}_i \|^2_2 - 1)
-		\right\} \\
-		& & = \quad \frac{\partial}{\partial{\mat{\Phi}}}
-		\left\{
 		\frac{1}{K} \sum_{y=1}^K \left( \mat\Phi (\vect{\mu}'_y - \bar{\vect{\mu}}') \right)^T
-		\left( \mat\Phi (\vect{\mu}'_y - \bar{\vect{\mu}}') \right) +
-		\sum_{i=1}^{L} \nu_i (\| \mat {\Phi}_i \|^2_2 - 1)
-		\right\} \\
-		& & = \quad \frac{\partial}{\partial{\mat{\Phi}}}
-		\left\{
-		\mbox{tr} (\mat\Phi \ \mat \Sigma_{\mbox{inter}} \ \mat\Phi^T) +
-		\sum_{i=1}^{L} \nu_i (\| \mat {\Phi}_i \|_2^2 - 1)
-		\right\}
-		\stackrel{!}{=} \mat 0,
+		\left( \mat\Phi (\vect{\mu}'_y - \bar{\vect{\mu}}') \right)
+		&=& \mbox{tr} (\mat\Phi \ \mat \Sigma_{\mbox{inter}} \ \mat\Phi^T),
 	\end{eqnarray*}
 	{\small where $\mat \Sigma_{\mbox{inter}} = \frac{1}{K}\sum_{y=1}^K (\vect \mu'_y - \bar{\vect \mu}')(\vect \mu'_y - \bar{\vect \mu}')^T$ is the inter-class (between-class) covariance matrix of the transformed class means.}
-Now we compute the \textbf{partial derivatives}:
-
+	The constraint $\mat\Phi\mat\Phi^T=\mat I_L$ consists of $L(L+1)/2$ scalar equations; we collect their Lagrange multipliers in a \textbf{symmetric} matrix $\mat N\in\real^{L\times L}$:
 	\begin{displaymath}
-		\frac{\partial}{\partial{\mat{\Phi}}}
-		\left\{
-		\mbox{tr} (\mat \Phi \ \mat \Sigma_{\mbox{inter}}  \ \mat \Phi^T) + \sum_{i=1}^{L} \nu_i (\| \mat {\Phi}_i \|^2_2 - 1)  \right\} =
-		2 \mat \Phi\mat  \Sigma_{\mbox{inter}} +2 \mat N \mat \Phi = \mat 0,
+		\mathcal L(\mat\Phi,\mat N)=\mbox{tr} (\mat\Phi \ \mat \Sigma_{\mbox{inter}} \ \mat\Phi^T) - \mbox{tr}\big(\mat N(\mat\Phi\mat\Phi^T-\mat I_L)\big).
 	\end{displaymath}
-	where $\mat N = \mbox{diag}(\nu_1,\dots,\nu_L)$ contains the Lagrange multipliers.
-	This results in the eigenvalue and eigenvector problem:
+Now we compute the \textbf{partial derivatives} (using the matrix-calculus rule above, with symmetric $\mat\Sigma_{\mbox{inter}}$ and $\mat N$):
 	\begin{displaymath}
-		\mat{\Sigma}_{\mbox{inter}} \mat \Phi^T = \mat \Phi^T \mat{\Lambda}', \qquad \mat\Lambda' = -\mat N = \mbox{diag}(\lambda'_1,\dots,\lambda'_L),
+		\frac{\partial\mathcal L}{\partial{\mat{\Phi}}} =
+		2 \mat \Phi\mat  \Sigma_{\mbox{inter}} -2 \mat N \mat \Phi \stackrel{!}{=} \mat 0
+		\quad\Rightarrow\quad
+		\mat{\Sigma}_{\mbox{inter}} \mat \Phi^T = \mat \Phi^T \mat N~.
+	\end{displaymath}
+	Since $\mat N$ is symmetric, $\mat N=\mat V\mat\Lambda'\mat V^T$ with orthogonal $\mat V$ and $\mat\Lambda'=\mbox{diag}(\lambda'_1,\dots,\lambda'_L)$. Replacing $\mat\Phi$ by $\mat V^T\mat\Phi$ (an orthogonal change of basis within the projected space, which changes neither the constraint nor the objective) gives the eigenvalue and eigenvector problem
+	\begin{displaymath}
+		\mat{\Sigma}_{\mbox{inter}} \mat \Phi^T = \mat \Phi^T \mat{\Lambda}'~,
 	\end{displaymath} 
-	i.\,e.\ the rows of $\mat\Phi$ are eigenvectors of $\mat\Sigma_{\mbox{inter}}$ with eigenvalues $\lambda'_i$.
+	and the objective becomes $\mbox{tr}(\mat\Phi\mat\Sigma_{\mbox{inter}}\mat\Phi^T)=\sum_{i=1}^L\lambda'_i$, so we take the eigenvectors of the $L$ largest eigenvalues.
+	I.\,e.\ the rows of $\mat\Phi$ are orthonormal eigenvectors of $\mat\Sigma_{\mbox{inter}}$ with eigenvalues $\lambda'_i$. If $\mat\Sigma_{\mbox{inter}}$ has rank $r<L$, only $r$ of these directions carry between-class spread.
 	\textbf{Note:} \\
 	In original PCA, the transform $\mat \Phi$ maximizes the overall spread using the covariance matrix of all features:
 	\begin{displaymath}
@@ -583,8 +564,8 @@ In a nutshell, we recognize the fishers problem is solved by finding the eigenva
 
 	\begin{itemize}
 		\item PCA does not require a classified set of feature vectors  (in contrast to LDA). 
-		\item PCA transformed features are approximately normally distributed (central limit theorem).
-		\item Components of PCA transformed features are mutually uncorrelated (if the features are jointly Gaussian, uncorrelated components are also independent). 
+		\item PCA does \textbf{not} make data Gaussian: it is a linear (orthogonal) transform that decorrelates the features. If the original features are jointly Gaussian, the PCA features are jointly Gaussian too.
+		\item Components of PCA transformed features are mutually uncorrelated. Uncorrelated does not imply independent in general; only for jointly Gaussian features are uncorrelated components also independent. 
 		\item There exist many other methods for dimensionality reduction, e.\,g.,  Sammon transform, independent component analysis. 
 		\item Usually the estimation of (non-linear) transforms is computationally prohibitive.
 		\item \textbf{Johnson-Lindenstrauss lemma}: If vectors are projected onto a randomly selected subspace of suitably high dimension, then the distances between the vectors are approximately preserved.
@@ -679,8 +660,8 @@ A regression formula based on L2 norm and the regularizer is also an L2 norm. re
 		      \textbf{standardize} the input before solving the regression problem!  
 		\item The intercept $\alpha_0$ should not be penalized, there should be bias correction which is done as shown below:
 		      \begin{itemize}
-			      \item \textbf{Center} the input $\vect{x}_i$.
-			      \item Estimate $\alpha_0$ by $\bar{y} = \frac{1}{m} \sum_{i=1}^m y_i$.
+			      \item \textbf{Center} the inputs and targets: subtract $\bar{\vect x}=\frac1m\sum_i\vect x_i$ and $\bar y=\frac1m\sum_i y_i$.
+			      \item In the centered coordinates the intercept is $0$; in the original coordinates it is $\alpha_0=\bar y-\vect\alpha^T\bar{\vect x}$ (i.\,e.\ $\alpha_0=\bar y$ if the inputs were already centered).
 			      \item Estimate the remaining coefficients by a ridge regression without  intercept. Matrix $\mat{X}$ has $d$ columns (instead of $d+1$).
 		      \end{itemize}
 	\end{itemize}

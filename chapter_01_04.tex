@@ -544,7 +544,7 @@ The {\em exponential family} is a class of pdfs that can be written in the follo
     \item Posteriors can be rewritten in terms of a logistic function. 
     \item Given the decision boundary $F(\vect x)=0$, we can write down the posterior $p(y|\vect x)$ right away.
     \item With class-specific Gaussian covariances, the decision boundary $F(\vect x)=0$ is quadratic in $\vect x$ (a conic section in $d=2$, and a quadric surface in higher dimensions).
-    \item If the Gaussian classes share the same covariance matrix, then $F(\vect x)=0$ is linear in $\vect x$, i.e.\ a hyperplane (a straight line only for $d=2$).
+    \item If the Gaussian classes share the same covariance matrix, then $\mat A=\mat 0$ and $F(\vect x)=0$ is linear in $\vect x$, i.e.\ a hyperplane (a straight line only for $d=2$); this is the LDA case, and unequal covariances give the quadratic (QDA) case. With equal priors as well, the decision is the nearest class mean in the shared Mahalanobis metric.
 
 \begin{figure}
     \centering
@@ -698,7 +698,16 @@ Before we work on the formulas of the ML-estimator, we rewrite the posteriors us
        \frac{\partial}{\partial\vect \theta} \mathcal{L}\left(\vect \theta^{(k)}\right)
       \end{eqnarray*}
   \end{itemize}
-  \textbf{Note:} If you write the Newton-Raphson iteration in matrix form, you will end up with a weighted least squares iteration scheme.
+  \textbf{Note (matrix form, IRLS):} Let $\mat X$ have rows $\vect x_i^T$, $p_i=g(\vect\theta^T\vect x_i)$, $\vect p=(p_1,\dots,p_m)^T$ and $\mat W=\mathrm{diag}\big(p_i(1-p_i)\big)$. Then (see the gradient and Hessian below)
+  \begin{displaymath}
+    \frac{\partial\mathcal L}{\partial\vect\theta}=\mat X^T(\vect y-\vect p),\qquad
+    \frac{\partial^2\mathcal L}{\partial\vect\theta\partial\vect\theta^T}=-\mat X^T\mat W\mat X,
+  \end{displaymath}
+  so the Newton step for \emph{maximizing} $\mathcal L$ is
+  \begin{displaymath}
+    \vect\theta^{(k+1)}=\vect\theta^{(k)}+(\mat X^T\mat W\mat X)^{-1}\mat X^T(\vect y-\vect p),
+  \end{displaymath}
+  with $\vect p,\mat W$ evaluated at $\vect\theta^{(k)}$. Each step solves a weighted least-squares problem (\emph{iteratively reweighted least squares}). This assumes $\mat X^T\mat W\mat X$ is invertible; for perfectly separable data the unregularized ML estimate does not exist (the likelihood keeps increasing as $\|\vect\theta\|\to\infty$).
 
   \textbf{Taylor's Theorem:} Approximation of an $n$-times differentiable function $f(x)$ around a given point $x_0$ (here $x$ is a scalar variable):
    {\small

@@ -235,17 +235,18 @@ The unit ball of a norm is the set of all vectors of norm at most one. Its shape
     \item Assume we have fewer measurements than required to estimate the parameter vector $\vect x$. 
     \item Solution of the underdetermined case required. 
     \item We call a vector $s$-sparse if its support, i.\,e.\ the number of non-zero entries, is less than or equal to $s$ ($S$ is reserved for the training set).  
-    \item The vector $\vect x$ can be recovered mostly always by solving the convex optimization problem (it can be rewritten as a linear program):
+    \item Under suitable conditions on the sparsity $s$ and on the measurement matrix $\mat A$ (e.\,g.\ a restricted isometry or null-space property), an $s$-sparse vector $\vect x$ is recovered \emph{exactly} from noiseless measurements by solving the convex optimization problem (it can be rewritten as a linear program):
       \begin{eqnarray*}
         \mbox{minimize}   & &\quad \|\vect x\|_1\\
         \mbox{subject to} & & \quad \mat A\vect x =\vect b.
       \end{eqnarray*}
+      For noisy measurements the constraint is relaxed, e.\,g.\ to $\|\mat A\vect x-\vect b\|_2\le\varepsilon$, or a penalized form (lasso) is used.
   \end{itemize}
 
 \newpage
 \subsection{Convex and Non-Convex Penalty Functions}
 
-  Motivated by the discussion of different norms, we now introduce and study \textbf{penalty functions}. This is different from norms in intent. A norm dictates the primary objective function that is used for optimization and penalty function is additional constraints introduced to further guide the optimization. In general functions need to be convex to be optimized. more details are in later chapters about convex optimizations and what happens with non-convex functions.\\[0.3cm]
+  Motivated by the discussion of different norms, we now introduce and study \textbf{penalty functions}. A penalty function $\phi$ assigns a cost to each residual; norms are special cases (e.\,g.\ $\phi(r)=|r|$ or $r^2$), and norms can also be used as regularizers on the parameters (e.\,g.\ $\lambda\|\vect x\|_1$). Both convex and non-convex objectives can be optimized, but convexity is very useful: every local minimum of a convex function is global. Non-convex problems may have several local minima, so finding or certifying the global optimum is harder (see the optimization chapters).\\[0.3cm]
   
   \textbf{Definition}\\
 The \emph{penalty function approximation problem} is defined as follows:
