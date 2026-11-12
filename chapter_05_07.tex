@@ -6,16 +6,11 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
 
 \subsection{Independency Assumptions}
 
- \begin{itemize}
-    \item still widely (and successfully) used 
-    \item often outperforming much more advanced classifiers 
-    \item appropriate in the presence of high dimensional features (curse of dimensionality). it is used to overcome the curse of dimensionality, for eg. an image will have all the pixels as the dimensions which might be 1024x1024 and that vector is too large !! 
-    \item also called \textbf{''Idiot's Bayes''}
-   \end{itemize}
-   
+Naive Bayes is still widely and successfully used despite its extreme simplicity, and in many applications it outperforms much more advanced classifiers. It is particularly appropriate for high-dimensional features, because the strong independence assumption sidesteps the curse of dimensionality: an image, for example, has every pixel as a dimension, so a $1024\times1024$ image already gives a feature vector that is far too large to model with a full joint density. Because of its simplicity the classifier is also called \textbf{``Idiot's Bayes''}.
+
    \textbf{Naive Bayes and Statistical Independency}
-  
-  For the class-conditional pdf $p(\vect x\mid y)$ we can do the following factorization:
+
+  To see what the independence assumption buys us, start from the exact factorization of the class-conditional pdf $p(\vect x\mid y)$, which follows from the chain rule of probability and holds without any assumption:
 %
   \begin{eqnarray*}
     p(\vect x\mid y) &=& p(x_1, x_2, \dots, x_d \mid y) \\
@@ -23,24 +18,17 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
     &=& p(x_1\mid y)p(x_2\mid y,x_1)p(x_3,x_4,\dots, x_d \mid y, x_1, x_2) \\
     &=& p(x_1\mid y)\prod_{j=2}^d p(x_j\mid y, x_1,\dots,x_{j-1})
   \end{eqnarray*} 
-   \begin{itemize}
-    \item The Naive Bayes classifier makes a strong \textbf{naive independence assumption}.
-    \item All $d$ components $x_j$ of the feature vector $\vect x$ are assumed to be \textbf{conditionally} independent given the class $y$.
-    \item This implies:
+  The Naive Bayes classifier now makes a strong \textbf{naive independence assumption}: all $d$ components $x_j$ of the feature vector $\vect x$ are assumed to be \textbf{conditionally} independent given the class $y$. Each factor $p(x_j\mid y, x_1,\dots,x_{j-1})$ then reduces to $p(x_j\mid y)$, which implies
       \begin{eqnarray*}
-        p(\vect x\mid y) &=& \prod_{j=1}^d p(x_j\mid y)
+        p(\vect x\mid y) &=& \prod_{j=1}^d p(x_j\mid y).
       \end{eqnarray*}
-  \end{itemize}
 
-  \textbf{Decision rules:}
-  \begin{itemize}
-    \item Bayes-optimal prediction: $y^* = \argmax_y p(y\mid\vect x)$.
-    \item Naive Bayes prediction (using the conditional-independence assumption):
+  \textbf{Decision rules.}
+  The Bayes-optimal prediction is $y^* = \argmax_y p(y\mid\vect x)$. Replacing the class-conditional pdf by the factorized one gives the Naive Bayes prediction
       \begin{eqnarray*}
-        \hat y &=& \argmax\limits_{y} p(y)\prod_{j=1}^d p(x_j \mid y)
+        \hat y &=& \argmax\limits_{y} p(y)\prod_{j=1}^d p(x_j \mid y).
       \end{eqnarray*}
-      In general, $\hat y$ is only an approximation of $y^*$.
-  \end{itemize}
+  The evidence $p(\vect x)$ in the denominator of Bayes' rule has been dropped because it does not depend on $y$ and therefore does not change the maximizer. The classifier thus only needs the class priors $p(y)$ and $d$ one-dimensional class-conditional densities $p(x_j\mid y)$ per class. In general, $\hat y$ is only an approximation of $y^*$, because the independence assumption rarely holds exactly.
 
 \subsection{An Example: Gaussians}
   Assume the $100$--dimensional feature vector $\vect x\in \real^{100}$ belonging to class $y$ is normally distributed and all components are {\em mutually dependent}:

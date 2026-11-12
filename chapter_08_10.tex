@@ -334,11 +334,7 @@ The \emph{penalty function approximation problem} is defined as follows:
 
 \subsection{Motivation}
 
-  \begin{itemize}
-    \item We want to compute a linear decision boundary.
-    \item We assume that classes are linearly separable.
-    \item Computation of a linear separating hyperplane that minimizes the distance of misclassified feature vectors  to the decision boundary.
-  \end{itemize}
+The perceptron, developed by Frank Rosenblatt in 1957, is considered the first model of an artificial neural network. Its goal is to compute a linear decision boundary between two classes. We therefore assume that the classes are \textbf{linearly separable}, i.\,e.\ that there exists a hyperplane which classifies every training example correctly. The learning task is then to compute such a linear separating hyperplane by minimizing the distance of the misclassified feature vectors to the decision boundary.
 
 \subsection{Objective Function}
 
@@ -505,6 +501,12 @@ Then the perceptron learning algorithm with zero initialization makes at most $k
 \section{Multi-Layer Perceptrons}
 
 The basics of neural networks, activation functions, and backpropagation (covered in greater detail in the Deep Learning course).\autocite{bishop2006,hastie2009}
+
+\subsection{Physiological Motivation}
+
+The biological neuron provides the conceptual foundation for artificial neural networks. A neuron receives incoming signals through its dendrites; the cell body (soma) integrates them, and at the axon hillock it is decided whether an action potential is fired. The axon then propagates the signal away from the soma to the synaptic terminals, where neurotransmitters are released onto the receptors of neighboring neurons. Biophysical models such as the Hodgkin--Huxley equations describe how action potentials are generated and propagated.
+
+Abstracting the neuron to a computational unit that sums weighted inputs, subtracts a threshold, and passes the result through a non-linear activation function gives the \textbf{artificial neuron} on which the Multi-Layer Perceptron (MLP) is built. Rosenblatt's perceptron used a hard step activation with a binary ``all-or-none'' output, mirroring the observation that a biological neuron fires only when its membrane potential exceeds a threshold. Modern MLPs replace this discontinuous step by smooth (e.\,g.\ sigmoid) or piecewise-linear (e.\,g.\ ReLU) functions, which makes gradient-based learning by backpropagation possible.
 
 \subsection{Topology and Activation Functions}
 

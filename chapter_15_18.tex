@@ -4,21 +4,9 @@
 
 \subsection{Motivation}
 
-	Linear decision boundaries in its current form have serious limitations:  
+	Linear decision boundaries in their current form have serious limitations. First, they are often too simple to provide good decision boundaries for real-world data. Second, data that are not linearly separable cannot be classified correctly at all. Third, noisy data cause problems, because outliers can strongly shift a linear separator. Finally, the formulation deals with vectorial data only and does not directly handle other data types such as sequences.
 
-	\begin{itemize}
-		\item too simple to provide good decision boundaries  
-		\item non-linearly separable data cannot be classified     
-		\item noisy data cause problems     
-		\item formulation deals with vectorial data only
-	\end{itemize}
-
-	\textbf{Possible solution:} \\
-
-	\begin{itemize}
-		\item Map data into a higher dimensional feature space using a \textbf{non-linear feature transform},
-		      then use a linear classifier.
-	\end{itemize}
+	\textbf{Possible solution.} Map the data into a higher-dimensional feature space using a \textbf{non-linear feature transform} $\phi:\real^d\rightarrow\real^D$, $D\ge d$, and then use a linear classifier in that space, where the data may have become linearly separable. As a simple example, take two classes in $\real^2$ where one class lies inside a region around the origin and the other outside it. The transform $\phi(\vect x)=(x_1^2, x_2^2)^T$ makes them linearly separable, but only if the data are centered at the origin; for non-centered data the transform must also keep linear terms, e.\,g.\ $\phi(\vect x)=(x_1^2, x_2^2, x_1)^T$ if the data are shifted along $x_1$ (in general, both $x_1$ and $x_2$ are needed).
      
   
 	\subsubsection{Dual Representation}
@@ -191,6 +179,8 @@
 	\textbf{Gaussian RBF kernel $e^{-0.1\|\vect x-\vect x'\|_2^2}$:} the decision boundary is no longer linear in $\vect x$ (examples in the slides).
 
 \subsection{Kernel PCA}
+	Principal component analysis can be extended by kernels to a \textbf{non-linear} dimensionality reduction. The key idea is to rewrite the PCA eigenvalue problem such that the feature vectors only appear in inner products, which can then be replaced by a kernel.
+
 	\textbf {PCA revisited}  
 
 	\begin{itemize}
@@ -210,13 +200,10 @@
 	\end{itemize}
   	\textbf {Facts from linear algebra:} \\ 
 
-	\begin{itemize}
-		\item The eigenvectors $\vect v_i$ span the same space as the feature vectors.
-		\item For eigenvalues $\lambda_i\neq 0$, each eigenvector $\vect v_i$ can be written as a linear combination of feature vectors:
+	The eigenvectors $\vect v_i$ with $\lambda_i\neq 0$ lie in the space spanned by the feature vectors. Hence, for eigenvalues $\lambda_i\neq 0$, each eigenvector $\vect v_i$ can be written as a linear combination of the feature vectors:
 		      \begin{displaymath}
 			      \vect v_i = \sum_{n=1}^m a_{i,n} \, \vect x_n.
 		      \end{displaymath}
-	\end{itemize}
    The eigenvector/-value problem for the PCA computation can now be rewritten:
 
 	\begin{eqnarray*}
@@ -228,14 +215,12 @@
 		&=& m \cdot \lambda_i \sum_{n=1}^m a_{i,n} \, \vect x_n
 	\end{eqnarray*}
      
-	\begin{itemize}
-		\item The following equations have to be fulfilled for all projections on $\vect x_l$ for all indices $l$:
+	Projecting both sides onto each feature vector $\vect x_l$ (multiplying from the left by $\vect x_l^T$), the following equations have to be fulfilled for all indices $l$:
 		      \begin{displaymath}
 			      \sum_{j=1}^m\sum_{n=1}^m a_{i,n}\vect x_l^T \vect x_j \vect x_j^T\vect x_n =
 			      m \cdot \lambda_i \sum_{n=1}^m a_{i,n} \vect x_l^T\vect x_n
 		      \end{displaymath}
-		\item \textbf{Wow} -- now all feature vectors show up in terms of inner products and the kernel trick can be applied, \textbf{if \emph{transformed} features $\phi(\vect x)$ have zero mean}. \\ 
-		\item For \emph{any} kernel $k(\vect x, \vect x')$, we get the \textbf{key equation for Kernel PCA}: \\
+	\textbf{Wow} -- now all feature vectors show up in terms of inner products only, so the kernel trick can be applied, \textbf{provided that the \emph{transformed} features $\phi(\vect x)$ have zero mean} (see the centering step below). For \emph{any} kernel $k(\vect x, \vect x')$, we get the \textbf{key equation for Kernel PCA}:
 		      \begin{center}
 			      \tikz[baseline]{
 				      \node[fill=bl1!100,anchor=base,rounded corners=3pt] (d1) {
@@ -245,7 +230,6 @@
 				      };
 			      }
 		      \end{center}
-	\end{itemize}
  	This can be written in \textbf{matrix notation} using the symmetric, positive semi-definite kernel matrix $\mat K\in \real^{m\times m}$ and the vector $\vect a_i = (a_{i,1}, a_{i,2}, \dots, a_{i,m})^T$:
 
 	\begin{eqnarray*}
@@ -258,11 +242,7 @@
 		\mat K (\mat K {\vect a}_i - m\cdot \lambda_i \vect a_i) = \vect 0
 	\end{displaymath}
 
-	\begin{itemize}
-		\item For $\lambda_i\neq 0$, we may choose $\vect a_i$ in the range of $\mat K$ such that
-		      $\mat K\vect a_i = m\lambda_i\,\vect a_i$.
-		\item (In general, $\vect a_i$ is only defined up to addition of a null-space component of $\mat K$.)
-	\end{itemize}
+	For $\lambda_i\neq 0$, we may choose $\vect a_i$ in the range of $\mat K$ such that $\mat K\vect a_i = m\lambda_i\,\vect a_i$. (In general, $\vect a_i$ is only defined up to addition of a null-space component of $\mat K$.)
   	The coefficient vector $\vect a_i$ for the principal components can be computed by solving the \textbf{eigenvalue/-vector problem} for $i$: \\
 
 	\begin{center}
@@ -272,18 +252,14 @@
 	\textbf {Note:}\\
 
 	\small
-	\begin{itemize}
-		\item Kernel PCA (and thus the classical PCA as well) can be computed by solving an eigenvector/-value problem for an $(m\times m)$-matrix, where $m$ is the \textbf{cardinality of the training feature set}.
-		\item The principal components cannot be computed easily, because only the kernel is known, but \textbf{not} $\phi(\vect x)$.
-		\item However, the projection $c$ of the transformed feature vector $\phi(\vect x)$ on principal component $\vect v_i= \sum_{n=1}^m a_{i,n}  \, \phi(\vect x_n)$ is easily computed by:
+	Kernel PCA (and thus the classical PCA as well) can be computed by solving an eigenvector/-value problem for an $(m\times m)$-matrix, where $m$ is the \textbf{cardinality of the training feature set}, instead of a $(d\times d)$-matrix. This is attractive whenever the feature dimension is much larger than the number of samples. The principal components themselves cannot be computed easily, because only the kernel is known, but \textbf{not} $\phi(\vect x)$. However, the projection $c$ of the transformed feature vector $\phi(\vect x)$ on principal component $\vect v_i= \sum_{n=1}^m a_{i,n}  \, \phi(\vect x_n)$ is easily computed by:
 		      \begin{displaymath}
 			      c \quad = \quad
 			      \phi( \vect x)^T \vect v_i   \quad = \quad
 			      \sum_{n=1}^m a_{i,n} \, \phi(\vect x)^T\phi(\vect x_n) \quad   = \quad
 			      \sum_{n=1}^m a_{i,n} \, k(\vect x, \vect x_n)
 		      \end{displaymath}
-		\item Normalization: choose the eigenvector scaling such that $\|\vect v_i\|_2=1$, i.e.\ $\vect a_i^T\mat K\vect a_i = m\lambda_i\|\vect a_i\|_2^2 = 1$ (this requires $\lambda_i\neq 0$).
-	\end{itemize}
+	For the normalization, the eigenvector scaling is chosen such that $\|\vect v_i\|_2=1$, i.e.\ $\vect a_i^T\mat K\vect a_i = m\lambda_i\|\vect a_i\|_2^2 = 1$ (this requires $\lambda_i\neq 0$).
      
 It is assumed that the transformed features have   \textbf{zero mean}:
 
@@ -333,19 +309,9 @@ It is assumed that the transformed features have   \textbf{zero mean}:
 	\subsubsection{Kernels for Feature Sequences}
 
 	 \textbf{Example: string kernels}
-		\begin{itemize}
-			\item In speech recognition we do not have feature vectors but sequences of feature vectors.
-			\item In order to use kernel methods we need a kernel for time series.
-			\item Feature vectors are considered in $\real^d =\cal X$.
-			\item Sequences of feature vectors are elements of $\cal X^*$.
-			\item   \textbf{Problem:} How to define a kernel over the sequence space $\cal X^*$?  
-		\end{itemize}
+		In many domains, such as speech recognition, we do not have single feature vectors but sequences of feature vectors, possibly of different lengths. In order to use kernel methods, we therefore need a kernel for time series. The individual feature vectors are considered in $\real^d =\cal X$, and sequences of feature vectors are elements of $\cal X^*$, the set of all finite sequences over $\cal X$. The \textbf{problem} is how to define a kernel over the sequence space $\cal X^*$.
 
-		\textbf {Implications:}
-		\begin{itemize}
-			\item PCA on feature sequences -- COOL!
-			\item SVM for feature sequences -- EVEN COOLER!
-		\end{itemize}
+		Such a kernel has strong \textbf{implications}: it allows PCA on feature sequences -- COOL! -- and SVMs for feature sequences -- EVEN COOLER!
 		Comparison of sequences via \emph{dynamic time warping} (DTW): \\
 
 		Given two feature sequences $X, X'\in {\cal X^*}$ (with time index $t$):
@@ -353,31 +319,25 @@ It is assumed that the transformed features have   \textbf{zero mean}:
 			X   &=& \big( \vect x(1), \vect x(2), \dots, \vect x(p)\big) \, ,\\
 			X'  &=& \big( \vect x'(1), \vect x'(2), \dots, \vect x'(q)\big)~.
 		\end{eqnarray*}
-		\begin{itemize}
-			\item Distance is computed by DTW (schematically):
+		DTW aligns the two sequences by a warping path and accumulates the distances of the matched feature vectors (schematically):
 			      \begin{displaymath}
 				      D_{\text{DTW}}(X,X') = \frac{1}{p}\sum_{t=1}^{p} \| \vect x\big(v(t)\big)- \vect x'\big(w(t)\big) \|_2
 			      \end{displaymath}
-			      where $v, w$ define the time-warping (mapping of indices to indices).
-			\item The DTW kernel can be defined as:
+			      where $v, w$ define the time-warping (mapping of indices to indices). The DTW kernel can then be defined as
 			      \begin{displaymath}
 				      k(X,X') = e^{-D_{\text{DTW}}(X,X')}\qquad (\text{not positive semidefinite in general}).
 			      \end{displaymath}
-		\end{itemize}
+		Because the kernel depends on the sequences only through the DTW distance, it automatically accounts for the temporal alignment.
 
 \subsection{Fisher Kernels}
-	Now we design kernels building on probability density functions $p(\vect x;\vect  \theta)$.
-
-	\begin{itemize}
-		\item   \textbf{Fisher score (score function):}
+	A different way to construct kernels starts from a generative model: we now design kernels building on probability density functions $p(\vect x;\vect  \theta)$. Two quantities are needed, the \textbf{Fisher score (score function)}, i.\,e.\ the gradient of the log-likelihood w.\,r.\,t.\ the parameters,
 		      \begin{displaymath}
 			      \vect u_{\vect\theta}(\vect x) \,=\, \frac{\partial}{\partial \vect \theta} \log p(\vect x; \vect \theta)
 		      \end{displaymath}
-		\item   \textbf{Fisher information matrix:}
+	and the \textbf{Fisher information matrix}
 		      \begin{displaymath}
-			      \mathcal I(\vect\theta) \,=\, E_{\vect x} \big[\vect u_{\vect\theta}(\vect x)\, \vect u_{\vect\theta}^T(\vect x)\big]
+			      \mathcal I(\vect\theta) \,=\, E_{\vect x} \big[\vect u_{\vect\theta}(\vect x)\, \vect u_{\vect\theta}^T(\vect x)\big].
 		      \end{displaymath}
-	\end{itemize}
 
 	\textbf {Note:} \\
 	The Fisher information matrix is the curvature of the Kullback-Leibler divergence. The Fisher kernel can be defined in   \textbf{two different ways}:
@@ -394,13 +354,7 @@ It is assumed that the transformed features have   \textbf{zero mean}:
 	\textbf {Application:} learning from partially labeled data  
 
 	\small
-	\begin{itemize}
-		\item Some classification approaches require   \textbf{huge collections of data}  (e.\,g.\ for text or speech recognition).  
-		\item Labeling of the data can be   \textbf{time-consuming} and   \textbf{costly}.  
-		\item If the data can be modeled with a small number of well separated components  (with each component corresponding to a distinct category),  little labeled data would suffice to assign a proper label to each of them.  
-		\item A machine learning approach that also uses the unlabeled data can achieve better classification performance than one that uses only the labeled data.  
-		\item Fisher kernels describe a generative model that can be used in a discriminative approach (e.\,g.\ SVM).
-	\end{itemize}
+	Some classification approaches require \textbf{huge collections of data} (e.\,g.\ for text or speech recognition), but labeling these data can be \textbf{time-consuming} and \textbf{costly}. If the data can be modeled with a small number of well separated components (with each component corresponding to a distinct category), little labeled data would suffice to assign a proper label to each of them. A machine learning approach that also uses the unlabeled data can therefore achieve better classification performance than one that uses only the labeled data. Fisher kernels make this possible: the generative model $p(\vect x;\vect\theta)$ can be trained on the abundant unlabeled data, and the resulting kernel is then used in a discriminative approach (e.\,g.\ an SVM) trained on the labeled data.
   
 \subsection{Lessons Learned}
 
@@ -426,25 +380,21 @@ It is assumed that the transformed features have   \textbf{zero mean}:
 Modification of SVMs for different kind of data distribution. 
 
 \subsection{Motivation}
-  \textbf{Example: two class ``clock'' data set}
-  refer to slides for images. 
+  \textbf{Example: two class ``clock'' data set} (refer to the slides for the images).
+  The data set consists of points on an inner and an outer ring, of which only two points -- one per class -- are labeled. A conventional SVM trained on just these two labels yields a straight decision boundary that cuts through both rings arbitrarily. The many unlabeled points, however, trace out the two rings and thereby reveal the geometric structure of the data. A Laplacian SVM exploits this structure, so that the decision boundary follows the circular geometry. Incorporating the geometry of the whole data set can therefore improve the classifier considerably when labels are scarce.
  
 \subsection{Learning from Labeled and Unlabeled Data}
-    \textbf{Training data: $S = S_l \cup S_u$}
-    \begin{itemize}
-    \item labeled data: $S_l = \{(\vect{x}_i, y_i)\}_{i=1}^{l}$ with true labels $y_i\in\{-1,+1\}$
-    \item unlabeled data: $S_u = \{\vect{x}_i\}_{i=l+1}^{m}$, with $m=l+u$
-  \end{itemize}
+    \textbf{Training data: $S = S_l \cup S_u$.}
+    The training set consists of labeled data $S_l = \{(\vect{x}_i, y_i)\}_{i=1}^{l}$ with true labels $y_i\in\{-1,+1\}$ and unlabeled data $S_u = \{\vect{x}_i\}_{i=l+1}^{m}$, i.\,e.\ $u$ feature vectors without class information, with $m=l+u$.
 
-    \textbf{Graph Laplacian $\mat{L}$ associated with $S$:} (bold $\mat L$ is the graph Laplacian; the Lagrangian below is $\mathcal L$)\footnote{Notation in Belkin et al.\ (2006): labeled and unlabeled points are only distinguished by their index ranges ($1,\dots,l$ and $l+1,\dots,l+u$), the expansion coefficients are $\alpha_i$ (here $\beta_i$), the Lagrange multipliers are $\beta_i$ and $\zeta_i$ (here $\lambda_i$ and $\eta_i$), the selection matrix is $\mat J$ (here $\mat J_l$), the intrinsic term is normalized as $\frac{\gamma_I}{(l+u)^2}\vect f^T\mat L\vect f$ (here the factor is absorbed into $\gamma_\text{I}$), and the hinge loss is weighted by $\frac1l$, so their box constraint is $0\le\beta_i\le\frac1l$ (here $0\le\lambda_i\le1$). The lecture slides use $\mathcal L,\mathcal U$ for the labeled and unlabeled sets (here $S_l,S_u$) and $L$ for both the Laplacian and the Lagrangian.}
-   \begin{itemize}
-    \item $\mat{L} = \mat{D} - \mat{W}$
-    \item adjacency matrix $\mat{W}$ with edge weights $w_{ij}\ge 0$ (e.\,g.\ heat kernel $w_{ij}=\exp(-\|\vect x_i-\vect x_j\|_2^2/(4t))$)
-    \item diagonal matrix $\mat{D}$ with the degree of each node: $d_{ii} = \sum_{j=1}^m w_{ij}$
-  \end{itemize}
+    \textbf{Graph Laplacian $\mat{L}$ associated with $S$.} (Bold $\mat L$ is the graph Laplacian; the Lagrangian below is $\mathcal L$.)\footnote{Notation in Belkin et al.\ (2006): labeled and unlabeled points are only distinguished by their index ranges ($1,\dots,l$ and $l+1,\dots,l+u$), the expansion coefficients are $\alpha_i$ (here $\beta_i$), the Lagrange multipliers are $\beta_i$ and $\zeta_i$ (here $\lambda_i$ and $\eta_i$), the selection matrix is $\mat J$ (here $\mat J_l$), the intrinsic term is normalized as $\frac{\gamma_I}{(l+u)^2}\vect f^T\mat L\vect f$ (here the factor is absorbed into $\gamma_\text{I}$), and the hinge loss is weighted by $\frac1l$, so their box constraint is $0\le\beta_i\le\frac1l$ (here $0\le\lambda_i\le1$). The lecture slides use $\mathcal L,\mathcal U$ for the labeled and unlabeled sets (here $S_l,S_u$) and $L$ for both the Laplacian and the Lagrangian.}
+    To exploit the geometry of the entire sample $S$, the training points are treated as the nodes of a graph. The adjacency matrix $\mat{W}$ holds the edge weights $w_{ij}\ge 0$ (e.\,g.\ the heat kernel $w_{ij}=\exp(-\|\vect x_i-\vect x_j\|_2^2/(4t))$): a large weight means that $\vect x_i$ and $\vect x_j$ are close, while $w_{ij}=0$ means that there is no direct connection. The diagonal matrix $\mat{D}$ contains the degree of each node, $d_{ii} = \sum_{j=1}^m w_{ij}$, i.\,e.\ the sum of all edge weights incident to node $i$. The graph Laplacian is then
+    \begin{displaymath}
+      \mat{L} = \mat{D} - \mat{W}.
+    \end{displaymath}
 
     \textbf{Kernel matrix $\mat{K}$:} $k_{ij} = k(\vect{x}_i, \vect{x}_j)$\\
-    \textbf{Decision function $f(\vect{x})$, predicted label $\hat y=\sign(f(\vect x))$:} $\vect{f} = [f(\vect{x}_i),~i=1,\ldots,m]^T$\\
+    \textbf{Decision function $f(\vect{x})$, predicted label $\hat y=\sign(f(\vect x))$:} $\vect{f} = [f(\vect{x}_i),~i=1,\ldots,m]^T$ collects the outputs on all training points, labeled and unlabeled.\\
     \textbf{Regularization framework for function learning:}\\
   
   \begin{center}
@@ -456,47 +406,19 @@ Modification of SVMs for different kind of data distribution.
         $\\
         {\small where $\mathcal H_k$ is the reproducing kernel Hilbert space (RKHS) of the kernel $k$ and $\mathcal M$ denotes the data manifold.}
   \end{center}
-\textbf{Loss function $V(\vect{x}_i, y_i, f)$}
-  
-  \begin{itemize}
-    \item Squared loss function   \textbf{$(y_i - f(\vect{x}_i))^2$} for Regularized Least Squares (RLS)
-    \item Hinge loss function   \textbf{$\max [0, 1-y_i f(\vect{x}_i)]$} for SVM
-  \end{itemize}
+\textbf{Loss function $V(\vect{x}_i, y_i, f)$.}
+  Typical choices are the squared loss \textbf{$(y_i - f(\vect{x}_i))^2$}, which gives Regularized Least Squares (RLS), and the hinge loss \textbf{$\max [0, 1-y_i f(\vect{x}_i)]$}, which gives the SVM.
  
-\textbf{Regularization framework for function learning:}
-\textbf{Regularization terms}
-  
-  \begin{itemize}
-    \item \emph{Ambient} norm $\|\cdot\|_\text{A}$: 
-      \begin{itemize}
-        \item norm of the function $f$ in the Reproducing Kernel Hilbert Space (RKHS) enforces a smoothness condition on the possible solutions   
-      \end{itemize}
-    \item \emph{Intrinsic} norm $\|\cdot\|_\text{I}$:
-      \begin{itemize}
-        \item norm of the function $f$ in the low dimensional manifold enforces a smoothness along the sampled $\mathcal{M}$
-      \end{itemize}
-  \end{itemize}
+\textbf{Regularization terms.}
+  Two complementary regularizers are used. The \emph{ambient} norm $\|\cdot\|_\text{A}$ is the norm of the function $f$ in the Reproducing Kernel Hilbert Space (RKHS); it enforces a smoothness condition on the possible solutions in the ambient space $\real^d$. The \emph{intrinsic} norm $\|\cdot\|_\text{I}$ is the norm of the function $f$ on the low-dimensional manifold; it enforces smoothness along the sampled manifold $\mathcal{M}$, i.\,e.\ neighboring points on the graph (large $w_{ij}$) should receive similar function values.
 
-
-  Reproducing Kernel Hilbert Spaces (RKHS)    \textbf{Hilbert space}
-
-  \begin{itemize}
-    \item   \textbf{abstract vector space} with any finite or   \textbf{infinite} number of dimensions
-    \item possesses the structure of the   \textbf{inner product}
-    \item allows the measurement of  \textbf{angles} and   \textbf{lengths}
-    \item is   \emph{complete}    
-  \end{itemize}
-\vspace{0.3cm}
-\textbf{Reproducing Kernel Hilbert Space}
-  \begin{itemize}
-    \item Hilbert space of functions
-    \item can be defined by kernels
-  \end{itemize}
+  \textbf{Reproducing Kernel Hilbert Spaces (RKHS).}
+  A \textbf{Hilbert space} is an \textbf{abstract vector space} with any finite or \textbf{infinite} number of dimensions that possesses the structure of an \textbf{inner product}, which allows the measurement of \textbf{angles} and \textbf{lengths}, and that is \emph{complete} (every Cauchy sequence converges). A \textbf{Reproducing Kernel Hilbert Space} is a Hilbert space of functions that can be defined by a kernel $k$: evaluating a function $f$ at a point $\vect x$ can be written as an inner product, $f(\vect x)=\langle f, k(\vect x,\cdot)\rangle_{\mathcal H_k}$ (the reproducing property). Kernels thus provide a constructive way to work in (possibly infinite-dimensional) function spaces.
     
   \subsubsection{Manifolds}
   
-  A   \textbf{manifold} is a topological space that on a small enough scale resembles  the Euclidean space. it is roughly the shape of the distribution of the features.  \\
-\textbf{The Swiss Roll Problem} where the data is distributed in the shape of a swiss roll. look at slides and video for more details. 
+  A   \textbf{manifold} is a topological space that on a small enough scale resembles  the Euclidean space. it is roughly the shape of the distribution of the features. Many high-dimensional data sets are believed to lie near a low-dimensional manifold embedded in the feature space. \\
+\textbf{The Swiss Roll Problem} where the data is distributed in the shape of a swiss roll, i.\,e.\ a two-dimensional sheet rolled up in three-dimensional space. Euclidean distances in $\real^3$ ignore this two-dimensional structure, whereas manifold-aware methods such as the Laplacian regularizer respect the intrinsic geometry. look at slides and video for more details. 
 
 \textbf{Intrinsic norm $\|\cdot\|_\text{I}$:}
   
@@ -611,32 +533,18 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
 An important chapter for the exam. understand the steps, and if possible do the exercise to understand better. 
 
 \subsection{Parameter Estimation}
-\textbf{Goal:} Derivation of a parameter estimation technique that can deal with
-  \begin{itemize}
-    \item high dimensional parameter spaces and
-    \item latent, hidden, incomplete data.
-  \end{itemize}
+\textbf{Goal:} Derivation of a parameter estimation technique that can deal with high-dimensional parameter spaces and with latent, hidden, or incomplete data.
   
-  Parameter estimation techniques known from statistics: 
-  \begin{enumerate}
-    \item   \textbf{Maximum likelihood estimation (ML estimation)}
-      \begin{itemize}
-        \item All observations are assumed to be mutually statistically independent. 
-        \item The observations are kept fixed.
-        \item The (log-)likelihood function is optimized regarding the parameters.       
-      \end{itemize}
-    \item   \textbf{Maximum a-posteriori estimation (MAP estimation)}
-      \begin{itemize}
-        \item The probability density function of the parameters $p(\vect{\theta})$ to be estimated is known.
-      \end{itemize}
-  \end{enumerate}
+  Two parameter estimation techniques are known from statistics. In \textbf{maximum likelihood estimation (ML estimation)}, all observations are assumed to be mutually statistically independent; the observations are kept fixed, and the (log-)likelihood function is optimized with respect to the parameters. In \textbf{maximum a-posteriori estimation (MAP estimation)}, the probability density function $p(\vect{\theta})$ of the parameters to be estimated is additionally assumed to be known, and the posterior of the parameters given the observations is maximized.
   
   Let $X$ be the observed random variable and $\p$ the parameter set. The estimates of $\p$ are denoted by $\hatp$.
   Let $x$ be a realization (observed value) of $X$.
 %
-  \begin{itemize}
-    \item   \textbf{ML estimation:} $\displaystyle \hatp= \argmax_{\p}\ p(x; \p) = \argmax_{\p}\ \log p(x; \p)$
-    \item   \textbf{MAP estimation:}
+  The \textbf{ML estimate} is
+  \begin{displaymath}
+    \hatp= \argmax_{\p}\ p(x; \p) = \argmax_{\p}\ \log p(x; \p),
+  \end{displaymath}
+  and the \textbf{MAP estimate} is
       {\small
         \begin{eqnarray*}
           \hatp &=& \argmax_{\p}\ p(\p|{x})\\
@@ -644,8 +552,7 @@ An important chapter for the exam. understand the steps, and if possible do the 
                 &=& \argmax_{\p}\ \log p(\p) + \log p(x|\p)
         \end{eqnarray*}
       }
-    \item[] Here $\p$ is considered as a random variable and its probability density function $p(\p)$ is known.
-  \end{itemize}
+  Here $\p$ is considered as a random variable and its probability density function $p(\p)$ is known. The denominator (the evidence) does not depend on $\p$ and can be dropped in the maximization.
      
 
   \subsubsection{ML Estimation: Example}
@@ -835,12 +742,7 @@ refer to slides\\
 
      
 \textbf{Mathematical formalization of the MIP:}
-
-  \begin{itemize}
-    \item observable random variable: $X$
-    \item hidden random variable: $Z$
-    \item parameter set: $\p$
-  \end{itemize}
+  Let $X$ be the observable random variable, $Z$ the hidden random variable, and $\p$ the parameter set.
    
   The joint density of the events $x$ (observation) and $z$ (hidden) is:
   \begin{displaymath}
@@ -859,9 +761,7 @@ refer to slides\\
   \textbf{Key Equation}\\
   We now consider the mathematical formulation of the key equation and derive an iterative parameter estimation scheme:
 
-  \begin{itemize}
-   \item Let $j$ denote the iteration index (note: $i$ is used as the sample index in this course).
-   \item Consider the key equation for the $(j+1)$-st iteration:
+  Let $j$ denote the iteration index (note: $i$ is used as the sample index in this course), and consider the key equation for the $(j+1)$-st iteration:
      {\small
        \begin{displaymath}
          \log p\left(x    ; \hatp^{(j+1)} \right) =
@@ -869,14 +769,14 @@ refer to slides\\
          \log p\left(z\mid x  ; \hatp^{(j+1)} \right)~.
        \end{displaymath}
      }
-   \item Now we multiply both sides with $p\left( z\mid x ; \hatp^{(j)} \right)$ and integrate over the hidden event $z$:
+  Now we multiply both sides with $p\left( z\mid x ; \hatp^{(j)} \right)$, the posterior of the hidden event under the current estimate, and integrate over the hidden event $z$:
      \footnotesize
      \begin{eqnarray*}
              \int p\left(z\mid x ; \hatp^{(j)} \right) \log p\left( x ;   \hatp^{(j+1)} \right)\, \mathsf{d}z
          &=& \int p\left(z\mid x ; \hatp^{(j)} \right) \log p\left(x, z ; \hatp^{(j+1)} \right)\, \mathsf{d}z -{} \\
          & & \int p\left(z\mid x ; \hatp^{(j)} \right) \log p\left(z\mid x  ; \hatp^{(j+1)} \right)\, \mathsf{d}z
      \end{eqnarray*}
-  \end{itemize}
+ \normalsize
  Now consider the left hand side of this equation:
   
   \begin{eqnarray*}
@@ -884,10 +784,7 @@ refer to slides\\
           &=& \log p\left(x   ; \hatp^{(j+1)} \right) \, \int p\left( z\mid x ; \hatp^{(j)} \right)\ \mathsf{d}z = \\  
           &=& \log p\left(x   ; \hatp^{(j+1)} \right)
   \end{eqnarray*}
-  \begin{itemize}
-    \item   \textbf{Observation:} The left side of the key equation is the log likelihood function of observations.      
-    \item   \textbf{Conclusion:} The maximization of the right hand side of the above key equation corresponds to a ML estimation
-  \end{itemize}
+  \textbf{Observation:} the left side of the key equation is simply the log-likelihood function of the observations, because the posterior integrates to one. \textbf{Conclusion:} the maximization of the right hand side of the above key equation corresponds to an ML estimation.
      
  
   \subsubsection{Kullback-Leibler Statistics and Entropy}
@@ -1175,71 +1072,35 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
 }
 
 \subsection{Introduction}
- \textbf{Magnetic Resonance Imaging (MRI)} is an important acquisition technique.      
+ \textbf{Magnetic Resonance Imaging (MRI)} is an important acquisition technique. It features a high spatial resolution and a good soft-tissue contrast, and, unlike computed tomography, it does not involve ionizing radiation. Several applications require the \textbf{segmentation} (classification) of the acquired images into \textbf{tissue types}, i.\,e.\ each voxel has to be assigned to a tissue class such as gray matter, white matter, or cerebrospinal fluid.
 
-  It features:
-  \begin{itemize}
-    \item high spatial resolution
-    \item good soft tissue contrast
-    \item does not incorporate ionizing radiation (as computed tomography)         
-  \end{itemize}
-  Several applications require the   \textbf{segmentation} (classification) of the acquired images into   \textbf{tissue types}.
-     
-  Difficulties arise from:
+  This task is difficult for two reasons. First, MRI has no intensity normalization like the Hounsfield units in CT, so intensities are not directly comparable across scans. Second, MR images suffer from \textbf{intensity inhomogeneities}, also known as the bias field, which arise from the RF coils and the acquisition sequences. The bias field causes a slow spatial variation of the observed intensities and thereby degrades purely intensity-based classifiers, e.\,g.\ an ML segmentation (see the slides for the effect of the bias field on ML segmentation).
 
-  \begin{itemize}
-    \item missing intensity normalization (like Hounsfield units in CT)   
-    \item   \textbf{intensity inhomogeneities}, also known as bias field (RF coils, acquisition sequences)
-  \end{itemize}
-     
-  Effect of the bias field on ML segmentation:
-  W.\,M.\,Wells et al. presented an approach to improve MR brain segmentation (1996):
+  W.\,M.\,Wells et al.\ presented an approach to improve MR brain segmentation in 1996. It is a statistical approach to intensity-based segmentation of MRI that models the bias field statistically (with a smoothness constraint) and uses the EM algorithm to compute the tissue classification and the intensity inhomogeneity correction simultaneously.
 
-  \begin{itemize}
-    \item statistical approach to intensity-based segmentation of MRI
-    \item statistical modeling of bias field (smoothness constraint)
-    \item usage of EM algorithm for simultaneous computation of tissue classification and intensity inhomogeneity correction
-  \end{itemize}
-
-    \textbf{Typical EM problem:}
-  \begin{itemize}
-    \item The missing data is the tissue class assignment for each voxel.   
-    \item If the tissue was classified, the bias field could easily be computed.  
-    \item If the bias field was known, the tissue classification would be much easier. 
-  \end{itemize}
+    This is a \textbf{typical EM problem}: the missing data is the tissue class assignment of each voxel. If the tissue was classified, the bias field could easily be computed; conversely, if the bias field was known, the tissue classification would be much easier.
 
 \subsection{Bias Field Model}
- \begin{itemize}
-    \item Let $\tilde{X}_i$ be the (unknown) intensity of the $i$-th voxel of the MRI data and \\
-      $B_i$ the corresponding bias field.  
-    \item The bias field is assumed to be multiplicative:
+  Let $\tilde{X}_i$ be the (unknown) intensity of the $i$-th voxel of the MRI data and $B_i$ the corresponding bias field. The bias field is assumed to be multiplicative:
       \begin{displaymath}
         X_i = \tilde{X}_i \cdot B_i
       \end{displaymath}
-       
-    \item Using a log-transform on the intensities yields an additive bias field model:
+  Using a log-transform on the intensities turns this into an additive bias field model:
       \begin{displaymath}
         v_i = \log X_i = \log \tilde{X}_i + \beta_i ~,~\mbox{with}~ \beta_i = \log B_i
       \end{displaymath}
-       
-    \item The bias field is then:
+  Collecting the values of all $n$ voxels, the bias field is then
       \begin{displaymath}
         \vect \beta = \left(\beta_0, \beta_1, \ldots, \beta_{n-1}\right)^T
       \end{displaymath}
       with $n$ being the number of voxels.
-      \item The bias field is assumed to change smoothly over the entire image domain.
-    \item It is modeled by an $n$-dimensional zero mean Gaussian prior:
+  The bias field is assumed to change smoothly over the entire image domain. It is therefore modeled by an $n$-dimensional zero-mean Gaussian prior
       \begin{displaymath}
-        p(\vect \beta) = {\mathcal N}(\vect{\beta} ; \vect{0}, \mat{\Psi}_{\vect{\beta}})
+        p(\vect \beta) = {\mathcal N}(\vect{\beta} ; \vect{0}, \mat{\Psi}_{\vect{\beta}}),
       \end{displaymath}
-  \end{itemize}
-   \textbf{Notes:}
+  whose covariance matrix encodes the spatial smoothness.
 
-  \begin{itemize}
-    \item $\mat{\Psi}_{\vect{\beta}}$ is a $n \times n$-dimensional covariance matrix  
-    \item $\mat{\Psi}_{\vect{\beta}}$ is too large to compute directly in practice  
-    \item Instead of the full covariance matrix, a banded estimate is chosen in practice.
-  \end{itemize}
+   \textbf{Notes:} $\mat{\Psi}_{\vect{\beta}}$ is an $n \times n$-dimensional covariance matrix, which is too large to compute (and invert) directly in practice. Instead of the full covariance matrix, a banded estimate is therefore chosen, which keeps the local smoothness while remaining computationally tractable.
  
 \subsection{Bayesian Approach}
   \textbf{Variables:}
@@ -1395,23 +1256,11 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
  
 
 \subsection{Model Extensions}\autocite{jaeger2009,pohl2005,pohl2007}
- \textbf{Drawbacks} of initial adaptive segmentation algorithm:
+ The initial adaptive segmentation algorithm has several \textbf{drawbacks}: the brain has to be extracted from the entire data set beforehand, the algorithm does not incorporate the neighborhood of voxels (each voxel is classified by its intensity alone), and the model is purely intensity-based.
 
-  \begin{itemize}
-    \item brains should be extracted from entire data  
-    \item algorithm does not incorporate the neighborhood of voxels  
-    \item purely intensity-based model
-  \end{itemize}
-  \textbf{Extensions} of the algorithm:
-
-  \begin{itemize}
-    \item incorporation of atlases for spatial probability maps of tissue classes  
-    \item definition of vector space for probabilistic atlases to get shape models  
-    \item voxel neighborhood relations modeled by Markov random fields  
-    \item incorporation into Bayesian model that is solved by EM approach
-  \end{itemize}
+  Several \textbf{extensions} of the algorithm address these issues. Atlases can be incorporated to provide spatial probability maps of the tissue classes, i.\,e.\ prior knowledge about where each tissue is anatomically expected. Defining a vector space for probabilistic atlases additionally gives shape models that capture typical anatomical variability. Voxel neighborhood relations can be modeled by Markov random fields, which encourage spatially coherent segmentations. Finally, all of these components (intensity model, bias field, atlases, and Markov random field) can be incorporated into a single Bayesian model that is still solved by an EM approach.
  
-  Results using an extended model are shown in the slides.
+  Results using an extended model are shown in the slides; the spatial priors and the neighborhood smoothness markedly improve the anatomical plausibility of the tissue labels.
 \subsection{Lessons Learned}
  \begin{itemize}
     \item Bayesian approach for MRI data segmentation   

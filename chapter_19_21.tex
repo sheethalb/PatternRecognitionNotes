@@ -20,50 +20,21 @@
 }
 
 \subsection{Motivation - Cocktail-Party Problem}
-Example
-  
-  Imagine the following situation:
-    \begin{itemize}
-      \item You have two microphones in a room at different locations.
-      \item The microphones record time signals $x_1(t), x_2(t)$.            
-      \item Each recorded signal is a weighted sum of two speakers $s_1(t), s_2(t)$:             
-    \end{itemize}
+  The classical motivation for ICA is the cocktail-party problem. Imagine the following situation: two microphones are placed in a room at different locations, and they record the time signals $x_1(t), x_2(t)$. Two speakers $s_1(t), s_2(t)$ are talking at the same time, and each recorded signal is a weighted sum of the two speakers:
  \begin{eqnarray*}
       x_1(t) &=& a_{11} s_1(t) + a_{12} s_2(t) \\
       x_2(t) &=& a_{21} s_1(t) + a_{22} s_2(t)
     \end{eqnarray*}
 
-    Parameters $a_{ij}$ depend on the distance of the microphones to the speakers.For simplicity, we assume just a very simple mixing model without any time delays or other factors.  
+    The parameters $a_{ij}$ depend on the distance of the microphones to the speakers. For simplicity, we assume just a very simple mixing model without any time delays, reflections, or other factors.  
 
-   \textbf {Observations:}
-    \begin{itemize}
-      \item If we knew the $a_{ij}$, the problem of reconstructing $s_i$ is to solve the linear equations by classical methods.             
-      \item \textbf{But:} We do not know the $a_{ij}$! Thus, the problem is considerably more difficult!
-    \end{itemize}
+   \textbf {Observations:} if we knew the $a_{ij}$, reconstructing the $s_i$ would only require solving a system of linear equations by classical methods. \textbf{But:} we do not know the $a_{ij}$! Thus, the problem is considerably more difficult. The goal is to estimate an unmixing from the recorded mixtures alone, without knowing the sources or the mixing process (blind source separation). In the lecture example, one source is a person speaking and the other a piano playing; both microphones record a superposition of the two with different relative loudness, and the separated outputs recover the speech and the piano.
   
-  The principle for solving the cocktail-party problem has a lot of 
- \textbf {other interesting applications}: \\
+  The principle for solving the cocktail-party problem has a lot of \textbf {other interesting applications}: speech signal recovery in telecommunications, recovery of images from mixed signals in MRI and fMRI, electrical recordings of brain activity such as EEG (electroencephalography) and MEG (magnetoencephalography), where ICA isolates and localizes independent sources of brain activity, feature extraction, and multispectral image analysis. ICA can, for example, also separate a mixture of natural images into its individual source images, although the recovered sources may appear in a different order (permuted) than the original ones.
 
-  \begin{itemize}
-    \item speech signal recovery: telecommunications         
-    \item recovery of images from mixed signals: MRI, fMRI         
-    \item electrical recordings of brain activity:
-      \begin{itemize}
-        \item EEG (electroencephalography)
-        \item MEG (magnetoencephalography)         
-      \end{itemize}
-    \item feature extraction         
-    \item multispectral image analysis
-  \end{itemize}
- Common Framework
-
- \textbf {Idea:}
-  \begin{itemize}
-    \item Use some information about the statistical properties of the signals $s_i(t)$ to estimate $a_{ij}$.
-  \end{itemize}
-         
-  Surprisingly, it turns out that the only statistical assumption that we have to make is that the $s_i(t)$ are \textit{statistically independent} at each time point $t$.
- Formulation in a unified mathematical framework (H\'{e}rault and Jutten, 1984-1991):
+ \textbf{Common framework.}
+ The \textbf {idea} is to use some information about the statistical properties of the signals $s_i(t)$ to estimate the $a_{ij}$. Surprisingly, it turns out that the only statistical assumption that we have to make is that the $s_i(t)$ are \textit{statistically independent} at each time point $t$.
+ The formulation of this idea in a unified mathematical framework (H\'{e}rault and Jutten, 1984-1991) is
   \begin{center}
    \textbf {ICA -- Independent Component Analysis}
   \end{center}
@@ -679,17 +650,7 @@ Overall general theory is important to understand; derivations are not required 
 
 \subsection{No Free Lunch}
 
-  \begin{itemize}
-    \item In the past lectures, we have come across many learning algorithms and classification techniques.
-    \item They have properties such as
-      \begin{itemize} 
-        \item low computational complexity
-        \item incorporation of prior knowledge
-        \item linearity\,/\,non-linearity
-        \item optimality with respect to certain cost functions, etc.
-      \end{itemize}
-   \item Some compute smooth decision boundaries, some compute rather non-smooth decision boundaries.
-  \end{itemize}
+  In the past lectures, we have come across many learning algorithms and classification techniques. Each of them has its own set of properties, such as low computational complexity, the incorporation of prior knowledge, linearity or non-linearity, or optimality with respect to certain cost functions. Some compute smooth decision boundaries, others compute rather non-smooth decision boundaries.
 
   We really have to ask:
   \begin{center}
@@ -698,7 +659,7 @@ Overall general theory is important to understand; derivations are not required 
 
     Let $f \in {\mathcal{F}}$ be a cost (objective) function, $A$ a search algorithm and $c_m$ the sequence of cost values of the first $m$ points visited by $A$.             
     The performance of $A$ is described by the conditional probability $P(c_m | f, m, A)$.                    
-    The \textbf  {No Free Lunch Theorem} states that for any two algorithms $A_1$ and $A_2$:
+    The \textbf  {No Free Lunch Theorem} states that for any two algorithms $A_1$ and $A_2$, the performance summed over all possible cost functions is identical:
     \begin{displaymath}
       \sum_f P(c_m | f, m, A_1) = \sum_f P(c_m | f, m, A_2)
     \end{displaymath}

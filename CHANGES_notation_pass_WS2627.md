@@ -483,3 +483,24 @@ Every changed line was re-read and every new or changed formula re-derived. Clai
 - [x] MR bias field: voxel sum index $j\to i'$ ($j$ is the EM iteration index).
 - [x] Belkin footnote completed (multipliers $\beta_i,\zeta_i$; loss weight $\frac1l$ and box $0\le\beta_i\le\frac1l$). Wells footnote corrected (the paper indexes classes by $j$: $W_{ij}$). The unverified sentence on Schölkopf–Smola's sigmoid-kernel notation was removed.
 - [x] Niemann postulates: split confirmed against the FAU lecture notes (postulate 5 = structure + "few constituents").
+
+## Prose import from Andreas's chapter md files (`TeachingMD/out/pattern-recognition`, 12 Nov)
+Bullet lists turned into paragraphs, using his explanations where they add content. The notes' notation was kept everywhere (`\vect`, 𝓛, z for hidden variables, S_l/S_u, v_i/k, κ/c, y\* only for the Bayes decision). Lessons Learned, Comprehensive Questions, algorithm steps and notation boxes stay as lists.
+- [x] Ch. 5 Naive Bayes: independence assumptions and decision rules now prose. Evidence-drop sentence added. ŷ kept for Naive Bayes (his md writes y\*).
+- [x] Ch. 9 Perceptron: motivation as a paragraph (Rosenblatt 1957, linear separability).
+- [x] Ch. 10 MLP: new "Physiological Motivation" subsection (biological neuron → artificial neuron; step → sigmoid/ReLU).
+- [x] Ch. 11 Optimization: motivation as paragraphs, with a short description of each problem class.
+- [x] Ch. 15 Kernels: motivation as prose plus the centered/non-centered φ example (corrected: in general both linear terms are needed). Kernel PCA intro, linear-algebra facts and remarks; string-kernel and Fisher-kernel text.
+- [x] Ch. 16 LapSVM: "clock" motivation; graph/degree-matrix intuition; loss, regularizers, RKHS (reproducing property) and Swiss roll as prose. Belkin footnote unchanged.
+- [x] Ch. 17 EM: ML/MAP description, MIP variables, key-equation steps as prose.
+- [x] Ch. 18 MR: introduction, bias field model, notes and model extensions as prose.
+- [x] Ch. 19 ICA: cocktail-party motivation, applications and common framework as prose.
+- [x] Ch. 20 No Free Lunch: intro as a paragraph (consequences stay a list).
+
+Not imported, because they are errors or artefacts in the md files:
+- Ch. 2: "p(Heads|Red) ≈ 17/18". That is p(Red|Heads); p(Heads|Red) = 17/32.
+- Kernels: Fisher score with a minus sign. Fisher information written I(x), and the second kernel without the inverse.
+- Kernels: "positive-definite kernel" built from the DTW distance. It is not PSD in general (the notes say so).
+- EM: MAP denominator as a sum over θ. The notes keep the integral.
+- Ch. 18: generation leftovers ("…absent from the merged markdown").
+- Notation from his md not adopted (notes are canonical): L(·) for the Lagrangian, y for EM latent variables, 𝓛/𝓤 and ν_i in LapSVM, Y_i/Γ in MR, tanh(α⟨⟩+β), y\* for non-Bayes decisions.
