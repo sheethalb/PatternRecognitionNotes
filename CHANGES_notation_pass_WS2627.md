@@ -13,14 +13,9 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 2) Notes contradict their own notation (symbol overloading)
 
-- [x] $L$: Lagrangian vs graph Laplacian (same equation); also subspace dimension, number of layers, log-likelihood. Reviewer request: use $\mathcal L$ for Lagrangian; reserve $L$ (or $\Delta_G$) for Laplacian.
-- [x] $p$: density vs mixture weight $p_k$ vs responsibility $p_{ik}$ → use $\pi_k$ and $\gamma_{ik}$.
-- [x] $\lambda$: eigenvalue vs Lagrange multiplier vs ridge weight vs learning rate, etc.
 - [ ] $\alpha_0,\alpha_i$: inconsistent meanings across logistic / naive Bayes parts.
 - [ ] $S$: training set vs scatter matrices vs sparsity level.
-- [x] $D$: DTW distance vs degree matrix vs dimension.
 - [ ] $d$: signed distance vs dimension.
-- [x] $F(\vect x)$: log-odds vs true label vs posterior symbol.
 - [ ] $I$: Fisher information vs identity vs indicator vs image intensity.
 - [ ] $M$: misclassified set vs max norm vs neurons per layer.
 - [ ] $y$: neuron outputs vs targets.
@@ -33,10 +28,7 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 3) Typesetting / consistency
 
-- [x] Fix listed typos: double “+” line break; broken legend “$p(x\mid y=0\mid$”; define $r$ in Fig. 13 caption (“plane $z=r^2$”);
-      change exact “=” stopping tests to tolerances; spacing consistency for conditionals $p(y\mid\vect x)$; etc. (see reviewer note).
 - [ ] Matrix/vector typeface consistency: pick one convention and apply consistently (reviewer lists mixed bolding and a stray “$\|\vec X\|_F$”).
-- [x] Undefined symbols list: ensure each is defined where first used (e.g. $\Omega$, $\omega$ vs $w$, $x^*$ in Fig. 5, etc.).
 
 ---
 
@@ -295,5 +287,13 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 ## Completed review items
 
+- [x] $L$: Lagrangian vs graph Laplacian (same equation); also subspace dimension, number of layers, log-likelihood. Reviewer request: use $\mathcal L$ for Lagrangian; reserve $L$ (or $\Delta_G$) for Laplacian.
+- [x] $p$: density vs mixture weight $p_k$ vs responsibility $p_{ik}$ → use $\pi_k$ and $\gamma_{ik}$.
+- [x] $\lambda$: eigenvalue vs Lagrange multiplier vs ridge weight vs learning rate, etc.
+- [x] $D$: DTW distance vs degree matrix vs dimension.
+- [x] $F(\vect x)$: log-odds vs true label vs posterior symbol.
+- [x] Fix listed typos: double “+” line break; broken legend “$p(x\mid y=0\mid$”; define $r$ in Fig. 13 caption (“plane $z=r^2$”);
+      change exact “=” stopping tests to tolerances; spacing consistency for conditionals $p(y\mid\vect x)$; etc. (see reviewer note).
+- [x] Undefined symbols list: ensure each is defined where first used (e.g. $\Omega$, $\omega$ vs $w$, $x^*$ in Fig. 5, etc.).
 - [x] $c$: constant offset vs polynomial coefficient vs $c(\vect x,\phi)$ in exponential family.
       *Done:* offset symbol removed (p. 21, the constant is written out and noted as part of $\alpha_0$); polynomial coefficients already $a_{ij},\alpha_i$; $c(\vect x,\phi)$ kept as standard exponential-family notation.
