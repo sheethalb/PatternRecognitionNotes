@@ -205,7 +205,7 @@
 		      \end{displaymath}
 		\item Compute the   \textbf{eigenvectors} and   \textbf{eigenvalues}:
 		      \begin{displaymath}
-			      \mat \Sigma \vec e_i = \lambda_i \vec e _i  
+			      \mat \Sigma \vec v_i = \lambda_i \vec v_i  
 		      \end{displaymath}
 		\item   \textbf{Sort} eigenvectors with decreasing eigenvalues.  
 		\item Subsequent   \textbf{projection} of features to the eigenvectors.
@@ -213,17 +213,17 @@
   	\textbf {Facts from linear algebra:} \\ 
 
 	\begin{itemize}
-		\item The eigenvectors $\vec e_i$ span the same space as the feature vectors.
-		\item For eigenvalues $\lambda_i\neq 0$, each eigenvector $\vec e_i$ can be written as a linear combination of feature vectors:
+		\item The eigenvectors $\vec v_i$ span the same space as the feature vectors.
+		\item For eigenvalues $\lambda_i\neq 0$, each eigenvector $\vec v_i$ can be written as a linear combination of feature vectors:
 		      \begin{displaymath}
-			      \vec e_i = \sum_{n=1}^m a_{i,n} \, \vec x_n.
+			      \vec v_i = \sum_{n=1}^m a_{i,n} \, \vec x_n.
 		      \end{displaymath}
 	\end{itemize}
    The eigenvector/-value problem for the PCA computation can now be rewritten:
 
 	\begin{eqnarray*}
-		\mat \Sigma \vec e_i
-		&=& \lambda_i \vec e _i \\  
+		\mat \Sigma \vec v_i
+		&=& \lambda_i \vec v_i \\  
 		\left( \frac{1}{m}\sum_{j=1}^m \vec x_j \vec x_j^T\right) \cdot \sum_{n=1}^m a_{i,n} \, \vec x_n
 		&=& \lambda_i \sum_{n=1}^m a_{i,n} \, \vec x_n \\ 
 		\sum_{j=1}^m\sum_{n=1}^m a_{i,n} \, \vec x_j \vec x_j^T\vec x_n
@@ -277,14 +277,14 @@
 	\begin{itemize}
 		\item Kernel PCA (and thus the classical PCA as well) can be computed by solving an eigenvector/-value problem for an $(m\times m)$-matrix, where $m$ is the \textbf{cardinality of the training feature set}.
 		\item The principal components cannot be computed easily, because only the kernel is known, but \textbf{not} $\phi(\vec x)$.
-		\item However, the projection $c$ of the transformed feature vector $\phi(\vec x)$ on principal component $\vec e_i= \sum_{n=1}^m a_{i,n}  \, \phi(\vec x_n)$ is easily computed by:
+		\item However, the projection $c$ of the transformed feature vector $\phi(\vec x)$ on principal component $\vec v_i= \sum_{n=1}^m a_{i,n}  \, \phi(\vec x_n)$ is easily computed by:
 		      \begin{displaymath}
 			      c \quad = \quad
-			      \phi( \vec x)^T \vec e_i   \quad = \quad
+			      \phi( \vec x)^T \vec v_i   \quad = \quad
 			      \sum_{n=1}^m a_{i,n} \, \phi(\vec x)^T\phi(\vec x_n) \quad   = \quad
 			      \sum_{n=1}^m a_{i,n} \, k(\vec x, \vec x_n)
 		      \end{displaymath}
-		\item Normalization: choose the eigenvector scaling such that $\|\vec e_i\|_2=1$, i.e.\ $\vec a_i^T\mat K\vec a_i = 1$ (this requires $\lambda_i\neq 0$).
+		\item Normalization: choose the eigenvector scaling such that $\|\vec v_i\|_2=1$, i.e.\ $\vec a_i^T\mat K\vec a_i = 1$ (this requires $\lambda_i\neq 0$).
 	\end{itemize}
      
 It is assumed that the transformed features have   \textbf{zero mean}:

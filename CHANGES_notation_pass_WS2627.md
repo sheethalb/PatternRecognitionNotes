@@ -14,7 +14,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 ### 2) Notes contradict their own notation (symbol overloading)
 
 - [ ] $y$: neuron outputs vs targets.
-- [ ] $\vect e_i$: basis vector vs PCA eigenvector.
 - [ ] $J$: Fisher score vs functional derivative vs negentropy.
 - [ ] $\vect\mu'_y$: transformed true mean vs pooled transform of estimate.
 - [ ] $\vect r$: Fisher direction vs residual vs LP bound variable.
@@ -307,3 +306,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $M$: misclassified set vs max norm vs neurons per layer.
       *Done:* perceptron convergence bound $M=\max_i\|\vect x_i\|_2\to R$ (Novikoff notation, p. 58, 5 occurrences). Misclassified set is already calligraphic $\mathcal M$; $M^{(l)}$ stays neurons per layer (MLP).
+
+- [x] $\vect e_i$: basis vector vs PCA eigenvector.
+      *Done:* Kernel PCA eigenvectors renamed $\vec e_i\to\vec v_i$ (10 occurrences, p. 82-83); $\vect e_i$ stays the unit basis vector (Optimization I, p. 66).
