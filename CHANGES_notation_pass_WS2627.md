@@ -13,7 +13,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 2) Notes contradict their own notation (symbol overloading)
 
-- [ ] $I$: Fisher information vs identity vs indicator vs image intensity.
 - [ ] $M$: misclassified set vs max norm vs neurons per layer.
 - [ ] $y$: neuron outputs vs targets.
 - [ ] $\vect e_i$: basis vector vs PCA eigenvector.
@@ -303,3 +302,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $d$: signed distance vs dimension.
       *Done:* signed distance renamed $d\to\delta(\vect x)$ in the SVM I derivation (p. 69); $d$ is the dimension everywhere else. $d^*$ (dual optimum, Optimization II) kept as standard Boyd notation.
+
+- [x] $I$: Fisher information vs identity vs indicator vs image intensity.
+      *Done:* Fisher information already $\mathcal I(\vec\theta)$, identity already bold $\mat I$ (sizes $\mat I_l,\mat I_m$ in Laplacian SVM). AdaBoost: indicator function $I(\cdot)\to\mathbb I(\cdot)$ (9 occurrences + notation list, p. 121-123); $I(x,y)$ kept for image intensity and now defined under the integral image (p. 125).

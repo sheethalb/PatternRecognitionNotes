@@ -1036,7 +1036,7 @@ Interestingly:\\
   \item $f_M(\vect x)=\sum_{m=1}^M \beta_m G_m(\vect x)$: additive model.
   \item Final prediction: $\hat y = G(\vect x)=\sign(f_M(\vect x))$.
   \item $w_i^{(m)}$: weight of sample $i$ in boosting iteration $m$.
-  \item $I(\cdot)$: indicator function.
+  \item $\mathbb I(\cdot)$: indicator function ($I(x,y)$ is reserved for the image intensity).
 \end{itemize}
 }
 
@@ -1059,9 +1059,9 @@ Interestingly:\\
     \item Consider a two-class problem with $y \in \{ -1, +1\}$.          %           
     \item Given a set of observations $\mathcal{D} = \{(\vect{x}_i, y_i); \quad i=1,\ldots,N\}$ and a classifier $G(\vect x)$, the \textbf  {error rate} on the training sample is:
       \begin{displaymath}
-        \err = \frac{1}{N} \sum_{i=1}^N I(y_i \neq G(\vect{x}_i))
+        \err = \frac{1}{N} \sum_{i=1}^N \mathbb I(y_i \neq G(\vect{x}_i))
       \end{displaymath}
-      where $I$ is the \textbf  {indicator function}.
+      where $\mathbb I$ is the \textbf  {indicator function}.
     \item Sequentially applied weak classifiers produce a sequence $G_m(\vect x)$ with $m=1,2,\ldots,M$ %           
     \item The \textbf{combined prediction} is then:
       \begin{displaymath}
@@ -1109,13 +1109,13 @@ Interestingly:\\
         \until{$m > M$}\\
           \assign{{Fit classifier $G_m(\vect x)$ to training data using weights $w_1,\dots,w_N$}}\\
           \assign{{Compute classification error:}\\
-            $ \mathsf{err}_m = \frac{\sum_{i=1}^N w_i I(y_i \neq G_m(\vect x_i))}{\sum_{i=1}^N w_i}$
+            $ \mathsf{err}_m = \frac{\sum_{i=1}^N w_i \mathbb I(y_i \neq G_m(\vect x_i))}{\sum_{i=1}^N w_i}$
           }\\
           \assign{{Compute classifier weights:}\\
             $ \alpha_m = \log \left( \frac{1- \mathsf{err}_m}{\mathsf{err}_m} \right) $
           }\\
           \assign{{Compute new sample weights:}\\
-            $ w_i \leftarrow w_i \exp \left[ \alpha_m I(y_i \neq G_m(\vect x_i)) \right] ~,~ i = 1, \ldots, N $
+            $ w_i \leftarrow w_i \exp \left[ \alpha_m \mathbb I(y_i \neq G_m(\vect x_i)) \right] ~,~ i = 1, \ldots, N $
           }
           \assign{$m \gets m + 1$}\\
         \untilend
@@ -1205,14 +1205,14 @@ Interestingly:\\
     (\beta_m, G_m) 
       &=& \argmin_{\beta, G} ~\sum_{i=1}^N w_i^{(m)} \exp (-\beta y_i G(\vect{x}_i)) \\ 
       &=& \argmin_{\beta, G} ~ e^{-\beta} \sum_{y_i = G(\vect{x}_i)} w_i^{(m)} + e^{\beta} \sum_{y_i \neq G(\vect{x}_i)} w_i^{(m)} \\ 
-      &=& \argmin_{\beta, G} ~ \left( e^{\beta} - e^{-\beta} \right) \sum_{i=1}^N w_i^{(m)} I(y_i \neq G(\vect{x}_i)) + e^{-\beta} \sum_{i=1}^N w_i^{(m)}
+      &=& \argmin_{\beta, G} ~ \left( e^{\beta} - e^{-\beta} \right) \sum_{i=1}^N w_i^{(m)} \mathbb I(y_i \neq G(\vect{x}_i)) + e^{-\beta} \sum_{i=1}^N w_i^{(m)}
   \end{eqnarray*}
 
   \begin{itemize}
     \item The weight scaling is irrelevant for selecting $G_m$ (positive scaling does not change the argmin).
     \item Plugging the optimal $G_m(\vect x)$ into the objective function and solving for $\beta_m$ yields, with $\mathsf{err}_m$ being the \textbf{minimized weighted error rate}:
       \begin{displaymath}
-        \mathsf{err}_m = \frac{\sum_{i=1}^N w_i^{(m)} I(y_i \neq G_m(\vect{x}_i))}{\sum_{i=1}^N w_i^{(m)}}
+        \mathsf{err}_m = \frac{\sum_{i=1}^N w_i^{(m)} \mathbb I(y_i \neq G_m(\vect{x}_i))}{\sum_{i=1}^N w_i^{(m)}}
       \end{displaymath}
      \item From the update formula of the approximation:
       \begin{eqnarray*}
@@ -1222,8 +1222,8 @@ Interestingly:\\
       \begin{align*}
         w_i^{(m+1)}
           &= w_i^{(m)} \, e^{-\beta_m y_i G_m(\vect{x}_i)} \\
-          &\qquad \text{(using: $-y_i G_m(\vect{x}_i) = 2 I(y_i \neq G_m(\vect{x}_i)) - 1$)} \\
-          &= w_i^{(m)} \, e^{\alpha_m I(y_i \neq G_m(\vect{x}_i))} \, e^{-\beta_m}
+          &\qquad \text{(using: $-y_i G_m(\vect{x}_i) = 2 \mathbb I(y_i \neq G_m(\vect{x}_i)) - 1$)} \\
+          &= w_i^{(m)} \, e^{\alpha_m \mathbb I(y_i \neq G_m(\vect{x}_i))} \, e^{-\beta_m}
       \end{align*}
       with $\alpha_m = 2 \beta_m$ and thus $\hat y = \sign(f_M(\vect x))$.
   \end{itemize}
@@ -1236,13 +1236,13 @@ Interestingly:\\
       \begin{eqnarray*}
         \beta_m     &=& \frac{1}{2} \log \frac{1 - \mathsf{err}_m}{\mathsf{err}_m} \\
         \alpha_m    &=& 2 \beta_m \\
-        w_i^{(m+1)} &=& w_i^{(m)} ~ e^{\alpha_m I(y_i \neq G_m(\vect{x}_i))} ~ e^{-\beta_m}
+        w_i^{(m+1)} &=& w_i^{(m)} ~ e^{\alpha_m \mathbb I(y_i \neq G_m(\vect{x}_i))} ~ e^{-\beta_m}
       \end{eqnarray*}
              
     \item\textbf {AdaBoost:}
       \begin{eqnarray*}
         \alpha_m &=&          \log \frac{1- \mathsf{err}_m}{\mathsf{err}_m} \\
-        w_i      &\leftarrow& w_i \, e^{\alpha_m I(y_i \neq G_m(\vect{x}_i))}
+        w_i      &\leftarrow& w_i \, e^{\alpha_m \mathbb I(y_i \neq G_m(\vect{x}_i))}
       \end{eqnarray*}
   \end{itemize}
           
@@ -1300,6 +1300,7 @@ Interestingly:\\
       \begin{displaymath}
         II(x,y) = \sum_{x' \leq x, y' \leq y} I(x', y')
       \end{displaymath}
+      where $I(x',y')$ is the image intensity at pixel $(x',y')$.
   \end{itemize}
 
 Computation of the sum of intensities for any rectangle D  with just 3 basis operations based on the integral image: refer to slides for details.\\
