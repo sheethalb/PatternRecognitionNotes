@@ -81,39 +81,13 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 ## 14 SVM II
 
 ## 15 Kernels
-- [ ] Dual representation: $\hat y=\mathrm{sign}(f(\vec x))$, $y_i\in\{-1,+1\}$, $\lambda_i\ge0$; perceptron: meaning of $\mathcal E$, $\hat y=\mathrm{sign}(F(\vec x))$.
-- [ ] Kernel definition: input space $\mathcal X$ defined at first use; "for **some** feature mapping $\phi$".
-- [ ] PSD proof with $\vec c\in\mathbb R^m$: $\vec c^T\mat K\vec c=\sum c_ic_jK_{ij}$.
-- [ ] Polynomial kernel exponent $q$; **error fix** RBF caption $e^{-0.1\|\vec x-\vec x'\|^2}$.
-- [ ] Mercer: $\lambda_i$ are eigenvalues (not SVM multipliers); soft margin: "$C$: slack weight, denoted $\mu$ in Ch. 12/14".
-- [ ] Kernel PCA: coefficients $\alpha_{i,k}\to a_{i,n}$, $\vec\alpha_i\to\vec a_i$, index $k\to n$.
-- [ ] DTW: sequences $X,X'$, index $t$, $k(X,X')=e^{-D(X,X')}$ "(not positive semidefinite in general)".
 
 
 ## 16 Laplacian SVM
-- [ ] $\mathcal L$: $l$ samples with true labels $y_i\in\{-1,+1\}$; $\mathcal U$: $u$ unlabeled; $m=l+u$.
-- [ ] Edge weights $w_{ij}\ge0$ defined (e.g. heat kernel $e^{-\|\vec x_i-\vec x_j\|^2/(4t)}$).
-- [ ] "Decision function $f(\vec x)$, predicted label $\hat y=\mathrm{sign}(f(\vec x))$".
-- [ ] $\mathcal H_k$ = RKHS of kernel $k$; $\mathcal M$ = data manifold.
-- [ ] Bold $\vec\beta_j\to\beta_j$; $\lambda_i,\nu_i$ defined on the Lagrange slide.
-- [ ] **Error fixes**: $\sum_j\beta_j k(\vec x_i,\vec x_j)$ (was $\beta_i$, 2×); $\partial L/\partial\vec\beta$; $(2\gamma_A\mat I+2\gamma_I\mat L\mat K)^{-1}$ (was $\mat K\mat L$, 2×).
 
 ## 17 EM
-- [ ] Hidden variable **$y\to z$** throughout the general EM part ($p(x,z;\theta)$, $p(z|x;\theta)$, $\int dz$, Q, H); iteration index $(i)\to(j)$ with a note ("$i$ indexes samples").
-- [ ] Parameter estimation: "$x$ a realization (observed value) of $X$"; MAP denominator $\int p(\theta')p(x|\theta')d\theta'$.
-- [ ] ML example: `\vec{x_i}`→`\vec x_i`; zero matrix `\mat 0`.
-- [ ] GMM: $\theta=\{p_k,\vec\mu_k,\mat\Sigma_k\}$, hidden $z_i\in\{1..K\}$; $p_{ik}=p(z_i=k|\vec x_i;\hat\theta)$ "responsibility"; $p(\vec x;\theta)$ is a density; $L(\theta)=\sum_i\log p(\vec x_i;\theta)$; $\mathcal N(\cdot;\cdot,\cdot)$; M-step = fixed-point equations solved iteratively; figures `gmm1/2.pstex_t` legend $\sum_k p_k\mathcal N(x;\mu_k,\sigma_k^2)$.
-- [ ] **Error fix** GMM struktogramm: E-step uses $(j)$, M-step computes $\vec\mu_k^{(j+1)},\mat\Sigma_k^{(j+1)},p_k^{(j+1)}$.
-- [ ] Q: "expected complete-data log-likelihood (historically Kullback–Leibler statistics)"; $H$ is a cross-entropy; $E_{z\sim p(z|x;\theta)}[\log p(x,z;\theta')]$; KL proof uses $\log u\le u-1$, "$p,q$ arbitrary densities"; footnote "for discrete $z$ the integral becomes a sum".
-- [ ] **New frame** *EM for Gaussian Mixture Models*: observed $\vec x_1..\vec x_m$, hidden $z_i$, parameters, complete-data likelihood, E-step $Q$, M-step.
-- [ ] Constrained optimization: Lagrangian $\Lambda(p_1..p_K,\nu)$; "stationarity condition".
-- [ ] **Rewritten** prior-estimation example: samples $x_n$, $n=1..m$, hidden $z_n$, known $p(x|k)$, $a_{nk}=p(z_n=k|x_n;\hat\theta^{(j)})$, update $\hat p_k^{(j+1)}=\frac1m\sum_n a_{nk}$; undefined bias field $\beta$ removed.
 
 ## 18 EM Applications (MR bias field)
-- [ ] **New frame** *Notation in this Chapter*: voxels $0..n-1$, $\tilde X_i$/$X_i$/$Y_i$ (log intensity, not a label), $\vec\beta$ random with prior, hidden $z_i$, known $\mu_k,\psi_k,p_k$, $W_{ik}$, MAP-EM.
-- [ ] Hidden class $\Gamma\to z_i$ / $k$ everywhere; $W_{i\Gamma}\to W_{ik}$; $p_k=p(z_i=k)$.
-- [ ] "conditionally independent given $\vec\beta$"; "density (likelihood) of the observations"; pixel → voxel.
-- [ ] Gradient: typo $\psi_j^{-1}$ fixed; summation index $l$ in denominator; voxel sum index $i'$; $\bar{\vec R}=(\bar R_0..\bar R_{n-1})^T$, $\mat D=\mathrm{diag}(\bar\psi_i^{-1})$, $\mat H=[\mat D+\mat\Psi_\beta^{-1}]^{-1}$.
 
 
 ## 19 ICA
@@ -390,6 +364,58 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* added under the kernelized decision function; dual problem notes the soft-margin bound $\lambda_i\le\mu$.
 - [x] Polynomial kernel exponent $k\to q\in\mathbb N$.
       *Notes:* done in notes ($q\in\mathbb N$).
+- [x] Dual representation: $\hat y=\mathrm{sign}(f(\vec x))$, $y_i\in\{-1,+1\}$, $\lambda_i\ge0$; perceptron: meaning of $\mathcal E$, $\hat y=\mathrm{sign}(F(\vec x))$.
+      *Notes:* already in notes; perceptron decision function $F\to f$ (log-odds clash), zero init/$\eta=1$ stated.
+- [x] Kernel definition: input space $\mathcal X$ defined at first use; "for **some** feature mapping $\phi$".
+      *Notes:* already in notes.
+- [x] PSD proof with $\vec c\in\mathbb R^m$: $\vec c^T\mat K\vec c=\sum c_ic_jK_{ij}$.
+      *Notes:* already in notes; proof checked.
+- [x] Polynomial kernel exponent $q$; **error fix** RBF caption $e^{-0.1\|\vec x-\vec x'\|^2}$.
+      *Notes:* already in notes. Also: Laplacian RBF now divides by $\sigma$ (not $\sigma^2$); Gaussian RBF notes $\gamma=1/\sigma^2$ as in SVM II; empty RBF heading completed.
+- [x] Mercer: $\lambda_i$ are eigenvalues (not SVM multipliers); soft margin: "$C$: slack weight, denoted $\mu$ in Ch. 12/14".
+      *Notes:* added both remarks (Mercer $\lambda_i$ = eigenvalues of the integral operator; $C$ = slack weight $\mu$).
+- [x] Kernel PCA: coefficients $\alpha_{i,k}\to a_{i,n}$, $\vec\alpha_i\to\vec a_i$, index $k\to n$.
+      *Notes:* already in notes ($a_{i,n}$, $\vect a_i$); eigenvectors are $\vect v_i$; normalization $\vect a_i^T\mat K\vect a_i=m\lambda_i\|\vect a_i\|^2=1$ made explicit. Derivation $\mat K^2\vect a_i=m\lambda_i\mat K\vect a_i$ checked.
+- [x] DTW: sequences $X,X'$, index $t$, $k(X,X')=e^{-D(X,X')}$ "(not positive semidefinite in general)".
+      *Notes:* already in notes; sequence brackets $\langle\cdot\rangle\to(\cdot)$ (clash with inner product).
+- [x] $\mathcal L$: $l$ samples with true labels $y_i\in\{-1,+1\}$; $\mathcal U$: $u$ unlabeled; $m=l+u$.
+      *Notes:* already in notes.
+- [x] Edge weights $w_{ij}\ge0$ defined (e.g. heat kernel $e^{-\|\vec x_i-\vec x_j\|^2/(4t)}$).
+      *Notes:* already in notes.
+- [x] "Decision function $f(\vec x)$, predicted label $\hat y=\mathrm{sign}(f(\vec x))$".
+      *Notes:* already in notes.
+- [x] $\mathcal H_k$ = RKHS of kernel $k$; $\mathcal M$ = data manifold.
+      *Notes:* already in notes.
+- [x] Bold $\vec\beta_j\to\beta_j$; $\lambda_i,\nu_i$ defined on the Lagrange slide.
+      *Notes:* added the primal problem (from representer theorem + hinge loss) and defined $\lambda_i,\nu_i\ge0$ at the Lagrangian.
+- [x] **Error fixes**: $\sum_j\beta_j k(\vec x_i,\vec x_j)$ (was $\beta_i$, 2×); $\partial L/\partial\vec\beta$; $(2\gamma_A\mat I+2\gamma_I\mat L\mat K)^{-1}$ (was $\mat K\mat L$, 2×).
+      *Notes:* remaining $\beta_i\to\beta_j$ in the simplified Lagrangian fixed; $\partial L/\partial\vect\beta$ and $(2\gamma_A\mat I+2\gamma_I\mat L\mat K)^{-1}$ already correct. Dual $\mat Q$ re-derived: $\mat K\mat M^{-1}=\mat M^{-T}\mat K$, so $\mat Q$ is correct; box $0\le\lambda_i\le1$ matches the objective $\sum_i\xi_i$.
+- [x] Hidden variable **$y\to z$** throughout the general EM part ($p(x,z;\theta)$, $p(z|x;\theta)$, $\int dz$, Q, H); iteration index $(i)\to(j)$ with a note ("$i$ indexes samples").
+      *Notes:* already in notes.
+- [x] Parameter estimation: "$x$ a realization (observed value) of $X$"; MAP denominator $\int p(\theta')p(x|\theta')d\theta'$.
+      *Notes:* already in notes.
+- [x] ML example: `\vec{x_i}`→`\vec x_i`; zero matrix `\mat 0`.
+      *Notes:* already in notes.
+- [x] GMM: $\theta=\{p_k,\vec\mu_k,\mat\Sigma_k\}$, hidden $z_i\in\{1..K\}$; $p_{ik}=p(z_i=k|\vec x_i;\hat\theta)$ "responsibility"; $p(\vec x;\theta)$ is a density; $L(\theta)=\sum_i\log p(\vec x_i;\theta)$; $\mathcal N(\cdot;\cdot,\cdot)$; M-step = fixed-point equations solved iteratively; figures `gmm1/2.pstex_t` legend $\sum_k p_k\mathcal N(x;\mu_k,\sigma_k^2)$.
+      *Notes:* already in notes (with $\pi_k$, $\gamma_{ik}$ per the review); hats added in the responsibility numerator; "classification by unsupervised learning" → unsupervised learning (clustering, density estimation). M-step derivations checked.
+- [x] **Error fix** GMM struktogramm: E-step uses $(j)$, M-step computes $\vec\mu_k^{(j+1)},\mat\Sigma_k^{(j+1)},p_k^{(j+1)}$.
+      *Notes:* already in notes.
+- [x] Q: "expected complete-data log-likelihood (historically Kullback–Leibler statistics)"; $H$ is a cross-entropy; $E_{z\sim p(z|x;\theta)}[\log p(x,z;\theta')]$; KL proof uses $\log u\le u-1$, "$p,q$ arbitrary densities"; footnote "for discrete $z$ the integral becomes a sum".
+      *Notes:* done: $Q$ named expected complete-data log-likelihood (historically KL statistics), $H$ cross-entropy; wrong student note ("measures pdf similarity") replaced; KL proof with $\log u\le u-1$ for arbitrary densities. Added the two-line proof that EM never decreases the log-likelihood.
+- [x] **New frame** *EM for Gaussian Mixture Models*: observed $\vec x_1..\vec x_m$, hidden $z_i$, parameters, complete-data likelihood, E-step $Q$, M-step.
+      *Notes:* covered by the GMM section of the notes.
+- [x] Constrained optimization: Lagrangian $\Lambda(p_1..p_K,\nu)$; "stationarity condition".
+      *Notes:* notes use $\mathcal L$ (reviewer: $\mathcal L$ for Lagrangians), also in the GMM weight derivation; "The Lagrange multiplier is $a_k=\dots$" → $\nu$ is the multiplier.
+- [x] **Rewritten** prior-estimation example: samples $x_n$, $n=1..m$, hidden $z_n$, known $p(x|k)$, $a_{nk}=p(z_n=k|x_n;\hat\theta^{(j)})$, update $\hat p_k^{(j+1)}=\frac1m\sum_n a_{nk}$; undefined bias field $\beta$ removed.
+      *Notes:* already in notes; initialization note generalized.
+- [x] **New frame** *Notation in this Chapter*: voxels $0..n-1$, $\tilde X_i$/$X_i$/$Y_i$ (log intensity, not a label), $\vec\beta$ random with prior, hidden $z_i$, known $\mu_k,\psi_k,p_k$, $W_{ik}$, MAP-EM.
+      *Notes:* already in notes.
+- [x] Hidden class $\Gamma\to z_i$ / $k$ everywhere; $W_{i\Gamma}\to W_{ik}$; $p_k=p(z_i=k)$.
+      *Notes:* remaining $\Gamma$ in the gradient fixed ($\sum_k\pi_k\dots$).
+- [x] "conditionally independent given $\vec\beta$"; "density (likelihood) of the observations"; pixel → voxel.
+      *Notes:* already in notes; remaining "pixel" → voxel (2×).
+- [x] Gradient: typo $\psi_j^{-1}$ fixed; summation index $l$ in denominator; voxel sum index $i'$; $\bar{\vec R}=(\bar R_0..\bar R_{n-1})^T$, $\mat D=\mathrm{diag}(\bar\psi_i^{-1})$, $\mat H=[\mat D+\mat\Psi_\beta^{-1}]^{-1}$.
+      *Notes:* already in notes; bias-field gradient and update $\hat{\vect\beta}=\mat H\bar{\vect R}$ re-derived: correct. Empty "Result using an extended model:" completed.
 
 ## Additional fixes found during the notes pass (not in the list above)
 

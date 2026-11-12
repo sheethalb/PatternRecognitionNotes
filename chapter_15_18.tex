@@ -53,17 +53,15 @@
 	\subsubsection{Inner Product and the Perceptron}
 	The decision function that we get for the perceptron can also be written in terms of inner products:
 	\begin{align*}
-		F(\vect x)
+		f(\vect x)
 		&= \left (\sum_{i\in \cal E} y_i\cdot \vect x_i \right)^T \vect x + \sum_{i\in \cal E} y_i \\
 		&= \sum_{i\in \cal E} y_i\cdot \langle \vect x_i, \vect x\rangle + \sum_{i\in \cal E} y_i
 	\end{align*}
-	where $\cal E$ is the list of indices of training samples that required an update during perceptron training (indices may appear more than once), and the predicted label is $\hat y = \sign(F(\vect x))$.
+	where $\cal E$ is the list of indices of training samples that required an update during perceptron training (indices may appear more than once), and the predicted label is $\hat y = \sign(f(\vect x))$ (zero initialization, $\eta=1$).
 
 \subsection{Feature Transforms}
 
   	We select a   \textbf{feature transform $\phi: \real^d \rightarrow \real^D$}, $D \ge d$, such that the resulting features $\phi(\vect x_i)$, $i=1,2,\dots, m$, are linearly separable.  
-	\textbf {Second Example:} data is not centered\\ \phantom{q}
-
 	\textbf {Example}
 		Assume the decision boundary is given by the quadratic function
 		\begin{displaymath}
@@ -160,8 +158,8 @@
 	\begin{itemize}
 		\item Linear: $k(\vect x, \vect x') = \langle\vect x, \vect x'\rangle$     
 		\item Polynomial: $k(\vect x, \vect x') = (\langle\vect x, \vect x'\rangle+1)^q$, \quad $q\in\mathbb{N}$
-		\item Laplacian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_1}{\sigma^2}}$     
-		\item Gaussian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_2^2}{\sigma^2}}$     
+		\item Laplacian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_1}{\sigma}}$     
+		\item Gaussian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_2^2}{\sigma^2}}$ (written $e^{-\gamma\|\vect x-\vect x'\|_2^2}$ with $\gamma=1/\sigma^2$ in Chapter \emph{Support Vector Machines II})     
 		\item Sigmoid kernel: $k(\vect x, \vect x') =\mbox{tanh}({ \alpha\langle\vect x, \vect x'\rangle+\beta})$
 	\end{itemize}
 	\textbf {Question:} \\
@@ -174,7 +172,7 @@
 			\int_{{\cal X}\times {\cal X}} f(\vect x)\,f(\vect x')\,k(\vect x, \vect x')\ \mathsf{d}\vect x\, \mathsf{d} \vect x' \geq 0
 		\end{displaymath}
 
-		for all square integrable functions $f$, there exist transforms $\phi_i: {\cal X}\rightarrow \real$ and $\lambda_i\geq 0$ such that:
+		for all square integrable functions $f$, there exist transforms $\phi_i: {\cal X}\rightarrow \real$ and $\lambda_i\geq 0$ (eigenvalues of the integral operator of $k$, not the SVM multipliers) such that:
 		\begin{displaymath}
 			k(\vect x, \vect x') = \sum_i \lambda_i \,\phi_i(\vect x)\,\phi_i(\vect x')
 		\end{displaymath} for all $\vect x$ and $\vect x'$.
@@ -185,12 +183,12 @@
 	\subsubsection{Kernel SVMs with Soft Margins}
 		\textbf {Linear kernel $\langle\vect x, \vect x'\rangle$:}
 		\begin{itemize}
-			\item the complexity parameter $C$ controls the number of support vectors and
+			\item the complexity parameter $C$ (the slack weight, denoted $\mu$ in the SVM chapters) controls the number of support vectors and
 			\item hence the width of the margin and
 			\item the orientation of the decision boundary   
 		\end{itemize}
 
-	\textbf{Gaussian RBF kernel $e^{-0.1\|\vect x-\vect x'\|_2^2}$:}{}
+	\textbf{Gaussian RBF kernel $e^{-0.1\|\vect x-\vect x'\|_2^2}$:} the decision boundary is no longer linear in $\vect x$ (examples in the slides).
 
 \subsection{Kernel PCA}
 	\textbf {PCA revisited}  
@@ -284,7 +282,7 @@
 			      \sum_{n=1}^m a_{i,n} \, \phi(\vect x)^T\phi(\vect x_n) \quad   = \quad
 			      \sum_{n=1}^m a_{i,n} \, k(\vect x, \vect x_n)
 		      \end{displaymath}
-		\item Normalization: choose the eigenvector scaling such that $\|\vect v_i\|_2=1$, i.e.\ $\vect a_i^T\mat K\vect a_i = 1$ (this requires $\lambda_i\neq 0$).
+		\item Normalization: choose the eigenvector scaling such that $\|\vect v_i\|_2=1$, i.e.\ $\vect a_i^T\mat K\vect a_i = m\lambda_i\|\vect a_i\|_2^2 = 1$ (this requires $\lambda_i\neq 0$).
 	\end{itemize}
      
 It is assumed that the transformed features have   \textbf{zero mean}:
@@ -352,8 +350,8 @@ It is assumed that the transformed features have   \textbf{zero mean}:
 
 		Given two feature sequences $X, X'\in {\cal X^*}$ (with time index $t$):
 		\begin{eqnarray*}
-			X   &=& \langle \vect x(1), \vect x(2), \dots, \vect x(p)\rangle \, ,\\
-			X'  &=& \langle \vect x'(1), \vect x'(2), \dots, \vect x'(q)\rangle~.
+			X   &=& \big( \vect x(1), \vect x(2), \dots, \vect x(p)\big) \, ,\\
+			X'  &=& \big( \vect x'(1), \vect x'(2), \dots, \vect x'(q)\big)~.
 		\end{eqnarray*}
 		\begin{itemize}
 			\item Distance is computed by DTW (schematically):
@@ -400,7 +398,7 @@ It is assumed that the transformed features have   \textbf{zero mean}:
 		\item Some classification approaches require   \textbf{huge collections of data}  (e.\,g.\ for text or speech recognition).  
 		\item Labeling of the data can be   \textbf{time-consuming} and   \textbf{costly}.  
 		\item If the data can be modeled with a small number of well separated components  (with each component corresponding to a distinct category),  little labeled data would suffice to assign a proper label to each of them.  
-		\item A machine learning approach that makes use of only partially labeled data usually achieves much better classification performance than using only the labeled data alone.  
+		\item A machine learning approach that also uses the unlabeled data can achieve better classification performance than one that uses only the labeled data.  
 		\item Fisher kernels describe a generative model that can be used in a discriminative approach (e.\,g.\ SVM).
 	\end{itemize}
   
@@ -516,8 +514,12 @@ Modification of SVMs for different kind of data distribution.
   \end{displaymath}
  
 \subsection{Laplacian Support Vector Machines}
-Constrained primal optimization problem based on the dual form:\\
-\textbf{Lagrange function $L$:}
+With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vect\beta^T\mat K\vect\beta$ and $\|f\|_\text{I}^2=\vect\beta^T\mat K\mat L\mat K\vect\beta$. With the hinge loss this gives the constrained \textbf{primal problem}
+  \begin{eqnarray*}
+    \mbox{minimize}   & & \sum_{i=1}^l \xi_i + \gamma_\text{A}\,\vect\beta^T\mat K\vect\beta + \gamma_\text{I}\,\vect\beta^T\mat K\mat L\mat K\vect\beta\\
+    \mbox{subject to} & & y_i\Big(\sum_{j=1}^m \beta_j\, k(\vect x_i,\vect x_j)+\beta_0\Big)\ge 1-\xi_i,\quad \xi_i\ge 0,\quad i=1,\dots,l.
+  \end{eqnarray*}
+\textbf{Lagrange function $L$} with multipliers $\lambda_i\ge0$ (margin constraints) and $\nu_i\ge0$ (constraints $\xi_i\ge0$):
   
   \begin{eqnarray*}
     L(\vect\beta,\beta_0,\vect\xi,\vect\lambda,\vect\nu) 
@@ -545,13 +547,13 @@ Constrained primal optimization problem based on the dual form:\\
       \end{displaymath}
   \end{itemize}
   
-    \textbf{Simplifying the Langrangian using the two identities above:}
+    \textbf{Simplifying the Lagrangian using the two identities above:}
   
   {\small
     \begin{eqnarray*}
       L(\vect{\beta}, \vect{\lambda}) 
       &=& \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -{} \\
-      & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_i k(\vect{x}_i,\vect{x}_j) + \beta_0\Bigg) - 1 \right) \\
+      & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_j k(\vect{x}_i,\vect{x}_j) + \beta_0\Bigg) - 1 \right) \\
       &=& \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -
           \vect{\beta}^T \mat{K} \mat{J}_{\mathcal{L}}^T \mat{Y} \vect{\lambda} +
           \sum_{i=1}^l \lambda_i
@@ -713,7 +715,7 @@ recommend to implement this exercise. theory is important for the exam. So far, 
   Now we extend this model by representing the observations with a set of $K$ multivariate Gaussian distributions:\\
  \textbf{Problem description:} \\
   
-  Given $m$ feature vectors in an $d$ dimensional space, find a set of $K$ multivariate Gaussian distributions that best represent the observations. GMMs are an example of classification by   \textbf{\emph{unsupervised learning}}:  
+  Given $m$ feature vectors in an $d$ dimensional space, find a set of $K$ multivariate Gaussian distributions that best represent the observations. GMMs are an example of   \textbf{\emph{unsupervised learning}} (clustering, density estimation):  
 
   \begin{itemize}
     \item It is not known which feature vectors are generated by which of the $K$ Gaussians  
@@ -750,7 +752,7 @@ recommend to implement this exercise. theory is important for the exam. So far, 
 
   Individual probabilities for the $K$ contributions (responsibilities):
   \begin{displaymath}
-    \gamma_{ik} = p(z_i=k\mid\vect x_i;\hat{\vect\theta}) = \frac{ \pi_k\,{\mathcal N}(\vect x_i; \vect \mu_k, \mat \Sigma_k)}{p(\vect x_i;\hat{\vect\theta})}
+    \gamma_{ik} = p(z_i=k\mid\vect x_i;\hat{\vect\theta}) = \frac{ \hat\pi_k\,{\mathcal N}(\vect x_i; \hat{\vect \mu}_k, \hat{\mat \Sigma}_k)}{p(\vect x_i;\hat{\vect\theta})}
   \end{displaymath}
      
  \subsubsection{GMM -- Maximization}
@@ -792,7 +794,7 @@ recommend to implement this exercise. theory is important for the exam. So far, 
   \]
   }
 
-  \textbf{Mixture weights $\pi_k$:} enforce $\sum_k \pi_k=1$ via a Lagrangian $\Lambda = \ell(\vect\theta)+\nu(\sum_k \pi_k-1)$ and set $\partial\Lambda/\partial \pi_k=0$,
+  \textbf{Mixture weights $\pi_k$:} enforce $\sum_k \pi_k=1$ via a Lagrangian $\mathcal L = \ell(\vect\theta)+\nu(\sum_k \pi_k-1)$ and set $\partial\mathcal L/\partial \pi_k=0$ (see Sec.~\emph{Constrained Optimization} below),
   which yields $\hat \pi_k=\tfrac{1}{m}\sum_i \gamma_{ik}$.
 
   \subsubsection*{GMM Parameter Estimation}
@@ -887,17 +889,17 @@ refer to slides\\
   \end{itemize}
      
  
-  \subsubsection{}{Kullback-Leibler Statistics and Entropy}
+  \subsubsection{Kullback-Leibler Statistics and Entropy}
   
   For the terms on the right hand side we introduce the following notation (formally this is incorrect due to the differences in the iteration index):
   
   \begin{itemize}
-    \item   \textbf{Kullback--Leibler statistics} (historically: Kullback--Leibler statistics)
+    \item   \textbf{Expected complete-data log-likelihood} $Q$ (historically called \emph{Kullback--Leibler statistics}):
       \begin{displaymath}
         Q(\hatp^{(j)};\hatp^{(j+1)}) =
         \int p(z\mid x; \hatp^{(j)}) \, \log p(x, z;\hatp^{(j+1)}) \, \mathsf{d}z
       \end{displaymath}
-   \item   \textbf{Entropy (cross-entropy term):}
+   \item   \textbf{Entropy term} $H$ (a cross-entropy between the posteriors of $z$):
      \begin{displaymath}
        H(\hatp^{(j)};\hatp^{(j+1)}) = 
        - \int p(z\mid x; \hatp^{(j)}) \, \log p(z\mid x; \hatp^{(j+1)})\, \mathsf{d}z
@@ -907,7 +909,7 @@ refer to slides\\
      
   \subsubsection{Kullback-Leibler Statistics}
 
-A measure of how similar the predicted pdf is to the reference pdf. a method of measuring similarity of the pdfs. ANother metric to measure the performance of the system. 
+Despite its historical name, $Q$ is \emph{not} the Kullback--Leibler divergence: it is the expected complete-data log-likelihood. The KL divergence appears in the entropy term below. 
 
   Let us first take a closer look at the Kullback--Leibler statistics:
   \begin{displaymath}
@@ -947,8 +949,8 @@ A measure of how similar the predicted pdf is to the reference pdf. a method of 
   \end{center}
   \vspace{0.5\baselineskip}
   \begin{itemize}
-    \item Below we will motivate that the maximization of the Kullback-Leibler statistics can replace the optimization of the log-likelihood function.      
-    \item A complete proof can be found in the literature (see Further Readings).
+    \item Below we show that maximizing $Q$ instead of the log-likelihood never decreases the log-likelihood.      
+    \item Convergence properties (e.\,g.\ to a stationary point) are proven in the literature.
   \end{itemize}
 
  \textbf{Entropy Changes with Iterations-}\\
@@ -978,20 +980,26 @@ The difference of the considered entropies
 
   The best to see this is to make use of the inequality
   \begin{displaymath}
-  \log(x) \leq x-1
+  \log(u) \leq u-1
   \end{displaymath}
 
-  and conclude:
+  and conclude, for arbitrary densities $p,q$ of a variable $u$:
   \begin{eqnarray*}
-    \int p(x) \, \log \frac{p(x)}{q(x)}\ \mathsf{d}x 
-      & =  & -\int p(x) \, \log \frac{q(x)}{p(x)}\ \mathsf{d}x \\  
-      &\geq& \int p(x) \left( 1 - \frac{q(x)}{p(x)} \right) \, \mathsf{d}x\\   
+    \int p(u) \, \log \frac{p(u)}{q(u)}\ \mathsf{d}u 
+      & =  & -\int p(u) \, \log \frac{q(u)}{p(u)}\ \mathsf{d}u \\  
+      &\geq& \int p(u) \left( 1 - \frac{q(u)}{p(u)} \right) \, \mathsf{d}u\\   
       & =  & 1-1 = 0
   \end{eqnarray*}
+
+  \textbf{Consequence (EM never decreases the likelihood):} Write the key equation for $\p'$ and for $\p$ and subtract:
+  \begin{displaymath}
+    \log p(x;\p') - \log p(x;\p) = \big(Q(\p;\p')-Q(\p;\p)\big) + \big(H(\p;\p')-H(\p;\p)\big) \;\geq\; Q(\p;\p')-Q(\p;\p),
+  \end{displaymath}
+  since the entropy difference is non-negative. If $\p'$ maximizes $Q(\p;\cdot)$, then $Q(\p;\p')\ge Q(\p;\p)$ and hence $\log p(x;\p')\ge\log p(x;\p)$.
   
 \subsection{Expectation Maximization Algorithm}
 \subsubsection{The basic idea of the EM algorithm:}
-Instead of maximizing the log-likelihood function on the left hand side of the key-equation, we maximize the Kullback-Leibler statistics iteratively while ignoring the entropy term.
+Instead of maximizing the log-likelihood function on the left hand side of the key-equation, we maximize $Q$ (the Kullback--Leibler statistics) iteratively while ignoring the entropy term; by the consequence above this never decreases the log-likelihood.
  
 
   \begin{centernss}
@@ -1005,14 +1013,14 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
         \assign{\textbf{Maximization step:}
           $\displaystyle {\hatp}^{(j+1)} \gets \argmax_{{\p}} Q\left( \hatp^{(j)}\,;\, \p \right)$}
       \untilend
-      \assign{Output: estimate $\hatp \gets \hatp^{(j)}$}
+      \assign{Output: estimate $\hatp \gets \hatp^{(j+1)}$}
     \end{struktogramm}
   \end{centernss}
 \subsubsection{Advantages of the EM Algorithm}
  A few   \textbf{practical positive aspects} regarding the EM algorithm:
 
   \begin{itemize}
-    \item The maximum of the KL statistics is usually computed using zero crossings of the gradient.      
+    \item The maximum of $Q$ is usually computed using zero crossings of the gradient.      
     \item Mostly we find   \textbf{closed form iteration schemes}.      
     \item Easy to implement closed form iteration formulas (if these exist).      
     \item Iteration scheme is numerically robust.      
@@ -1026,7 +1034,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
   \begin{itemize}
     \item slow, slow, slow convergence \\
       (should not be used in run time critical applications)   
-    \item local optimization method, i.\,e.\ the initialization $\hatp^{(0)}$ has to lie in the area of attraction of the global maximum.
+    \item local optimization method, i.\,e.\ to find the global maximum, the initialization $\hatp^{(0)}$ has to lie in its area of attraction.
   \end{itemize}
   
 
@@ -1067,7 +1075,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
       \end{displaymath}
     }
      \small
-    The   \textbf{Lagrange multiplier} is:
+    This gives, with the \textbf{Lagrange multiplier} $\nu$:
     {\footnotesize
     \begin{displaymath}
       a_k= -\nu \pi_k~.  
@@ -1075,7 +1083,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
     }
 
     Due to the fact that the $\pi_k$'s are unknown, we have to apply a trick to get $\nu$. \\
-    We just sum both sides of the above equation over all $k$ and get:
+    We just sum both sides of the above equation over all $k$ and use $\sum_k\pi_k=1$:
     {\footnotesize
       \begin{displaymath}
         \nu = -\sum_{k=1}^K a_k~.  
@@ -1125,7 +1133,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
   \textbf{Initialization of Priors:}
 
   \begin{itemize}
-   \item Use prior medical knowledge about the frequency of tissue classes      
+   \item Use prior knowledge about the class frequencies (e.\,g.\ of tissue classes in the MR application of the next chapter)      
    \item If no prior information is available, assume uniform distribution
   \end{itemize}
   
@@ -1193,7 +1201,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
 
     \textbf{Typical EM problem:}
   \begin{itemize}
-    \item The missing data is the tissue class assignment for each pixel.   
+    \item The missing data is the tissue class assignment for each voxel.   
     \item If the tissue was classified, the bias field could easily be computed.  
     \item If the bias field was known, the tissue classification would be much easier. 
   \end{itemize}
@@ -1290,8 +1298,8 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
   \begin{eqnarray*}
     \frac{\frac{\partial}{\partial \beta_i} p(Y_i | \beta_i)}{p(Y_i | \beta_i)} 
     &=& \underbrace{
-          \frac{\sum_{\Gamma} p(\Gamma) \, \frac{\partial}{\partial \beta_i} {\mathcal N}(Y_i ; \mu_\Gamma + \beta_i, \psi_{\Gamma}) }
-               {\sum_{\Gamma} p(\Gamma) \, {\mathcal N}(Y_i ; \mu_\Gamma + \beta_i, \psi_\Gamma)}
+          \frac{\sum_{k=1}^K \pi_k \, \frac{\partial}{\partial \beta_i} {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k) }
+               {\sum_{l=1}^K \pi_l \, {\mathcal N}(Y_i ; \mu_l + \beta_i, \psi_l)}
         }_{\mbox{\small substitute GMM}}   \\  
     \noalign{\hbox{\footnotesize using $\frac{\partial}{\partial\beta_i}\mathcal N(Y_i;\mu_k+\beta_i,\psi_k)=\mathcal N(Y_i;\mu_k+\beta_i,\psi_k)\,\psi_k^{-1}(Y_i-\mu_k-\beta_i)$}}
     &=& \frac{\sum_{k=1}^K \pi_k \, {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k) \, \psi_k^{-1} \, (Y_i - \mu_k - \beta_i)}
@@ -1389,7 +1397,7 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
 
   \begin{itemize}
     \item brains should be extracted from entire data  
-    \item algorithm does not incorporate neighborhood of pixels  
+    \item algorithm does not incorporate the neighborhood of voxels  
     \item purely intensity-based model
   \end{itemize}
   \textbf{Extensions} of the algorithm:
@@ -1401,7 +1409,7 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
     \item incorporation into Bayesian model that is solved by EM approach
   \end{itemize}
  
-  Result using an extended model:
+  Results using an extended model are shown in the slides.
 \subsection{Lessons Learned}
  \begin{itemize}
     \item Bayesian approach for MRI data segmentation   
