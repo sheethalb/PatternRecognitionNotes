@@ -14,7 +14,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 ### 2) Notes contradict their own notation (symbol overloading)
 
 - [ ] $y$: neuron outputs vs targets.
-- [ ] Index $i$ overloaded (component vs sample vs iteration index); reviewer request: use $j,k$ for components; keep iteration index stable (uses $j$ in EM).
 
 ### 3) Typesetting / consistency
 
@@ -317,3 +316,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] Tilde notation overloaded (projected scalar / augmented vector / centred matrix).
       *Done:* verified, no edit needed: projected Fisher scalars already use $\mu_k^{\mathrm{proj}},(s_k^{\mathrm{proj}})^2$ and the centred matrix in Ch. 5 is gone, so in Ch. 5 tilde only marks the augmented vector $\tilde{\vect x}_i$. Other tildes are chapter-local with one meaning each (feasible point, Optimization II; centred $\tilde\phi,\tilde{\mat K}$, kernel PCA; bias-free intensity $\tilde X_i$, MR; whitened $\tilde{\vect x}$, ICA).
+
+- [x] Index $i$ overloaded (component vs sample vs iteration index); reviewer request: use $j,k$ for components; keep iteration index stable (uses $j$ in EM).
+      *Done:* Naive Bayes chapter (pp. 30-32): feature components now indexed by $j$ ($x_j$, $\prod_j$, $\mu_{y,j}$, $f_j(x_j)$), $i$ stays the sample index; consistent with $x_{i,j}$ in logistic regression. EM iteration index was already $(j)$ throughout (GMM, general EM, MR bias field), no edit needed.
