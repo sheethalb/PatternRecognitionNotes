@@ -5,20 +5,6 @@ Companion file: `notation_pass_WS2627.patch` — a unified diff of **every** cha
 
 **Instructions for an editing agent:** work chapter by chapter. For each item, find the frame by its title (given in *italics*), make the change, and tick it. Keep beamer overlays (`\pause`, `\alt`, `\only`) intact. Compile after each chapter. Do **not** change `p(·)` to `P(·)` anywhere (decision pending).
 
----
-
-## Review comments (mathematics + notation check, PDF dated 10 Nov 2026)
-
-Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and notation check" (checked against the 128-page PDF of 10 Nov 2026). Items below are transcribed and kept in the reviewer’s page-based wording so they can be located; tick when fixed in this Overleaf project.
-
-### 2) Notes contradict their own notation (symbol overloading)
-
-
-### 3) Typesetting / consistency
-
-
----
-
 ## 0. Course-wide conventions (apply everywhere)
 
 | Concept | Notation |
@@ -43,60 +29,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 ## Build fixes (only needed if starting from the lab repo)
   `\AtEndDocument{\immediate\write\csname @mainaux\endcsname{\string\newlabel{LastPage}{{}{\number\numexpr\value{page}-1\relax}{}{}{}}}}`
 
----
-
-## 01 Introduction
-
-
-## 02 Bayes Classifier
-
-## 03 Logistic Regression I
-- [x] Quadratic polynomial slide: $a_{11}x_1^2+(a_{12}+a_{21})x_1x_2+a_{22}x_2^2+\alpha_1x_1+\alpha_2x_2+\alpha_0$ (instead of $a\dots f$).
-- [x] Distributions unified: $p(x;\lambda)$ (exponential), $p(k;n,\pi)$ binomial (caption "…success probability $\pi$"), $p(k;\lambda)$ Poisson, $p(k;N,M,n)$ hypergeometric; figure labels in `exponential1–4`, `binomial1–3` (legend $p=\to\pi=$), `poisson1–3`, `hypergeometric1–3`.
-
-## 04 Logistic Regression II
-
-
-
-
-## 06 Discriminant Analysis
-- [x] *Discriminant Analysis*: "discriminative" → **generative** modeling (posterior via $p(y)p(\vec x|y)$); summation index $y'$.
-- [x] LDA algorithm: $\hat{\vec\mu}_y=\frac1{m_y}\sum_{i:y_i=y}\vec x_i$ ($m_y$ defined); $\hat{\mat\Sigma}$ uses $\hat{\vec\mu}_{y_i}$; $\phi(\vec x)=\mat D^{-1/2}\mat U^T\vec x$; decisions $\hat y$ using $\phi(\hat{\vec\mu}_y)$, note plug-in $\hat y$ approximates $\hat y^*$; 2-class slide "$y\in\{0,1\}$, equal priors".
-
-## 07 Discriminant Analysis II
-
-
-## 08 Norms
-
-## 09 Perceptron
-
-## 10 Multi-Layer Perceptron
-
-## 11 Optimization I
-
-## 12 SVM I
-
-## 13 Optimization II
-
-## 14 SVM II
-
-## 15 Kernels
-
-
-## 16 Laplacian SVM
-
-## 17 EM
-
-## 18 EM Applications (MR bias field)
-
-
-## 19 ICA
-
-## 20 Model Assessment
-
-## 21 AdaBoost
-
----
 
 ## Open decisions (not yet changed)
 - [ ] $p(\cdot)$ vs. $P(\cdot)$ for probabilities (ask professor); if switched, also revisit random-variable notation ($P(Y=y)$).
@@ -134,7 +66,13 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Newton–Raphson: Taylor order $k\to n$ (k only counts iterations); "(here $x$ is a scalar variable)".
 - [x] Gradient slides: define $\theta_j$ = $j$-th component.
 - [x] **New frame** *Decision Rule*: $\hat y=1\Leftrightarrow g(\hat{\vec\theta}^T\vec x)>0.5\Leftrightarrow\hat{\vec\theta}^T\vec x>0$, else 0; boundary $\hat{\vec\theta}^T\vec x=0$; $\hat y$ vs. true labels $y_i$.
-      
+
+- [x] Quadratic polynomial slide: $a_{11}x_1^2+(a_{12}+a_{21})x_1x_2+a_{22}x_2^2+\alpha_1x_1+\alpha_2x_2+\alpha_0$ (instead of $a\dots f$).
+- [x] Distributions unified: $p(x;\lambda)$ (exponential), $p(k;n,\pi)$ binomial (caption "…success probability $\pi$"), $p(k;\lambda)$ Poisson, $p(k;N,M,n)$ hypergeometric; figure labels in `exponential1–4`, `binomial1–3` (legend $p=\to\pi=$), `poisson1–3`, `hypergeometric1–3`.
+## 06 Discriminant Analysis
+- [x] *Discriminant Analysis*: "discriminative" → **generative** modeling (posterior via $p(y)p(\vec x|y)$); summation index $y'$.
+- [x] LDA algorithm: $\hat{\vec\mu}_y=\frac1{m_y}\sum_{i:y_i=y}\vec x_i$ ($m_y$ defined); $\hat{\mat\Sigma}$ uses $\hat{\vec\mu}_{y_i}$; $\phi(\vec x)=\mat D^{-1/2}\mat U^T\vec x$; decisions $\hat y$ using $\phi(\hat{\vec\mu}_y)$, note plug-in $\hat y$ approximates $\hat y^*$; 2-class slide "$y\in\{0,1\}$, equal priors".
+    
 - [x] p. 8 after the UAR formula: “$\kappa$ is the total number of classes” (wrong) → “$K$ is the number of classes, $\kappa$ the class index”.
 - [x] p. 18 posterior derivation, 3rd line: spurious trailing factor “$\cdot p(y=0\mid\vec x)$” → delete.
 - [x] p. 20 proof of Lemma 1: remove the “$=0$” tautology; prove $p(y=0\mid\vec x)=\tfrac12 \Leftrightarrow F(\vec x)=0$ cleanly.
