@@ -13,7 +13,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 2) Notes contradict their own notation (symbol overloading)
 
-- [ ] $y$: neuron outputs vs targets.
 
 ### 3) Typesetting / consistency
 
@@ -319,3 +318,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] Index $i$ overloaded (component vs sample vs iteration index); reviewer request: use $j,k$ for components; keep iteration index stable (uses $j$ in EM).
       *Done:* Naive Bayes chapter (pp. 30-32): feature components now indexed by $j$ ($x_j$, $\prod_j$, $\mu_{y,j}$, $f_j(x_j)$), $i$ stays the sample index; consistent with $x_{i,j}$ in logistic regression. EM iteration index was already $(j)$ throughout (GMM, general EM, MR bias field), no edit needed.
+
+- [x] $y$: neuron outputs vs targets.
+      *Done:* kept as is (decision by Sheethal, 12 Nov): neuron outputs carry the layer superscript $y_j^{(l)}$, targets have none ($y_k$), prediction $\hat y_k=y_k^{(L)}$; stated in the MLP Notation list and consistent with the slides.
