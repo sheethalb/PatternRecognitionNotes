@@ -24,8 +24,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 ---
 
-## 00 Cover / pr.tex (done by Sheethal)
-
 ## Build fixes (only needed if starting from the lab repo)
   `\AtEndDocument{\immediate\write\csname @mainaux\endcsname{\string\newlabel{LastPage}{{}{\number\numexpr\value{page}-1\relax}{}{}{}}}}`
 
