@@ -195,13 +195,12 @@ The space to which the parameters are optimized to , by using that particular no
   This optimization problem can be rewritten in terms of a LP-problem:
   \begin{eqnarray*}
     \begin{array}{lcl}
-     \mbox{minimize}& & r\\
-     \mbox{subject to} & &   - r\cdot \vect 1 \preceq \mat A \vect x - \vect b \preceq r\cdot \vect 1
+     \mbox{minimize}& & t\\
+     \mbox{subject to} & &   - t\cdot \vect 1 \preceq \mat A \vect x - \vect b \preceq t\cdot \vect 1
     \end{array}
   \end{eqnarray*}
-  where $r\in \real$, $\vect 1 \in \{1\}^m$ is the all-ones vector, and $\preceq$ denotes componentwise inequality.
+  over $\vect x$ and an auxiliary bound $t\in \real$ (i.\,e.\ $|r_i|\le t$ for all residual components), where $\vect 1 \in \{1\}^m$ is the all-ones vector and $\preceq$ denotes componentwise inequality.
 
-  % (The constraints above are equivalent to $|r_i|\le r$ for all residual components.)
 
   
 \subsubsection{Sum of Absolute Residuals}
@@ -212,11 +211,11 @@ The space to which the parameters are optimized to , by using that particular no
   This optimization problem can be rewritten in terms of a LP-problem:
   \begin{eqnarray*}
     \begin{array}{lcl}
-      \mbox{minimize}   & & \vect 1^T \vect r \\
-      \mbox{subject to} & & - \vect r \preceq  \mat A \vect x -\vect b\preceq \vect  r
+      \mbox{minimize}   & & \vect 1^T \vect t \\
+      \mbox{subject to} & & - \vect t \preceq  \mat A \vect x -\vect b\preceq \vect  t
     \end{array}
   \end{eqnarray*}
-  where $\vect r\in \real^m$ and $\vect 1 \in \{1\}^m$.
+  over $\vect x$ and auxiliary bounds $\vect t\in \real^m$ (i.\,e.\ $|r_i|\le t_i$), and $\vect 1 \in \{1\}^m$.
  
 \subsubsection{Ridge Regression and Unit Balls}
 \textbf{Ridge regression} is defined via the optimization problem

@@ -14,7 +14,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 ### 2) Notes contradict their own notation (symbol overloading)
 
 - [ ] $y$: neuron outputs vs targets.
-- [ ] $\vect r$: Fisher direction vs residual vs LP bound variable.
 - [ ] Tilde notation overloaded (projected scalar / augmented vector / centred matrix).
 - [ ] Index $i$ overloaded (component vs sample vs iteration index); reviewer request: use $j,k$ for components; keep iteration index stable (uses $j$ in EM).
 
@@ -313,3 +312,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $\vect\mu'_y$: transformed true mean vs pooled transform of estimate.
       *Done:* class-specific transform (p. 36): intermediate names $\vect\mu'_y,\mat\Sigma'_y$ removed, the density is written directly as $\mathcal N(\vect x';\mat D_y^{-1/2}\mat U_y^T\vect\mu_y,\mat I)$. $\vect\mu'_y=\phi(\hat{\vect\mu}_y)$ (LDA, pooled transform of the estimate) is now the only meaning.
+
+- [x] $\vect r$: Fisher direction vs residual vs LP bound variable.
+      *Done:* Norms chapter: LP bound variables renamed $r\to t$ (Chebyshev) and $\vect r\to\vect t$ ($L_1$), as in Boyd (p. 52); $\vect r$ stays the residual in that chapter. Fisher direction $\vect r$ (Ch. 5, pp. 41-43) kept: different chapter, single meaning there.
