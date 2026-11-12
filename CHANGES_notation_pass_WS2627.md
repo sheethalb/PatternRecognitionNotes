@@ -142,7 +142,7 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] p. 23 §3.3.4 intro: exponential-family condition must match Lemma 2 (“same family with equal dispersion $\phi$”).
 - [x] p. 25 definition under Fig. 13: “$F(\vec x)=\vec\theta^T\vec x$ … ($\vec\theta=-\vec a$)” → “$-F(\vec x)=\vec\theta^T\vec x$ with $\vec\theta=-\vec a$”.
 - [x] p. 29 Hessian bullet: replace “double derivative w.r.t. $x$ and $y$” by “second derivatives w.r.t. the components of $\vec\theta$”.
-- [ ] - [x] p. 36 conclusion: linear boundary claim must be restricted to the shared-transform/shared-covariance case; say hyperplane (not line) for $d>2$.
+- [x] p. 36 conclusion: linear boundary claim must be restricted to the shared-transform/shared-covariance case; say hyperplane (not line) for $d>2$.
 - [x] p. 39 $\vec\mu'_y\in\mathbb R^{K-1}$, $\mat\Phi\in\mathbb R^{L\times(K-1)}$: dimensionality mismatch (since $\phi:\mathbb R^d\to\mathbb R^d$ earlier) → either project to $(K-1)$ first and say so, or take $\mat\Phi\in\mathbb R^{L\times d}$.
 - [x] p. 41 “In original PCA: $\Sigma\Phi^T = \lambda'\Phi^T$”: eigenvalue matrix must multiply from the right → $\Sigma\Phi^T=\Phi^T\Lambda'$.
 - [x] p. 42 sums for $\vec\mu_k,\mat S_k,\tilde\mu_k,\tilde s_k^2$: fix index from $\sum_{i=1,\,y_i=k}^{m_k}$ to $\sum_{i:\,y_i=k}$.
