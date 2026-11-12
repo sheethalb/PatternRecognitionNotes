@@ -14,7 +14,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 ### 2) Notes contradict their own notation (symbol overloading)
 
 - [ ] $y$: neuron outputs vs targets.
-- [ ] Tilde notation overloaded (projected scalar / augmented vector / centred matrix).
 - [ ] Index $i$ overloaded (component vs sample vs iteration index); reviewer request: use $j,k$ for components; keep iteration index stable (uses $j$ in EM).
 
 ### 3) Typesetting / consistency
@@ -315,3 +314,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $\vect r$: Fisher direction vs residual vs LP bound variable.
       *Done:* Norms chapter: LP bound variables renamed $r\to t$ (Chebyshev) and $\vect r\to\vect t$ ($L_1$), as in Boyd (p. 52); $\vect r$ stays the residual in that chapter. Fisher direction $\vect r$ (Ch. 5, pp. 41-43) kept: different chapter, single meaning there.
+
+- [x] Tilde notation overloaded (projected scalar / augmented vector / centred matrix).
+      *Done:* verified, no edit needed: projected Fisher scalars already use $\mu_k^{\mathrm{proj}},(s_k^{\mathrm{proj}})^2$ and the centred matrix in Ch. 5 is gone, so in Ch. 5 tilde only marks the augmented vector $\tilde{\vect x}_i$. Other tildes are chapter-local with one meaning each (feasible point, Optimization II; centred $\tilde\phi,\tilde{\mat K}$, kernel PCA; bias-free intensity $\tilde X_i$, MR; whitened $\tilde{\vect x}$, ICA).
