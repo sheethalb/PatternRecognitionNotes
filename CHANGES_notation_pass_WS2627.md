@@ -14,7 +14,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 ### 2) Notes contradict their own notation (symbol overloading)
 
 - [ ] $y$: neuron outputs vs targets.
-- [ ] $J$: Fisher score vs functional derivative vs negentropy.
 - [ ] $\vect\mu'_y$: transformed true mean vs pooled transform of estimate.
 - [ ] $\vect r$: Fisher direction vs residual vs LP bound variable.
 - [ ] Tilde notation overloaded (projected scalar / augmented vector / centred matrix).
@@ -309,3 +308,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $\vect e_i$: basis vector vs PCA eigenvector.
       *Done:* Kernel PCA eigenvectors renamed $\vec e_i\to\vec v_i$ (10 occurrences, p. 82-83); $\vect e_i$ stays the unit basis vector (Optimization I, p. 66).
+
+- [x] $J$: Fisher score vs functional derivative vs negentropy.
+      *Done:* Fisher score already $\vec u_{\vec\theta}(\vec x)$ (p. 85). Max-entropy derivation (ICA, p. 109): $\delta J/\delta p\to\delta\mathcal L/\delta p$, matching the functional $\mathcal L(p)$ defined just above. $J$ now only denotes negentropy; bold $\mat J_{\mathcal L}$ (Laplacian SVM selection matrix) is a matrix and unaffected.
