@@ -30,7 +30,7 @@ Bayes theorem connects what we want to know with what we can measure. \autocite{
 		\item[ $\vect x \in \mathbb{R}^d:$] $d$-dimensional (observed) feature vector.
 		\item[$y\in\mathcal{Y}:$] \textbf{true} class label (ground truth), e.g.\ $\mathcal{Y}=\{1,\dots,K\}$ (for binary classification often $\{0,1\}$ or $\{-1,+1\}$; stated explicitly).
 		\item[$\hat y:$] \textbf{predicted} class label (output of a classifier).
-		\item[$\hat y^*:$] \textbf{optimal} (Bayes) prediction.
+		\item[$y^*:$] \textbf{optimal} (Bayes) decision, computed from the \emph{true} posterior: $y^*=\argmax_y p(y\mid\vect x)$. No hat: it is not estimated from data. A trained classifier uses estimated probabilities and gives $\hat y$, which approximates $y^*$.
 		\item[$p(y):$] prior probability of class $y$.
 		\item[$p(\vect x):$] evidence (marginal density of the features).
 		\item[$p(\vect x , y):$] \textbf{joint distribution} of $(\vect x,y)$.
@@ -91,9 +91,9 @@ Bayes theorem connects what we want to know with what we can measure. \autocite{
 			      p(y)&=& \int p(\vect{x}, y) \, \mathsf{d}\vect{x}
 		      \end{eqnarray*}
 	\end{itemize}
-	Now let us summarize the Bayesian decision rule: The optimal prediction $\hat y^*$ is the class with the highest posterior,
+	Now let us summarize the Bayesian decision rule: The optimal prediction $y^*$ is the class with the highest posterior,
 	\begin{eqnarray*}
-		\hat y^* &=&   \argmax\limits_{y} p(y \mid \vect x) \\
+		y^* &=&   \argmax\limits_{y} p(y \mid \vect x) \\
 		&=& \argmax_y \frac{p(y) \cdot p(\vect x \mid y)}{p(\vect x)} \\
 		&=& \argmax_y p(y) \cdot p(\vect x \mid y) \\
 		&=& \argmax_y\{\log p(y)\ + \log p(\vect x \mid y)\} 
@@ -209,14 +209,14 @@ A loss function quantifies the cost associated with making a decision, particula
  \addplot[cB!40] fill between[of=B and ax,soft clip={domain=-1:3.635}];
  \addplot[cA!40] fill between[of=A and ax,soft clip={domain=3.635:8}];
  \draw[thick,dashed] (axis cs:3.635,0)--(axis cs:3.635,0.27) node[above,font=\scriptsize]{$x^*$};
- \node[font=\scriptsize,cA] at (axis cs:1,0.25) {decide $\hat y^*=0$};
- \node[font=\scriptsize,cB] at (axis cs:6.3,0.19) {decide $\hat y^*=1$};
+ \node[font=\scriptsize,cA] at (axis cs:1,0.25) {decide $y^*=0$};
+ \node[font=\scriptsize,cB] at (axis cs:6.3,0.19) {decide $y^*=1$};
  \node[font=\scriptsize,align=center] (e) at (axis cs:5.6,0.11) {shaded = error\\(0,1)-loss $=1$};
  \draw[-{Latex},thin] (e.south west)--(axis cs:4.0,0.02);
  \draw[-{Latex},thin] (e.west)--(axis cs:3.3,0.025);
 \end{axis}
 \end{tikzpicture}
-\caption{The Bayes classifier $\hat y^*=\argmax_y p(y\mid\vect x)$ places the boundary where the curves cross. $x^*$ is the crossing point, i.\,e.\ the decision boundary. Moving it in either direction only adds shaded area, so no other rule has a lower expected (0,1)-loss.}
+\caption{The Bayes classifier $y^*=\argmax_y p(y\mid\vect x)$ places the boundary where the curves cross. $x^*$ is the crossing point, i.\,e.\ the decision boundary. Moving it in either direction only adds shaded area, so no other rule has a lower expected (0,1)-loss.}
 \end{figure}
 	
 $l(y',y)$ is the \textbf{loss} of assigning true class $y$ to class $y'$. The $(0,1)$-loss function is defined by
@@ -236,7 +236,7 @@ where the true class is unknown, so we average over its posterior.
 
 Using the $(0,1)$-loss, the optimal prediction is
 	\begin{eqnarray*}
-		\hat y^* &=& \argmin\limits_{y'} \mathsf{AL}(\vect x, y')\\
+		y^* &=& \argmin\limits_{y'} \mathsf{AL}(\vect x, y')\\
 		        &=& \argmin\limits_{y'} \left(1-p(y'\mid\vect x)\right)\\ 
 		        &=& \argmax\limits_{y'} p(y'\mid\vect x).\\
 	\end{eqnarray*}
@@ -374,12 +374,12 @@ The reason we have transformed into this kind of logistic or sigmoid function, i
   \subsection{Decision Rule}
   The classifier predicts class $0$ if the posterior of class $0$ is larger than $\tfrac{1}{2}$, i.\,e. if $F(\vect x)>0$:
   \begin{eqnarray*}
-    \hat y^* &=& \left\{\begin{array}{ll}
+    y^* &=& \left\{\begin{array}{ll}
       0 & \text{if } F(\vect x) > 0 \\
       1 & \text{if } F(\vect x) < 0
     \end{array}\right.
   \end{eqnarray*}
-  The boundary is given by $F(\vect x)=0$. Note that $\hat y^*$ is the predicted class; the true class $y$ (or labels $y_i$ in the training set) can differ.
+  The boundary is given by $F(\vect x)=0$. Note that $y^*$ is the class the optimal classifier decides for; the true class $y$ (or labels $y_i$ in the training set) can differ.
 
 \begin{figure}
     \centering

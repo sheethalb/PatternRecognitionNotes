@@ -812,7 +812,7 @@ An important concept for machine learning and pattern recognition.
     \item We cannot compare $g(\vect x ; {\mathcal{D}})$ and $f^*(\vect x)$ based on the mean-square error as in regression.
     \item For simplicity, let us assume \textbf{identical priors}: $p(y=+1)=p(y=-1)=\frac{1}{2}$.
       \begin{itemize}
-        \item The Bayes-optimal prediction is $\hat y^*(\vect x)=+1$ if $f^*(\vect x)\ge 0.5$ and $-1$ otherwise.
+        \item The Bayes-optimal prediction is $y^*(\vect x)=+1$ if $f^*(\vect x)\ge 0.5$ and $-1$ otherwise.
         \item The Bayes decision boundary is the set of points for which $f^*(\vect{x}) = 0.5$.
       \end{itemize}
   \end{itemize}
@@ -823,7 +823,7 @@ An important concept for machine learning and pattern recognition.
   \end{itemize}
 
   \begin{displaymath}
-    p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big) =
+    p\big(\hat y(\vect x;\mathcal D) \ne y^*(\vect x)\big) =
      \left\{
        \begin{array}{l l}
          \displaystyle{ \int_{0.5}^\infty p(g(\vect{x}; \mathcal{D})) \, \mathsf{d}g } & \mbox{if~} f^*(\vect{x}) < 0.5 \\
@@ -835,7 +835,7 @@ An important concept for machine learning and pattern recognition.
   \begin{itemize}
     \item Convenient assumption that \textbf{$p(g(\vect{x}; \mathcal{D}))$ is Gaussian}:
       \begin{eqnarray*}
-        \lefteqn{p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big) =} \\
+        \lefteqn{p\big(\hat y(\vect x;\mathcal D) \ne y^*(\vect x)\big) =} \\
         & & \Phi \Bigg[ 
               \underbrace{\sign\left(f^*(\vect x) - \frac{1}{2}\right) \cdot \left(E_{\mathcal{D}} \{ g(\vect x ; {\mathcal{D}}) \} - \frac{1}{2}\right) }_{\mbox{\small \textbf{boundary bias}}}
               \cdot \underbrace{\mathsf{Var}_{\mathcal D}\!\Big[g(\vect x ; {\mathcal{D}})\Big]^{-1/2}}_{\mbox{\small \textbf{variance}}}
@@ -845,7 +845,7 @@ An important concept for machine learning and pattern recognition.
       \begin{displaymath}
         \Phi(t) = \frac{1}{\sqrt{2\pi}} \int_t^\infty e^{-\frac{1}{2} u^2} \, \mathsf{d}u
       \end{displaymath}
-    \item $p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big)$ represents the probability of incorrect estimation of the Bayes decision at $\vect x$.
+    \item $p\big(\hat y(\vect x;\mathcal D) \ne y^*(\vect x)\big)$ represents the probability of incorrect estimation of the Bayes decision at $\vect x$.
   \end{itemize}
  
  \textbf{Conclusions:}

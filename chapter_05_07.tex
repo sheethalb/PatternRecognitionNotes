@@ -34,12 +34,12 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
 
   \textbf{Decision rules:}
   \begin{itemize}
-    \item Bayes-optimal prediction: $\hat y^* = \argmax_y p(y\mid\vect x)$.
+    \item Bayes-optimal prediction: $y^* = \argmax_y p(y\mid\vect x)$.
     \item Naive Bayes prediction (using the conditional-independence assumption):
       \begin{eqnarray*}
         \hat y &=& \argmax\limits_{y} p(y)\prod_{j=1}^d p(x_j \mid y)
       \end{eqnarray*}
-      In general, $\hat y$ is only an approximation of $\hat y^*$.
+      In general, $\hat y$ is only an approximation of $y^*$.
   \end{itemize}
 
 \subsection{An Example: Gaussians}
@@ -171,11 +171,11 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
     \item If all covariance matrices are diagonal matrices, then we get a \textbf{Naive Bayes} classifier.
     \item If all classes share the same (pooled) covariance matrix $\mat\Sigma$ and priors are identical, the optimal (Bayes) decision minimizes the \textbf{Mahalanobis distance} $\sqrt{(\vect x-\vect\mu_y)^T\mat\Sigma^{-1}(\vect x-\vect\mu_y)}$, or equivalently half its square
       \begin{eqnarray*}
-        \hat y^* &=& \argmin_{y} \frac{1}{2} (\vect x-\vect\mu_y)^T\mat\Sigma^{-1}(\vect x-\vect\mu_y)
+        y^* &=& \argmin_{y} \frac{1}{2} (\vect x-\vect\mu_y)^T\mat\Sigma^{-1}(\vect x-\vect\mu_y)
       \end{eqnarray*}
     \item If, in addition, all covariance matrices are the identity matrix, we get the \textbf{nearest class mean} classifier based on the $L_2$-norm:
       \begin{eqnarray*}
-        \hat y^* &=& \argmin_{y} \frac{1}{2} (\vect x-\vect\mu_y)^T(\vect x-\vect\mu_y)
+        y^* &=& \argmin_{y} \frac{1}{2} (\vect x-\vect\mu_y)^T(\vect x-\vect\mu_y)
       \end{eqnarray*}
       The prototype vectors are the mean vectors.
         
@@ -282,7 +282,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
         &=& \argmin_y \left\{ \frac{1}{2}\left\|\phi(\vect x)-\phi(\hat{\vect\mu}_y) \right\|_2^2 - \log p(y) \right\}
   \end{eqnarray*}
   where $\|.\|_2$ denotes the $L_2$ norm and the class means are replaced by their estimates $\hat{\vect\mu}_y$.\\
-  (Plug-in classifier: $\hat y$ approximates the Bayes decision $\hat y^*$.)\\[0.3cm]
+  (Plug-in classifier: $\hat y$ approximates the Bayes decision $y^*$.)\\[0.3cm]
   
   \textbf{Conclusions:}\\
   \begin{itemize}

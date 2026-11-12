@@ -11,14 +11,14 @@ Companion file: `notation_pass_WS2627.patch` — a unified diff of **every** cha
 |---|---|
 | True class label (ground truth) | $y$, training labels $y_i$ |
 | **Predicted** label (output of a classifier) | $\hat y$ |
-| **Optimal** prediction (Bayes decision, argmin of expected loss) | $\hat y^*$ |
+| **Optimal** decision (Bayes decision from the true posterior, argmin of expected loss) | $y^*$ (no hat: not estimated; changed 12 Nov per Andreas's review) |
 | Estimates of parameters | hat: $\hat\theta$, $\hat{\vec\mu}$, $\hat{\mat\Sigma}$ |
 | Hidden / latent variables | $z$ (never $y$) |
 | Training set | $S=\{(\vec x_i,y_i)\}_{i=1}^m$; $m$ samples, $d$ dimension, $\vec x_i$ = $i$-th sample, $x_{i,j}$ = $j$-th component |
 | Label coding | stated at first use in every chapter; one-line reminder wherever it switches ($\{0,1\}$, $\{1,2\}$, $\{-1,+1\}$) |
 | Probabilities / densities | single letter $p(\cdot)$ (pmf for discrete, pdf for continuous); random variable and value not distinguished (convention stated in Ch. 02) |
 | Parameters vs. conditioning | parameters after `;` e.g. $p(\vec x;\vec\theta)$, conditioning after `|` e.g. $p(\vec x|y)$; Gaussians $\mathcal N(\vec x;\vec\mu,\mat\Sigma)$ |
-| Star | optimum only ($\vec x^*$, $p^*$, $\hat y^*$); never ground truth |
+| Star | optimum only ($\vec x^*$, $p^*$, $y^*$); never ground truth |
 
 Chapters that follow a textbook's notation got a frame **"Notation in this Chapter"** (08, 11, 13, 18, 19, 20, 21) instead of mass renaming.
 
@@ -456,7 +456,7 @@ All changes made on 12 Nov were checked against every item of the original revie
 - [x] p. 111 kurtosis "linearity": the review asks for "homogeneity"; the notes had kept "linearity properties". Now "Additivity (independent variables) and homogeneity".
 
 **Open conflict (decision needed)**
-- [ ] $\hat y^*$ for the Bayes decision: the review notes that the hat marks an estimate (pp. 34, 37). The course convention table (Ch. 0 of this list) and review 2 (C01) keep $\hat y^*$. Not changed.
+- [x] $\hat y^*$ for the Bayes decision: the review notes that the hat marks an estimate (pp. 34, 37). **Decided 12 Nov:** $y^*$ without hat (16 places) and the convention table updated; the notation list in Ch. 2 explains $y^*$ (true posterior) vs. $\hat y$ (trained classifier). Open: two Ch. 3 PNG figures (`ch03_densities_logodds_posterior.png`, `ch03_equal_vs_unequal_variance.png`) still print $\hat y^*$.
 
 **Items of the original review that were still open, now fixed**
 - [x] p. 22 double "+" across the line break.
