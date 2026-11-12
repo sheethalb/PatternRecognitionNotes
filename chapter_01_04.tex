@@ -216,7 +216,7 @@ A loss function quantifies the cost associated with making a decision, particula
  \draw[-{Latex},thin] (e.west)--(axis cs:3.3,0.025);
 \end{axis}
 \end{tikzpicture}
-\caption{The Bayes classifier $\hat y^*=\arg\max_y p(y\mid\vect x)$ places the boundary where the curves cross. Moving $x^*$ in either direction only adds shaded area, so no other rule has a lower expected (0,1)-loss.}
+\caption{The Bayes classifier $\hat y^*=\arg\max_y p(y\mid\vect x)$ places the boundary where the curves cross. $x^*$ is the crossing point, i.\,e.\ the decision boundary. Moving it in either direction only adds shaded area, so no other rule has a lower expected (0,1)-loss.}
 \end{figure}
 	
 $l(y',y)$ is the \textbf{loss} of assigning true class $y$ to class $y'$. The $(0,1)$-loss function is defined by
@@ -250,7 +250,7 @@ Using the $(0,1)$-loss, the optimal prediction is
 	
 
     \noindent
-    \vorsicht The loss function is {\bf NOT} convex. Hence optimizing this loss function in practical scenario is very difficult 
+    \vorsicht The $(0,1)$-loss function is {\bf NOT} convex. Hence optimizing this loss function in practical scenario is very difficult 
 
 \begin{figure}[H]\centering
 \begin{tikzpicture}[scale=0.85,transform shape]
@@ -287,7 +287,7 @@ Using the $(0,1)$-loss, the optimal prediction is
 
 \section{Logistic regression}
 
-Logistic regression is the method where the log likelihood function is used to estimate the value. Regression is when the actual value of x or the sample is estimated, while in classification we only want to know if x falls into class A or B. for example in the case of flowers, given the probability distribution of the training set of flowers, in regression we try to estimate the exact shape, color, size of the flower. In classification we only want the model to say if its flower A or B. We do not care about its exact characteristics.\autocite{hastie2009,bishop2006}
+Despite its name, logistic regression is a \textbf{classification} method: it models the posterior $p(y\mid\vect x)$ directly by a logistic (sigmoid) function, and its parameters are estimated by maximizing the log-likelihood (Sec.~\ref{sec:lr_learning}). The name comes from regressing the log-odds on the features. Compare: in \emph{regression} a continuous value is predicted (e.g.\ the exact size of a flower), in \emph{classification} only the class (flower A or B).\autocite{hastie2009,bishop2006}
 
 \subsection{Posteriors and the Logistic Function}
 
@@ -394,7 +394,7 @@ The reason we have transformed into this kind of logistic or sigmoid function, i
       = \frac{1}{\sqrt{\det(2\pi \mat\Sigma_y)}}
         e^{-\frac{1}{2} (\vect{x} - \vect{\mu}_y)^T \mat\Sigma_y^{-1} (\vect{x} - \vect{\mu}_y)}
     \end{eqnarray*}
-    where $\mat\Sigma$ is the covariance matrix of the distribution and $\vect\mu$ is the mean. This convention is followed throughout the document. 
+    where $\mat\Sigma_y$ is the covariance matrix and $\vect\mu_y$ the mean of class $y$. This convention is followed throughout the document. 
  
     Then we can write the posterior of $y=0$ in terms of a logistic function:
  
@@ -540,7 +540,7 @@ The {\em exponential family} is a class of pdfs that can be written in the follo
 
   \begin{itemize}
     \item Posteriors can be rewritten in terms of a logistic function. 
-    \item Given the decision boundary $F(\vect x)=0$, we can write down the posterior $p(y|\vect x)$ right away.( which means it can be derived easily)
+    \item Given the decision boundary $F(\vect x)=0$, we can write down the posterior $p(y|\vect x)$ right away.
     \item With class-specific Gaussian covariances, the decision boundary $F(\vect x)=0$ is quadratic in $\vect x$ (a conic section in $d=2$, and a quadric surface in higher dimensions).
     \item If the Gaussian classes share the same covariance matrix, then $F(\vect x)=0$ is linear in $\vect x$, i.e.\ a hyperplane (a straight line only for $d=2$).
 
@@ -594,7 +594,7 @@ Need understanding of linear algebra for this section.
   \end{groupplot}
   \end{tikzpicture}
 
-  \caption{Lifting in 1D: $F(x)=w_0+w_1x+w_2x^2$ is quadratic in $x$, but linear in the lifted features $\varphi(x)=(x,\,x^2)$.}
+  \caption{Lifting in 1D: $F(x)=\alpha_0+\alpha_1x+\alpha_2x^2$ is quadratic in $x$, but linear in the lifted features $\varphi(x)=(x,\,x^2)$.}
   \label{fig:lifting_1d_quadratic_to_linear}
 \end{figure}
 
@@ -620,7 +620,7 @@ Need understanding of linear algebra for this section.
    \addplot3[cB,only marks,mark=square*,mark size=2pt] coordinates {(1.42,0.1,2.03) (1.44,0.78,2.68) (1.07,0.92,1.99) (0.39,1.54,2.52) (-0.15,1.74,3.05) (-0.81,1.57,3.12) (-1.16,1.27,2.96) (-1.62,0.72,3.14) (-1.42,-0.22,2.06) (-1.44,-0.36,2.2) (-0.89,-1.3,2.48) (-0.51,-1.43,2.3) (0,-1.55,2.4) (0.53,-1.54,2.65) (1.29,-1.2,3.1) (1.68,-0.56,3.14)};
   \end{axis}
   \end{tikzpicture}
-  \caption{Lifting in 2D: with $\varphi(\vect x)=(x_1,\,x_2,\,x_1^2+x_2^2)$, the plane $x_1^2+x_2^2=r^2$ (for a fixed radius $r>0$) cuts the paraboloid in exactly a circle.}
+  \caption{Lifting in 2D: with $\varphi(\vect x)=(x_1,\,x_2,\,x_1^2+x_2^2)$, the plane $z=r^2$ (third coordinate $z=x_1^2+x_2^2$, radius $r>0$) cuts the paraboloid in exactly the circle $x_1^2+x_2^2=r^2$.}
   \label{fig:lifting_2d_circle_to_plane}
 \end{figure}
 
@@ -628,7 +628,7 @@ Need understanding of linear algebra for this section.
     \begin{eqnarray*}
       g(\vect \theta^T \vect x) &=& \frac{1}{1+e^{-\vect \theta^T \vect x}}.
     \end{eqnarray*}
-\subsection{Learning in Logistic Regression}
+\subsection{Learning in Logistic Regression}\label{sec:lr_learning}
 Here we describe how the learning happens during logistic regression. 
 
 \subsubsection{Log-Likelihood Function}
@@ -683,7 +683,7 @@ Before we work on the formulas of the ML-estimator, we rewrite the posteriors us
   
   \subsubsection{Newton-Raphson Iteration}
   
-  In numerical analysis, Newton's method, also known as the Newton–Raphson method,is a root-finding algorithm which produces successively better approximations to the roots (or zeroes) of a real-valued function. it is a method of finding the max values that satisfy a function. Hence used here to find the optimal parameters that maximize the log-likelihood function. \footnote{https://en.wikipedia.org/wiki/Newton\%27s\_method}
+  In numerical analysis, Newton's method, also known as the Newton–Raphson method,is a root-finding algorithm which produces successively better approximations to the roots (zeros) of a real-valued function. Applied to the \emph{gradient} of the log-likelihood, it finds a stationary point; since the log-likelihood is concave, this stationary point is the maximum, i.\,e.\ the ML estimate. \footnote{https://en.wikipedia.org/wiki/Newton\%27s\_method}
  Maximization of the log-likelihood function -
    \begin{itemize}
     \item The log-likelihood function is concave.
@@ -712,7 +712,7 @@ Before we work on the formulas of the ML-estimator, we rewrite the posteriors us
   \end{displaymath}
 \textbf{Extremum:}
   \begin{eqnarray*}
-    f'(x_0 + h)         & = & f'(x_0) + f''(x_0) h ~\stackrel{!}{=}~ 0 \\[.3cm]
+    f'(x_0 + h)         & \approx & f'(x_0) + f''(x_0) h ~\stackrel{!}{=}~ 0 \\[.3cm]
                 \hat{h} & = & - \frac{f'(x_0)}{f''(x_0)} \\[.3cm]
     x_1 = x_0 + \hat{h} & = & x_0 - \frac{f'(x_0)}{f''(x_0)} 
   \end{eqnarray*}
@@ -733,7 +733,6 @@ Before we work on the formulas of the ML-estimator, we rewrite the posteriors us
        &=& \sum_{i=1}^m \left( y_i - g(\vect \theta^T\vect x_i) \right) x_{i,j}
   \end{eqnarray*}
   } 
-   where $x_{i,j}$ is the $j$-th component of the $i$-th training feature vector.
    Finally, we have a quite simple gradient: 
    
   {\small
