@@ -785,14 +785,34 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
 
   \medskip
   \textbf{Soft margin: same dual objective + box constraint.} \\
-  Using the three stationarity conditions from above
-  ($\vect\alpha=\sum_i\lambda_i y_i\vect x_i$, $\sum_i\lambda_i y_i=0$, $\mu-\eta_i-\lambda_i=0$) in the 
-  \emph{soft-margin} Lagrangian, the term $\sum_i(\mu-\eta_i-\lambda_i)\xi_i$ vanishes, so the dual objective is still $\mathcal L_\text{D}(\vect\lambda)$.
-  Only the constraints change:
-  $\lambda_i\ge 0$ and $\eta_i=\mu-\lambda_i\ge 0$ imply the \textbf{box constraint}
+  Start from the soft-margin Lagrangian and sort the terms by primal variable:
+  {\small
+  \begin{align*}
+    \mathcal L(\vect\alpha,\alpha_0,\vect\xi,\vect\lambda,\vect\eta)
+    &= \frac12\vect\alpha^T\vect\alpha + \mu\sum_i\xi_i - \sum_i\eta_i\xi_i - \sum_i\lambda_i\big(y_i(\vect\alpha^T\vect x_i+\alpha_0)-1+\xi_i\big)\\
+    &= \frac12\vect\alpha^T\vect\alpha - \Big(\sum_i\lambda_i y_i\vect x_i\Big)^T\vect\alpha - \alpha_0\sum_i\lambda_i y_i + \sum_i\lambda_i + \sum_i(\mu-\eta_i-\lambda_i)\,\xi_i~.
+  \end{align*}
+  }
+  Now insert the three stationarity conditions (Partial derivatives I--III):
+  \begin{itemize}
+    \item $\vect\alpha=\sum_i\lambda_i y_i\vect x_i$: the first two terms give $\frac12\vect\alpha^T\vect\alpha-\vect\alpha^T\vect\alpha=-\frac12\vect\alpha^T\vect\alpha=-\frac12\sum_i\sum_j\lambda_i\lambda_j y_iy_j\,\vect x_i^T\vect x_j$,
+    \item $\sum_i\lambda_i y_i=0$: the $\alpha_0$ term vanishes,
+    \item $\mu-\eta_i-\lambda_i=0$: every $\xi_i$ term vanishes.
+  \end{itemize}
+  What remains is exactly the hard-margin dual objective
+  \[
+    \mathcal L_\text{D}(\vect\lambda)=-\frac12\sum_i\sum_j\lambda_i\lambda_j y_iy_j\,\vect x_i^T\vect x_j+\sum_i\lambda_i~,
+  \]
+  so $\vect\alpha$, $\alpha_0$, $\vect\xi$ and $\vect\eta$ are eliminated. Only the constraints change. The multipliers of inequality constraints must be non-negative, $\lambda_i\ge0$ and $\eta_i\ge0$. With $\eta_i=\mu-\lambda_i$, the second condition becomes $\mu-\lambda_i\ge0$. Together this is the \textbf{box constraint}:
   \[
     0\le \lambda_i \le \mu,\qquad \sum_i \lambda_i y_i = 0\,.
   \]
+  \textbf{Soft-margin dual problem:}
+  \begin{align*}
+    \text{maximize}\quad & \mathcal L_\text{D}(\vect\lambda)=-\frac12\sum_i\sum_j\lambda_i\lambda_j y_iy_j\,\vect x_i^T\vect x_j+\sum_i\lambda_i\\
+    \text{subject to}\quad & 0\le\lambda_i\le\mu,\quad i=1,\dots,m,\qquad \sum_i\lambda_i y_i=0~.
+  \end{align*}
+  Interpretation: the slack weight $\mu$ caps the influence $\lambda_i$ of each single sample, so outliers cannot dominate the solution (in the hard-margin case $\mu\to\infty$ and the upper bound disappears).
 
   \textbf{Benefits of the dual representation}
   \begin{itemize}
@@ -916,8 +936,9 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
       \end{displaymath}
     \item \textbf{Sigmoid kernel:} 
       \begin{displaymath}
-        k(\vect x, \vect x') =\mbox{tanh}({ \alpha \langle\vect x, \vect x'\rangle + \beta})
+        k(\vect x, \vect x') =\mbox{tanh}({ \kappa \langle\vect x, \vect x'\rangle + c}), \quad \kappa>0
       \end{displaymath}
+      (not positive semidefinite for all $\kappa, c$, so strictly not always a valid kernel; see Chapter \emph{Kernels})
   \end{itemize}
   
 \subsection{Lessons Learned}

@@ -32,11 +32,7 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 ## Open decisions (not yet changed)
 - [ ] $p(\cdot)$ vs. $P(\cdot)$ for probabilities (ask professor); if switched, also revisit random-variable notation ($P(Y=y)$).
-- [ ] Sigmoid kernel uses $\alpha,\beta$ (clash with SVM $\vec\alpha$) — Ch. 14/15.
-- [ ] Ch. 16: $L$ = Laplacian and Lagrangian.
-- [ ] Ch. 18: $Y_i$ (observed) uses the label letter (flagged in notation box only).
 - [ ] Ch. 07: claim "PCA features approx. Gaussian (CLT)" is questionable content.
-- [ ] Ch. 14: soft-margin box constraint $0\le\lambda_i\le\mu$ never derived.
 - [ ] Figure labels were edited in `texfig_c/*.pstex_t`; regenerating figures from `texfig/*.fig` on the lab server would restore the old labels.
 
 ---
@@ -373,6 +369,14 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* already in notes; added the missing step solving for $\beta_m=\frac12\log\frac{1-\mathsf{err}_m}{\mathsf{err}_m}$ and $w_i^{(1)}=1$. Weight update identity checked.
 - [x] Face detection: integral image $ii(u,v)=\sum_{u'\le u,v'\le v}i(u',v')$ (figure `integral_image.pstex_t` $(x,y)\to(u,v)$); feature $\phi_j(\vec x)$, $j$ feature index; note Viola–Jones uses $G_j\in\{0,1\}$ (face iff $\sum\alpha_mG_m\ge\frac12\sum\alpha_m$); TPR and FPR defined.
       *Notes:* done: $II(u,v)=\sum I(u',v')$ (pixel coordinates no longer clash with the window $\vect x$), feature $\phi_j(\vect x)$, note on the Viola–Jones $\{0,1\}$ variant, TPR/FPR named; "3 basis operations" → four look-ups.
+- [x] Sigmoid kernel uses $\alpha,\beta$ (clash with SVM $\vec\alpha$) — Ch. 14/15.
+      *Notes:* decided 12 Nov: $\tanh(\kappa\langle\vect x,\vect x'\rangle+c)$, $\kappa>0$, in SVM II and Kernels, with the note that the sigmoid kernel is not PSD in general; footnote gives the slide and Schölkopf–Smola notation.
+- [x] Ch. 16: $L$ = Laplacian and Lagrangian.
+      *Notes:* decided 12 Nov: Lagrangian $\mathcal L$, graph Laplacian bold $\mat L$; labeled/unlabeled sets $\mathcal L,\mathcal U\to S_l,S_u$ and $\mat J_{\mathcal L}\to\mat J_l$ (else $\mathcal L$ would clash); footnote maps to Belkin et al. (2006) and slide notation.
+- [x] Ch. 18: $Y_i$ (observed) uses the label letter (flagged in notation box only).
+      *Notes:* decided 12 Nov: log-intensity $Y_i\to v_i$, $\vect Y\to\vect v$ (36+11 places); footnote maps to Wells et al. (1996) notation ($Y_i$, $\Gamma_i$).
+- [x] Ch. 14: soft-margin box constraint $0\le\lambda_i\le\mu$ never derived.
+      *Notes:* SVM II: full step-by-step derivation added (Lagrangian sorted by primal variable, three stationarity conditions, $\eta_i=\mu-\lambda_i\ge0$), plus the complete soft-margin dual problem and interpretation.
 
 ## Additional fixes found during the notes pass (not in the list above)
 

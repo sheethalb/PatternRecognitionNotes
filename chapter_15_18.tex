@@ -160,7 +160,7 @@
 		\item Polynomial: $k(\vect x, \vect x') = (\langle\vect x, \vect x'\rangle+1)^q$, \quad $q\in\mathbb{N}$
 		\item Laplacian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_1}{\sigma}}$     
 		\item Gaussian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_2^2}{\sigma^2}}$ (written $e^{-\gamma\|\vect x-\vect x'\|_2^2}$ with $\gamma=1/\sigma^2$ in Chapter \emph{Support Vector Machines II})     
-		\item Sigmoid kernel: $k(\vect x, \vect x') =\mbox{tanh}({ \alpha\langle\vect x, \vect x'\rangle+\beta})$
+		\item Sigmoid kernel: $k(\vect x, \vect x') =\mbox{tanh}({ \kappa\langle\vect x, \vect x'\rangle+c})$, $\kappa>0$. \textbf{Note:} this kernel is \emph{not} positive semidefinite for all choices of $\kappa$ and $c$, so by the lemma above it is not a valid kernel in general (its kernel matrix can have negative eigenvalues); it is still used in practice for suitable parameters.\footnote{The lecture slides write $\tanh(\alpha\langle\vect x,\vect x'\rangle+\beta)$; we use $\kappa,c$ to avoid a clash with the SVM weight vector $\vect\alpha$. Sch\"olkopf and Smola (2002) write $\tanh(\kappa\langle\vect x,\vect x'\rangle+\vartheta)$.}
 	\end{itemize}
 	\textbf {Question:} \\
 	Can we compute for any kernel function $k(\vect x, \vect x')$ a feature mapping $\phi$ such that the kernel function can be written as an inner product?
@@ -430,13 +430,13 @@ Modification of SVMs for different kind of data distribution.
   refer to slides for images. 
  
 \subsection{Learning from Labeled and Unlabeled Data}
-    \textbf{Training data: $\mathcal{S} = \mathcal{L} \cup \mathcal{U}$}
+    \textbf{Training data: $S = S_l \cup S_u$}
     \begin{itemize}
-    \item labeled data: $\mathcal{L} = \{(\vect{x}_i, y_i)\}_{i=1}^{l}$ with true labels $y_i\in\{-1,+1\}$
-    \item unlabeled data: $\mathcal{U} = \{\vect{x}_i\}_{i=l+1}^{m}$, with $m=l+u$
+    \item labeled data: $S_l = \{(\vect{x}_i, y_i)\}_{i=1}^{l}$ with true labels $y_i\in\{-1,+1\}$
+    \item unlabeled data: $S_u = \{\vect{x}_i\}_{i=l+1}^{m}$, with $m=l+u$
   \end{itemize}
 
-    \textbf{Graph Laplacian $\mat{L}$ associated with $\mathcal{S}$:}
+    \textbf{Graph Laplacian $\mat{L}$ associated with $S$:} (bold $\mat L$ is the graph Laplacian; the Lagrangian below is $\mathcal L$)\footnote{Notation in Belkin et al.\ (2006): labeled and unlabeled points are only distinguished by their index ranges ($1,\dots,l$ and $l+1,\dots,l+u$), the expansion coefficients are $\alpha_i$ (here $\beta_i$), the Lagrange multipliers of the margin constraints are $\beta_i$ (here $\lambda_i$), the selection matrix is $\mat J$ (here $\mat J_l$), and the intrinsic term is normalized as $\frac{\gamma_I}{(l+u)^2}\vect f^T\mat L\vect f$ (here the factor is absorbed into $\gamma_\text{I}$). The lecture slides use $\mathcal L,\mathcal U$ for the labeled and unlabeled sets (here $S_l,S_u$) and $L$ for both the Laplacian and the Lagrangian.}
    \begin{itemize}
     \item $\mat{L} = \mat{D} - \mat{W}$
     \item adjacency matrix $\mat{W}$ with edge weights $w_{ij}\ge 0$ (e.\,g.\ heat kernel $w_{ij}=\exp(-\|\vect x_i-\vect x_j\|_2^2/(4t))$)
@@ -519,10 +519,10 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
     \mbox{minimize}   & & \sum_{i=1}^l \xi_i + \gamma_\text{A}\,\vect\beta^T\mat K\vect\beta + \gamma_\text{I}\,\vect\beta^T\mat K\mat L\mat K\vect\beta\\
     \mbox{subject to} & & y_i\Big(\sum_{j=1}^m \beta_j\, k(\vect x_i,\vect x_j)+\beta_0\Big)\ge 1-\xi_i,\quad \xi_i\ge 0,\quad i=1,\dots,l.
   \end{eqnarray*}
-\textbf{Lagrange function $L$} with multipliers $\lambda_i\ge0$ (margin constraints) and $\nu_i\ge0$ (constraints $\xi_i\ge0$):
+\textbf{Lagrange function $\mathcal L$} with multipliers $\lambda_i\ge0$ (margin constraints) and $\nu_i\ge0$ (constraints $\xi_i\ge0$):
   
   \begin{eqnarray*}
-    L(\vect\beta,\beta_0,\vect\xi,\vect\lambda,\vect\nu) 
+    \mathcal L(\vect\beta,\beta_0,\vect\xi,\vect\lambda,\vect\nu) 
     &=& \sum_{i=1}^l \xi_i +
         \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -{} \\
     & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_j \, k(\vect{x}_i,\vect{x}_j) + \beta_0\Bigg) - 1 + \xi_i\right) -{} \\
@@ -535,13 +535,13 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
   \begin{itemize}
     \item Partial derivative w.\,r.\,t. $\beta_0$:
       \begin{displaymath}
-        \frac{\partial L}{\partial \beta_0} \stackrel{!}{=} 0  \quad \Rightarrow \quad
+        \frac{\partial \mathcal L}{\partial \beta_0} \stackrel{!}{=} 0  \quad \Rightarrow \quad
         \sum_{i=1}^l \lambda_i y_i = 0
       \end{displaymath}
        
     \item Partial derivative w.\,r.\,t. $\xi_i$:
       \begin{displaymath}
-        \frac{\partial L}{\partial \xi_i} \stackrel{!}{=} 0  \quad \Rightarrow \quad
+        \frac{\partial \mathcal L}{\partial \xi_i} \stackrel{!}{=} 0  \quad \Rightarrow \quad
         1 - \lambda_i - \nu_i = 0 \quad \Rightarrow \quad
         0 \leq \lambda_i \leq 1
       \end{displaymath}
@@ -551,16 +551,16 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
   
   {\small
     \begin{eqnarray*}
-      L(\vect{\beta}, \vect{\lambda}) 
+      \mathcal L(\vect{\beta}, \vect{\lambda}) 
       &=& \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -{} \\
       & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_j k(\vect{x}_i,\vect{x}_j) + \beta_0\Bigg) - 1 \right) \\
       &=& \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -
-          \vect{\beta}^T \mat{K} \mat{J}_{\mathcal{L}}^T \mat{Y} \vect{\lambda} +
+          \vect{\beta}^T \mat{K} \mat{J}_l^T \mat{Y} \vect{\lambda} +
           \sum_{i=1}^l \lambda_i
     \end{eqnarray*}
   }
   
-  with $\mat{J}_{\mathcal{L}} = [\mat{I}_l~\mat{0}] \in \real^{l\times m}$:
+  with $\mat{J}_l = [\mat{I}_l~\mat{0}] \in \real^{l\times m}$:
   \begin{itemize}
     \item identity matrix $\mat{I}_l \in \real^{l \times l}$
     \item rectangular matrix $\mat{0} \in \real^{l \times u}$ with all entries being 0
@@ -569,13 +569,13 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
 \textbf{Partial derivative w.\,r.\,t. $\vect{\beta}$:}
   
   \begin{eqnarray*}
-    \frac{\partial L}{\partial \vect{\beta}} \stackrel{!}{=} \vect{0} \\
+    \frac{\partial \mathcal L}{\partial \vect{\beta}} \stackrel{!}{=} \vect{0} \\
     &\Rightarrow& 
     (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -
-    \mat{K} \mat{J}_{\mathcal{L}}^T \mat{Y} \vect{\lambda} = \vect{0}   \\
+    \mat{K} \mat{J}_l^T \mat{Y} \vect{\lambda} = \vect{0}   \\
     &\Rightarrow& \text{(assuming $\mat K$ is invertible)} \\
     \vect{\beta} = (2 \gamma_\text{A} \mat{I}_m + 2 \gamma_\text{I} \mat{L}\mat{K})^{-1} 
-    \mat{J}_{\mathcal{L}}^T \mat{Y} \vect{\lambda}
+    \mat{J}_l^T \mat{Y} \vect{\lambda}
   \end{eqnarray*}
    
     \textbf{Note:} direct relationship between parameters $\vect{\beta}$ and Lagrange multipliers $\vect{\lambda}$\\
@@ -587,9 +587,9 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
    where
   {\small
   \begin{displaymath}
-    \mat{Q} = \mat{Y} \mat{J}_{\mathcal{L}} \mat{K}
+    \mat{Q} = \mat{Y} \mat{J}_l \mat{K}
     (2 \gamma_\text{A} \mat{I}_m + 2 \gamma_\text{I} \mat{L}\mat{K})^{-1}
-    \mat{J}_{\mathcal{L}}^T \mat{Y}.
+    \mat{J}_l^T \mat{Y}.
   \end{displaymath}
   }
  This is not to be memorized for the exam. 
@@ -1165,10 +1165,10 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
 \begin{itemize}
   \item Voxels are indexed by $i\in\{0,\dots,n-1\}$.
   \item $\tilde X_i$: (unknown) bias-free intensity of voxel $i$; $X_i$: observed intensity.
-  \item $Y_i:=\log X_i$: log-transformed observed intensity (note: $Y$ is \emph{not} a class label here).
+  \item $v_i:=\log X_i$: log-transformed observed intensity of voxel $i$ (voxel value)\footnote{Notation in the original paper by Wells et al.\ (1996) and in the lecture slides: the log-intensity is $Y_i$ (vector $\vect Y$) and the tissue class is $\Gamma_i$. We write $v_i$ and $z_i$ because $y$ denotes class labels and $z$ hidden variables throughout these notes; all other symbols ($\vect\beta$, $W_{ik}$, $\overline{\vect R}$, $\mat H$, $\mu_k$, $\psi_k$) follow the paper.}; $\vect v=(v_0,\dots,v_{n-1})^T$.
   \item $\beta_i:=\log B_i$: log-bias field; $\vect\beta=(\beta_0,\dots,\beta_{n-1})^T$ with Gaussian prior $p(\vect\beta)=\mathcal N(\vect\beta;\vect0,\mat\Psi_{\vect\beta})$.
   \item $z_i\in\{1,\dots,K\}$: hidden tissue class at voxel $i$, with prior $\pi_k=p(z_i=k)$.
-  \item Tissue parameters $\mu_k,\psi_k$ are assumed known; $W_{ik}$ denotes the posterior tissue probability $p(z_i=k\mid Y_i,\beta_i)$.
+  \item Tissue parameters $\mu_k,\psi_k$ are assumed known; $W_{ik}$ denotes the posterior tissue probability $p(z_i=k\mid v_i,\beta_i)$.
 \end{itemize}
 }
 
@@ -1217,7 +1217,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
        
     \item Using a log-transform on the intensities yields an additive bias field model:
       \begin{displaymath}
-        Y_i = \log X_i = \log \tilde{X}_i + \beta_i ~,~\mbox{with}~ \beta_i = \log B_i
+        v_i = \log X_i = \log \tilde{X}_i + \beta_i ~,~\mbox{with}~ \beta_i = \log B_i
       \end{displaymath}
        
     \item The bias field is then:
@@ -1243,7 +1243,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
   \textbf{Variables:}
 
   \begin{eqnarray*}
-    Y_i      &\phantom{=}& \mbox{log-transformed observed intensity at voxel $i$} \\
+    v_i      &\phantom{=}& \mbox{log-transformed observed intensity at voxel $i$} \\
     z_i      &\phantom{=}& \mbox{hidden tissue class of voxel $i$, with $z_i\in\{1,\dots,K\}$} \\
     \mu_k    &\phantom{=}& \mbox{mean intensity for tissue class $k$} \\
     \psi_k   &\phantom{=}& \mbox{variance of tissue class $k$} \\
@@ -1251,20 +1251,20 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
   \end{eqnarray*}
 
   The intensities are assumed to be scalar values, therefore $\mu_k, \psi_k \in \real$.
-  Assuming \textbf{conditional independence given $\vect\beta$}, the density for the entire image $\vect Y = \left(Y_0, Y_1, \ldots, Y_{n-1} \right)^T$ is:
+  Assuming \textbf{conditional independence given $\vect\beta$}, the density for the entire image $\vect v = \left(v_0, v_1, \ldots, v_{n-1} \right)^T$ is:
   
   \begin{displaymath}
-    p(\vect Y \mid \vect \beta) = \prod_i p(Y_i \mid \beta_i)
+    p(\vect v \mid \vect \beta) = \prod_i p(v_i \mid \beta_i)
   \end{displaymath}
   The density of the observations is modeled as a \textbf{Gaussian mixture} over the tissue classes:
   \begin{displaymath}
-    p(Y_i \mid \beta_i) = \sum_{k=1}^K p(Y_i, z_i=k \mid \beta_i)
-    = \sum_{k=1}^K \pi_k \, p(Y_i \mid z_i=k, \beta_i)
+    p(v_i \mid \beta_i) = \sum_{k=1}^K p(v_i, z_i=k \mid \beta_i)
+    = \sum_{k=1}^K \pi_k \, p(v_i \mid z_i=k, \beta_i)
   \end{displaymath}
 
   with
   \begin{displaymath}
-    p(Y_i \mid z_i=k, \beta_i) = {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k)
+    p(v_i \mid z_i=k, \beta_i) = {\mathcal N}(v_i ; \mu_k + \beta_i, \psi_k)
   \end{displaymath}
   \textbf{Observations so far:}
 
@@ -1275,61 +1275,61 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
   \end{itemize}
    Using   \textbf{Bayes rule} to derive an objective function for the bias field:
   \begin{displaymath}
-    p(\vect \beta | \vect Y) = \frac{p(\vect Y | \vect \beta) \, p(\vect \beta)} {p(\vect Y)}
+    p(\vect \beta | \vect v) = \frac{p(\vect v | \vect \beta) \, p(\vect \beta)} {p(\vect v)}
   \end{displaymath}
  
   Applying the   \textbf{MAP principle} yields an estimator for the bias field:
   \begin{eqnarray*}
-    \hat{\vect \beta} &=& \argmax_{\vect \beta} p(\vect \beta | \vect Y) \\   
-                     &=& \argmax_{\vect \beta} \log p(\vect \beta | \vect Y) \\   
-                     &=& \argmax_{\vect \beta} \big( \log p(\vect Y | \vect \beta) + \log p(\vect \beta) \big)
+    \hat{\vect \beta} &=& \argmax_{\vect \beta} p(\vect \beta | \vect v) \\   
+                     &=& \argmax_{\vect \beta} \log p(\vect \beta | \vect v) \\   
+                     &=& \argmax_{\vect \beta} \big( \log p(\vect v | \vect \beta) + \log p(\vect \beta) \big)
   \end{eqnarray*}
      
 At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
 
   \begin{eqnarray*}
-    \frac{\partial}{\partial \beta_i} \log p(\vect \beta | \vect Y) 
-    &=& \frac{\partial}{\partial \beta_i} \left( \log p(\vect Y | \vect \beta) + \log p(\vect \beta) \right) \\   
-    &=& \frac{\partial}{\partial \beta_i} \left( \sum_j \log p(Y_j | \beta_j) + \log p(\vect \beta) \right) \\   
-    &=& \frac{\frac{\partial}{\partial \beta_i} p(Y_i | \beta_i)}{p(Y_i | \beta_i)} + \frac{\frac{\partial}{\partial \beta_i} p(\vect \beta)}{p(\vect \beta)} \\
+    \frac{\partial}{\partial \beta_i} \log p(\vect \beta | \vect v) 
+    &=& \frac{\partial}{\partial \beta_i} \left( \log p(\vect v | \vect \beta) + \log p(\vect \beta) \right) \\   
+    &=& \frac{\partial}{\partial \beta_i} \left( \sum_j \log p(v_j | \beta_j) + \log p(\vect \beta) \right) \\   
+    &=& \frac{\frac{\partial}{\partial \beta_i} p(v_i | \beta_i)}{p(v_i | \beta_i)} + \frac{\frac{\partial}{\partial \beta_i} p(\vect \beta)}{p(\vect \beta)} \\
     &\stackrel{!}{=}& 0.
   \end{eqnarray*}
   {\footnotesize
   \begin{eqnarray*}
-    \frac{\frac{\partial}{\partial \beta_i} p(Y_i | \beta_i)}{p(Y_i | \beta_i)} 
+    \frac{\frac{\partial}{\partial \beta_i} p(v_i | \beta_i)}{p(v_i | \beta_i)} 
     &=& \underbrace{
-          \frac{\sum_{k=1}^K \pi_k \, \frac{\partial}{\partial \beta_i} {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k) }
-               {\sum_{l=1}^K \pi_l \, {\mathcal N}(Y_i ; \mu_l + \beta_i, \psi_l)}
+          \frac{\sum_{k=1}^K \pi_k \, \frac{\partial}{\partial \beta_i} {\mathcal N}(v_i ; \mu_k + \beta_i, \psi_k) }
+               {\sum_{l=1}^K \pi_l \, {\mathcal N}(v_i ; \mu_l + \beta_i, \psi_l)}
         }_{\mbox{\small substitute GMM}}   \\  
-    \noalign{\hbox{\footnotesize using $\frac{\partial}{\partial\beta_i}\mathcal N(Y_i;\mu_k+\beta_i,\psi_k)=\mathcal N(Y_i;\mu_k+\beta_i,\psi_k)\,\psi_k^{-1}(Y_i-\mu_k-\beta_i)$}}
-    &=& \frac{\sum_{k=1}^K \pi_k \, {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k) \, \psi_k^{-1} \, (Y_i - \mu_k - \beta_i)}
-             {\sum_{l=1}^K \pi_l \, {\mathcal N}(Y_i ; \mu_l + \beta_i, \psi_l) }  \\    
-    &=& \sum_{k=1}^K W_{ik} \left( \psi_k^{-1} (Y_i - \mu_k - \beta_i) \right)
+    \noalign{\hbox{\footnotesize using $\frac{\partial}{\partial\beta_i}\mathcal N(v_i;\mu_k+\beta_i,\psi_k)=\mathcal N(v_i;\mu_k+\beta_i,\psi_k)\,\psi_k^{-1}(v_i-\mu_k-\beta_i)$}}
+    &=& \frac{\sum_{k=1}^K \pi_k \, {\mathcal N}(v_i ; \mu_k + \beta_i, \psi_k) \, \psi_k^{-1} \, (v_i - \mu_k - \beta_i)}
+             {\sum_{l=1}^K \pi_l \, {\mathcal N}(v_i ; \mu_l + \beta_i, \psi_l) }  \\    
+    &=& \sum_{k=1}^K W_{ik} \left( \psi_k^{-1} (v_i - \mu_k - \beta_i) \right)
   \end{eqnarray*}
   }
  Weight for voxel $i$ and tissue class $k$:
   {\footnotesize
   \begin{eqnarray*}
     W_{ik} := 
-      \frac{\pi_k \cdot \mathcal{N}(Y_i ; \mu_k + \beta_i, \psi_k) }
-           {\sum_{l=1}^K \pi_l \cdot \mathcal{N}(Y_i ; \mu_l + \beta_i, \psi_l)} 
+      \frac{\pi_k \cdot \mathcal{N}(v_i ; \mu_k + \beta_i, \psi_k) }
+           {\sum_{l=1}^K \pi_l \cdot \mathcal{N}(v_i ; \mu_l + \beta_i, \psi_l)} 
   \end{eqnarray*}
   }
  Rewriting the equation:
 
   {\footnotesize
   \begin{eqnarray*}
-    \frac{\frac{\partial}{\partial \beta_i} p(Y_i \mid \beta_i)}
-         {p(Y_i \mid \beta_i)} 
-    &=& \sum_{k=1}^K W_{ik} \left( \psi_k^{-1} (Y_i - \mu_k - \beta_i) \right) \\   
-    &=& \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, (Y_i - \mu_k) - \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, \beta_i \\   
+    \frac{\frac{\partial}{\partial \beta_i} p(v_i \mid \beta_i)}
+         {p(v_i \mid \beta_i)} 
+    &=& \sum_{k=1}^K W_{ik} \left( \psi_k^{-1} (v_i - \mu_k - \beta_i) \right) \\   
+    &=& \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, (v_i - \mu_k) - \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, \beta_i \\   
     &=& \overline{R_i} - \overline{\psi^{-1}}_i ~\beta_i
   \end{eqnarray*}
   }
   Mean residual:
   {\footnotesize
   \begin{displaymath}
-    \overline{R_i} := \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, (Y_i - \mu_k)
+    \overline{R_i} := \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, (v_i - \mu_k)
   \end{displaymath}
   }
   Mean inverse variance:
@@ -1343,7 +1343,7 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
 
   {\small
   \begin{eqnarray*}
-    \nabla_{\vect \beta} \log p(\vect \beta \mid \vect Y) 
+    \nabla_{\vect \beta} \log p(\vect \beta \mid \vect v) 
       &=& \overline{\vect R} - \mat D\, \vect \beta + \frac{\nabla_{\vect \beta} p(\vect \beta)}{p(\vect \beta)} \\
       \noalign{\hbox{\footnotesize with the zero-mean Gaussian prior $p(\vect\beta)=\mathcal N(\vect\beta;\vect 0,\mat\Psi_{\vect\beta})$: $\;\frac{\nabla_{\vect\beta}\,p(\vect\beta)}{p(\vect\beta)}=\nabla_{\vect\beta}\log p(\vect\beta)=-\mat\Psi_{\vect\beta}^{-1}\vect\beta$}}
       &=& \overline{\vect R} - \mat D\, \vect \beta - \mat{\Psi}_{\vect{\beta}}^{-1} \vect \beta \\
@@ -1379,8 +1379,8 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
 
   \begin{eqnarray}
     W_{ik}^{(j)}
-    &\leftarrow& \frac{\pi_k \cdot \mathcal{N}(Y_i ; \mu_k + \hat\beta_i^{(j)}, \psi_k)}
-                      {\sum_{l=1}^K \pi_l \cdot \mathcal{N} (Y_i ; \mu_l + \hat\beta_i^{(j)}, \psi_l)} \label{eq:E}    \\
+    &\leftarrow& \frac{\pi_k \cdot \mathcal{N}(v_i ; \mu_k + \hat\beta_i^{(j)}, \psi_k)}
+                      {\sum_{l=1}^K \pi_l \cdot \mathcal{N} (v_i ; \mu_l + \hat\beta_i^{(j)}, \psi_l)} \label{eq:E}    \\
     \hat{\vect \beta}^{(j+1)}
     &\leftarrow& \mat{H}^{(j)} \, \overline{\vect R}^{(j)} \label{eq:M}
   \end{eqnarray}
