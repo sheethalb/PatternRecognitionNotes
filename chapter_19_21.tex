@@ -1,0 +1,1389 @@
+% !TeX root = main.tex
+\def\kurt{\mathop{\mathsf{kurt}}}
+\def\MI{\mathop{\mathsf{MI}}}
+\def\KL{\mathop{\mathsf{D}_{\mathsf{KL}}}}
+
+\section{Independent Component Analysis}\autocite{hyvarinen2000,cover2006}
+
+\textbf{Notation in this Chapter}\\
+{\small
+\begin{itemize}
+  \item $\vect x$ is a random vector of $n$ sensor measurements (here $x_i$ is the $i$-th \emph{component}, not the $i$-th training sample).
+  \item $\vect s=(s_1,\dots,s_m)^T$ are the (latent) source signals ($m$ sources; later we assume $m=n$).
+  \item $\mat A$ mixing matrix, $\mat W$ unmixing matrix.
+  \item Observed realizations: $\vect x(1),\dots,\vect x(T)$.
+  \item $E\{\cdot\}$ denotes expectation (often approximated by the sample mean over $t=1,\dots,T$).
+  \item $\vect{\tilde x}$: whitened (decorrelated) version of $\vect x$.
+  \item $\hat{\vect s}$: estimated sources.
+  \item $y=\vect w^T\vect x$: a projection (scalar), \emph{not} a class label.
+\end{itemize}
+}
+
+\subsection{Motivation - Cocktail-Party Problem}
+Example
+  
+  Imagine the following situation:
+    \begin{itemize}
+      \item You have two microphones in a room at different locations.
+      \item The microphones record time signals $x_1(t), x_2(t)$.            
+      \item Each recorded signal is a weighted sum of two speakers $s_1(t), s_2(t)$:             
+    \end{itemize}
+ \begin{eqnarray*}
+      x_1(t) &=& a_{11} s_1(t) + a_{12} s_2(t) \\
+      x_2(t) &=& a_{21} s_1(t) + a_{22} s_2(t)
+    \end{eqnarray*}
+
+    Parameters $a_{ij}$ depend on the distance of the microphones to the speakers.For simplicity, we assume just a very simple mixing model without any time delays or other factors.  
+
+   \textbf {Observations:}
+    \begin{itemize}
+      \item If we knew the $a_{ij}$, the problem of reconstructing $s_i$ is to solve the linear equations by classical methods.             
+      \item \textbf{But:} We do not know the $a_{ij}$! Thus, the problem is considerably more difficult!
+    \end{itemize}
+  
+  The principle for solving the cocktail-party problem has a lot of 
+ \textbf {other interesting applications}: \\
+
+  \begin{itemize}
+    \item speech signal recovery: telecommunications         
+    \item recovery of images from mixed signals: MRI, fMRI         
+    \item electrical recordings of brain activity:
+      \begin{itemize}
+        \item EEG (electroencephalography)
+        \item MEG (magnetoencephalography)         
+      \end{itemize}
+    \item feature extraction         
+    \item multispectral image analysis
+  \end{itemize}
+ Common Framework
+
+ \textbf {Idea:}
+  \begin{itemize}
+    \item Use some information about the statistical properties of the signals $s_i(t)$ to estimate $a_{ij}$.
+  \end{itemize}
+         
+  Surprisingly, it turns out that the only statistical assumption that we have to make is that the $s_i(t)$ are \textit{statistically independent} at each time point $t$.
+ Formulation in a unified mathematical framework (H\'{e}rault and Jutten, 1984-1991):
+  \begin{center}
+   \textbf {ICA -- Independent Component Analysis}
+  \end{center}
+
+\subsection{Latent Variables and Factor Analysis}
+
+Latent means hidden. 
+ \textbf {Statistical latent variables model:}
+  \begin{itemize}
+    \item Rewrite the time series into $n$ linear mixture observations $x_1, \ldots, x_n$            
+    \item Each mixture $x_i$ as well as each component $s_j$ are random variables
+  \end{itemize}
+  \begin{displaymath}
+    x_i = \sum_{j=1}^m a_{ij} s_j ~, \qquad i = 1,\ldots,n
+  \end{displaymath}
+
+  In matrix notation:
+  \begin{displaymath}
+    \vect x = \mat A \vect s
+  \end{displaymath}
+
+  where
+  \begin{itemize}
+    \item $\mat A$ is a constant \textit{mixing} matrix
+    \item $s_j$ are latent random variables (independent components)
+    \item both $\mat A$ and $s_j$ have to be estimated based on observations $x_i$
+  \end{itemize}
+         
+ \subsubsection {First Approach: Decorrelation}
+
+  Assuming $E\{\vect x\} = \vect{0}$, we already know a latent variable representation \\
+  (see chapter \emph{Discriminant Analysis I}).
+
+  From:
+  \begin{displaymath}
+      E\{ \vect x \vect x^T \} = \mat \Sigma = \mat U \mat D \mat U^T
+  \end{displaymath}
+  and
+  \begin{displaymath}
+    \mat{\Sigma}^{-1} 
+    = \mat{U}\mat{D}^{-1}\mat{U}^T
+    = (\mat{U}\mat{D}^{-\frac{1}{2}})\cdot \mat{I} \cdot(\mat{U}\mat{D}^{-\frac{1}{2}})^T
+  \end{displaymath}
+
+  we compute a mapping:
+  \begin{displaymath}
+    \vect{\tilde{x}} = \mat D^{-\frac{1}{2}} \mat U^T \vect x
+  \end{displaymath}
+ 
+  For zero-mean vectors, the mapping:
+  \begin{displaymath}
+    \vect{\tilde{x}} = \mat D^{-\frac{1}{2}} \mat U^T \vect x
+  \end{displaymath}
+  is called\textbf   {\textit{Whitening Transform}}. It has some interesting properties:
+  \begin{itemize}
+    \item The mapped random variables $\tilde{x}_i$ are uncorrelated.            
+    \item $\vect{\tilde{x}}$ has unit variance:
+  \end{itemize}
+
+  \begin{eqnarray*}
+     E\{ \vect{\tilde{x}} \vect{\tilde{x}}^T \} 
+     &=& E\left\{ \Big( \mat D^{-\frac{1}{2}} \mat U^T \vect x \Big) \Big( \mat D^{-\frac{1}{2}} \mat U^T \vect x \Big)^T \right\}             
+     = E\left\{ \mat D^{-\frac{1}{2}} \mat U^T \vect x \vect x^T \mat U \mat D^{-\frac{1}{2}} \right\} \\             
+     &=& \mat D^{-\frac{1}{2}} \mat U^T \mat \Sigma \mat U \mat D^{-\frac{1}{2}} = \mat D^{-\frac{1}{2}} \mat U^T \cdot \mat U \mat D \mat U^T \cdot \mat U \mat D^{-\frac{1}{2}} \\             
+     &=& \mat D^{-\frac{1}{2}} \mat D \mat D^{-\frac{1}{2}}             
+     = \mat I
+  \end{eqnarray*}
+ 
+  We could interpret the mapped random variable $\vect{\tilde{x}}$ as an estimate of the latent variable model:
+  \begin{displaymath}
+    \hat{\vect s} = \vect{\tilde x}
+  \end{displaymath}
+  But this would give poor results.                      
+
+ \textbf {Problem:} The whitening transform is not unique!              
+  Consider for example an arbitrary orthogonal matrix $\mat R \in \real^{n \times n}$:
+%
+  \small
+  \begin{eqnarray*}
+    \vect x' 
+    &=& \mat R \, \vect{\tilde x} = \mat R \, \mat D^{-\frac{1}{2}} \mat U^T \vect x \\[.2cm]
+    E\{ \vect x' \, \vect x'^T \}
+    &=& E\left\{ \mat R \left(\mat D^{-\frac{1}{2}} \mat U^T \vect x \right) \left( \mat D^{-\frac{1}{2}} \mat U^T \vect x \right)^T \mat R^T \right\} \\             
+    &=& \mat R \mat I \mat R^T \\             
+    &=& \mat I
+  \end{eqnarray*}
+         
+\subsubsection{Second Approach: Independence}
+
+ \textbf{Observations:}
+  
+  \begin{itemize}
+    \item Lack of correlation determines the second-degree cross-moments (covariances) of a multi-variate distribution.
+    \item Statistical independence is stronger, as it determines all of the cross-moments. 
+  \end{itemize}
+
+  Given 2 statistically independent random variables $y_1, y_2$ and 2 functions $h_1, h_2$:
+  \footnotesize
+  \begin{eqnarray*}
+    E\{ h_1(y_1) \, h_2(y_2) \}
+    &=& \iint h_1(y_1) \, h_2(y_2) \, p(y_1, y_2) \, \mathsf{d}y_1 \, \mathsf{d}y_2 \\             
+    &=& \iint h_1(y_1) \, p(y_1) \, h_2(y_2) \, p(y_2) \, \mathsf{d}y_1 \, \mathsf{d}y_2 \\            
+    &=& \int h_1(y_1) \, p(y_1) \, \mathsf{d}y_1 \int h_2(y_2) \, p(y_2) \, \mathsf{d}y_2 \\             
+    &=& E\{ h_1(y_1) \} \, E\{ h_2(y_2) \}
+  \end{eqnarray*}
+   
+  These extra moment conditions allow us to identify the elements of $\mat A$ uniquely. 
+
+ \textbf {Case of Gaussian distribution:}
+  
+  \begin{itemize}
+    \item Gaussian distribution is determined by its second moments alone.
+    \item Any Gaussian independent components can be determined only \\
+      up to a rotation
+  \end{itemize}
+  \vspace{0.5\baselineskip}
+
+  Therefore, we assume that the $s_i$ are \textbf{independent} and \textbf{non-Gaussian}.
+
+\subsubsection{Whitening Transform}
+
+  The whitening transform is usually done before ICA as a pre-processing step:
+
+  \begin{itemize}
+    \item Mixing matrix $\mat A$ has $n^2$ degrees of freedom.
+    \item Whitening transforms the mixing matrix $\mat A$ into $\mat{\widetilde A}$:
+      \begin{displaymath}
+        \widetilde{\vect x} = \mat D^{-\frac{1}{2}} \, \mat U^T \, \mat A \, \vect s = \mat{\widetilde A}\, \vect s
+      \end{displaymath}
+    \item The new mixing matrix is \textbf{orthogonal} (assuming unit-variance sources $E\{\vect s\vect s^T\}=\mat I$):
+      \begin{displaymath}
+        E\big\{ \widetilde{\vect x}\,\widetilde{\vect x}^T \big\} = \mat{\widetilde A}\, E\big\{\vect s\, \vect s^T\big\} \, \mat{\widetilde A}^T = \mat I
+      \end{displaymath}
+    \item $\mat{\widetilde A}$ is orthogonal and has \textbf{$n (n-1) / 2$ degrees of freedom}.
+  \end{itemize}
+
+  Thus, applying the whitening transform solves roughly half of the problem.
+
+\subsection{Illustration of ICA}
+
+  Consider two independent components with the following uniform distributions:
+
+  \begin{displaymath}
+    p(s_i) = \begin{cases}
+      \frac{1}{2\sqrt{3}} \quad &, ~\mbox{if}~|s_i| \leq \sqrt{3} \\
+      0 \quad &, ~\mbox{otherwise}
+    \end{cases}
+  \end{displaymath}
+
+  \textbf{Properties of the joint pdf:}
+  \begin{itemize}
+    \item signal components are independent.
+    \item joint pdf is uniform on a square.
+    \item zero mean.
+    \item variance is equal to one.
+  \end{itemize}
+
+  The two independent components are mixed with the matrix:
+  \begin{displaymath}
+    \mat A = \left(
+      \begin{array}{cc}
+        2 & 3 \\
+        2 & 1
+      \end{array}
+    \right),
+    \quad \mbox{which results in}~ \vect x = \mat A \, \vect s ~.
+  \end{displaymath}
+
+  \textbf{Properties of the mixed signal:}
+  \begin{itemize}
+    \item joint pdf of mixed signals is uniform on a parallelogram.
+  \end{itemize}
+
+  More important: $x_1, x_2$ are not independent any more.
+
+  \textbf{Intuitive way of estimating $\mat A$:}
+  \begin{itemize}
+    \item Edges of the parallelogram are in the directions of the columns of $\mat A$.
+    \item In principle, we could first estimate the joint pdf of $x_1, x_2$.
+    \item If we locate the edges of the joint pdf, we can estimate $\mat A$.
+  \end{itemize}
+
+  \textbf{But:}
+  \begin{itemize}
+    \item Computationally quite expensive.
+    \item This principle works only with \textbf{exactly uniform} distributions.
+  \end{itemize}
+
+  Effect of the whitening transform applied to the data.
+
+  \textbf{Properties of the whitened observations:}
+  \begin{itemize}
+    \item Joint pdf of $\widetilde{\vect x}$ is uniform on a square.
+    \item Components are determined except for rotation.
+    \item Problem of recovering $\mat{\widetilde A}$ is much simpler.
+  \end{itemize}
+  
+ 
+\subsection{Properties of ICA}
+ \textbf {Assumptions for the ICA model:}
+  \begin{itemize}
+    \item We assume that the $s_j$ are mutually independent.            
+    \item The $s_j$ have to be non-Gaussian in order to determine them from the $x_i$.      \item For simplicity, we assume that $\mat A$ is square.
+  \end{itemize}
+ \textbf {Ambiguities of the ICA model:}
+  \begin{itemize} 
+    \item The $s_j$ are defined only up to a multiplicative constant.
+    \item The $s_j$ are not ordered.
+  \end{itemize}
+ Writing the ICA model in terms of the colums of $\mat A$:
+  \begin{displaymath}
+    \vect x = \sum_{i=1}^n \vect a_i s_i            
+  \end{displaymath}
+  
+  \begin{itemize}
+    \item Any\textbf        {scalar multiplier} for $s_i$ can be eliminated by scaling $\vect a_i$ appropriately.            
+    \item The matrix $\mat A$ can be adapted to restrict the $s_i$ to have\textbf        {unit variance}.            
+    \item This still leaves the ambiguity of the\textbf        {sign}: \\
+      multiplying $s_i$ by $\pm 1$ does not affect the model.            
+    \item This ambiguity is usually\textbf        {insignificant} in most applications.
+  \end{itemize}
+ 
+ \textbf        {Ambiguity of the ordering:}
+  \begin{displaymath}
+    \vect x = \sum_{i=1}^n \vect a_i s_i
+  \end{displaymath}
+  \begin{itemize}
+    \item As both $\vect s$ and $\mat A$ are unknown we can change the order of the summation.            
+    \item Formalization using a\textbf        {permutation matrix $\mat P$}:
+      \begin{displaymath}
+        \vect x = \underbrace{\mat A \mat P}_{\mat A^{\ast}} \underbrace{\mat P^{-1} \vect s}_{\vect s^{\ast}}            
+      \end{displaymath}
+    \item $\mat A^{\ast}$ is just a new mixing matrix to be solved.
+  \end{itemize}
+ 
+\subsection{Basic Principle of ICA}
+
+  So far, if we know $\mat A$, we could compute its inverse $\mat A^{-1}$ to obtain the independent components. Consider a linear combination of $x_i$ with a weight vector $\vect w$:
+  \begin{displaymath}
+    y = \vect w^T \vect x
+  \end{displaymath}
+  \vspace{0.5\baselineskip}
+
+  Clearly, $y$ equals one of the independent components if $\vect w$ is one row of $\mat A^{-1}$.Change in variables:
+
+  \begin{displaymath}
+    \vect z = \mat A^T \vect w
+  \end{displaymath}
+  
+  Applied to the linear combination:
+ \begin{displaymath}
+    y = \vect w^T \vect x = \vect w^T \mat A \vect s = \vect z^T \vect s
+  \end{displaymath}
+ 
+ \textbf{Result from the Central Limit Theorem:}
+
+  \begin{itemize}
+    \item The sum of a number of independent random variables tends toward a normal distribution.
+    \item $\vect z^T \vect s$ is \textit{typically} more Gaussian than any of the $s_i$.
+    \item $\vect z^T \vect s$ is \textit{least Gaussian} when it equals one of the $s_i$.
+  \end{itemize}
+ 
+ \textbf {Key principle of ICA:}         
+
+  Maximizing the non-Gaussianity of $\vect w^T \vect x$ results in the independent components!\\[0.3cm]
+
+ \textbf {Reasons for the importance of the non-Gaussianity:}             
+ \begin{itemize}
+    \item In case of Gaussian random variables, the ICA model can only be estimated up to an orthogonal transformation.                 
+     \textbf{Note:}\\
+      \quad If just one of the components is Gaussian, ICA still works.                             
+    \item The Gaussian is the \textit{most random} distribution within the family of pdfs with given mean and variance.             
+    \item Therefore, it is the least informative pdf with respect to the underlying data.
+  \end{itemize}
+  
+  Distributions that have the \textit{least resemblance} to the Gaussian reveal more structure associated with the data.
+ 
+\subsubsection{Importance of Non-Gaussianity}
+  The \textit{randomness} can be measured using the concept of entropy from Shannon's information theory:
+  \begin{itemize}
+    \item Entropy is a measure of the uncertainty of an event, or the randomness of a measure.
+  \end{itemize}
+  \vspace{0.5\baselineskip}
+
+\subsubsection{Differential Entropy}
+  
+  The \textit{differential entropy} of a continuous random variable $X$ with density $p(x)$ is defined as
+    \begin{displaymath}
+      H(x) = - \int p(x) \log p(x) \,\mathsf{d}x
+    \end{displaymath}
+  
+\textbf{Theorem:}\\
+    The Gaussian maximizes the entropy over all distributions with the same mean and the same covariance.\\
+ \textbf {Proof:}   \\         
+
+  \begin{itemize}
+    \item Let $x$ be the random variable, $p(x)$ the pdf that has the highest randomness. \item Rewrite moments $M_i$ equations using a set of polynomials $\{ r_i(x) \}$:
+      \begin{displaymath}
+        \int p(x) r_i(x) \,\mathsf{d}x = M_i ~,~\mbox{where}~M_i~\mbox{are called moments}. \end{displaymath} 
+    \item Using $r_0(x) \equiv 1$, $M_0 = 1$ constrains $p(x)$ to be a pdf.
+  \end{itemize}
+ 
+ \textbf{Lagrangian functional for the maximum entropy problem:}
+
+  {\small
+  \begin{displaymath}
+    \argmin_{p(x)} \mathcal L(p) \equiv 
+    \argmin_{p(x)} \int p(x) \log p(x) \,\mathsf{d}x - \sum_{i = 0}^N \lambda_i \left( \int p(x) r_i(x) \,\mathsf{d}x - M_i \right)
+  \end{displaymath}
+  }
+  Taking the functional derivative with respect to $p(x)$ (G\^{a}teaux derivative) and setting it to zero:
+%
+  {\small
+  \begin{displaymath}
+    \frac{\delta J}{\delta p} = \log p(x) + 1 - \sum_{i=0}^N \lambda_i r_i(x) \stackrel{!}{=} 0
+  \end{displaymath}
+  }
+              
+%  
+  yields the family of exponential distributions:
+%
+  {\small
+  \begin{displaymath}
+    p(x) = \exp \left( -1 + \sum_{i=0}^N \lambda_i r_i(x) \right)
+  \end{displaymath}
+  } 
+  Result for using first and second moments for mean $\mu$ and variance $\sigma^2$:
+  \begin{displaymath}
+    p(x) = e^{-(1 - \lambda_0 - \lambda_1 x - \lambda_2 (x-\mu)^2)}
+  \end{displaymath}
+  Plug the form into the constraints:
+  \begin{eqnarray*}
+    \int e^{-(1 - \lambda_0 - \lambda_1 x - \lambda_2 (x-\mu)^2)} \,\mathsf{d}x &=& 1 \\
+    \int x e^{-(1 - \lambda_0 - \lambda_1 x - \lambda_2 (x-\mu)^2)} \,\mathsf{d}x &=& \mu \\
+    \int (x-\mu)^2 e^{-(1 - \lambda_0 - \lambda_1 x - \lambda_2 (x-\mu)^2)} \,\mathsf{d}x &=& \sigma^2
+  \end{eqnarray*}
+ 
+  Integrate analytically (non-trivial) and solve for Lagrangian multipliers:
+  \begin{eqnarray*}
+    \lambda_0 &=& 1 - \frac{1}{2} \log(2 \pi \sigma^2 ) \\
+    \lambda_1 &=& 0 \\
+    \lambda_2 &=& - \frac{1}{2 \sigma^2}  
+  \end{eqnarray*}
+   
+  Insert the results into the form of $p(x)$:
+  \begin{eqnarray*}
+    p(x) &=& e^{-(1 - \lambda_0 - \lambda_1 x - \lambda_2 (x-\mu)^2)} \\
+         &=& e^{-\frac{1}{2} \log(2 \pi \sigma^2)} e^{-\frac{(x-\mu)^2}{2 \sigma^2}} \\
+         &=& \frac{1}{\sqrt{2 \pi} \sigma} e^{- \frac{(x-\mu)^2}{2 \sigma^2}}
+  \end{eqnarray*}
+  
+\subsection{ICA Estimation Algorithm}
+
+ \textbf{Basic ICA Estimation Algorithm:}
+
+  \begin{centernss}
+    \begin{struktogramm}(105,50)
+      \assign{Apply centering transform}
+      \assign{Apply whitening transform}
+      \assign{$i \gets 1$}
+      \until{$i > n$~ ($n$: number of independent components)}
+        \assign{Take a random vector $\vect w_i$}
+        \assign{Maximize non-Gaussianity of $\vect w_i^T \vect{\tilde x}$ subject to $\| \vect w_i \| = 1$ and $\vect w_j^T \vect w_i = 0$, $j<i$}
+        \assign{$i \gets i+1$}
+      \untilend
+      \assign{Use weight matrix $\mat W = \left( \vect w_1, \vect w_2, \ldots, \vect w_n \right)^T$ to compute $\hat{\vect s}=\mat W\vect{\tilde x}$}
+      \assign{Output: independent components $\hat{\vect s}$}
+    \end{struktogramm}
+  \end{centernss}
+  \vspace{0.3cm}
+  
+ \textbf {Notes:}\\
+
+  \begin{itemize}
+    \item Estimation by maximizing non-Gaussianity of independent components.            
+    \item There exist equivalent algorithms for solving the ICA:
+      \begin{itemize}
+        \item Gradient descent methods
+        \item Fast ICA
+      \end{itemize}
+                 
+    \item Relation to Projection Pursuit approach (Friedman and Tukey, 1974):
+      \begin{itemize}
+        \item Projection Pursuit is a method for visualization and exploratory data analysis.
+        \item Attempts to show clustering structure by finding \textit{interesting} projections.
+        \item Interestingness is usually measured by non-Gaussianity.
+      \end{itemize}
+  \end{itemize}
+ 
+\subsection{Measures of Non-Gaussianity}
+
+these measures of gaussianity will be seen in other lectures, so it is good to understand them.  
+
+  \begin{itemize}
+    \item So far, we have seen that the key principle in estimating independent components is the non-Gaussianity.            
+    \item In order to optimize the independent components, we need a quantitative measure of non-Gaussianity.
+  \end{itemize}
+ 
+  Consider the random variable $y$ and assume that it has zero mean and unit variance (enforced by pre-processing).  We will consider three measures of non-Gaussianity:
+
+  \begin{itemize}
+    \item\textbf        {Kurtosis}
+    \item\textbf        {Negentropy}
+    \item\textbf        {Mutual Information}
+  \end{itemize}
+          
+\subsubsection{Kurtosis}
+
+\textbf{Definition}
+ 
+   The \textbf {\textit{Kurtosis}} of $y$ is defined as:
+    \begin{displaymath}
+      \kurt(y) = E \{ y^4 \} - 3 \left( E\{ y^2 \} \right)^2
+    \end{displaymath}
+%    
+    Since $y$ has unit variance, the equation simplifies to:
+    \begin{displaymath}
+      \kurt(y) = E \{ y^4 \} - 3
+    \end{displaymath}    
+    Linearity properties for independent random variables $y_1, y_2$:
+    \begin{eqnarray*}
+      \kurt(y_1 + y_2) &=& \kurt(y_1) + \kurt(y_2) \\
+      \kurt(\alpha y) &=& \alpha^4 \kurt(y) ~, \quad \alpha \in \real
+    \end{eqnarray*}
+Kurtosis for a Gaussian distribution:
+  
+  \begin{itemize}
+    \item The $k$-th central moment of a Gaussian distribution $p(y) = {\mathcal{N}}(y ; \mu, \sigma^2)$ with mean $\mu$ and variance $\sigma^2$ is:
+      \begin{eqnarray*}
+        E \{ (y - \mu)^n \} = \begin{cases}
+                                (n-1) !! \cdot \sigma^n \quad &, ~n~ \mbox{even} \\
+                                0 \quad &, ~n~ \mbox{odd}
+                              \end{cases}
+      \end{eqnarray*}
+     \textbf{Note:}
+      $(n-1)!!$ denotes the double factorial; for even $n$ we have $(n-1)!! = 1\cdot 3\cdot \dots \cdot (n-1)$.
+    \item Thus, for a zero mean, unit variance random variable $y$ that is normally distributed:
+      \begin{displaymath}
+        \kurt(y) = 0
+      \end{displaymath}
+  \end{itemize}
+ \textbf {Properties of Kurtosis:}
+
+refer to slides for clarity. 
+
+  \begin{itemize}
+    \item Kurtosis is zero for a Gaussian random variable.            
+    \item For most (but not all) non-Gaussian random variables, Kurtosis is nonzero.           \item Kurtosis can be positive or negative.            
+    \item Typically, non-Gaussianity is measured as:
+      \begin{itemize}
+        \item\textbf        {$| \kurt(y) |$} ~ or
+        \item\textbf        {$\kurt(y)^2$}
+      \end{itemize}
+  \end{itemize}
+   
+\textbf{Example}
+        \textbf{\small \hspace{.5cm} Subgaussian pdf:}
+        \begin{displaymath}
+          p(y) = \begin{cases}
+                   \frac{1}{2\sqrt{3}} \quad &, ~\mbox{if}~|y| \leq \sqrt{3} \\
+                   0 \quad &, ~\mbox{otherwise}
+                 \end{cases}
+        \end{displaymath}
+      
+       \textbf  {\small \hspace{.5cm} Supergaussian pdf:}
+        {\footnotesize
+        \begin{displaymath}
+          p(y) = \frac{1}{\sqrt{2}} \exp(-\sqrt{2} |y|)
+        \end{displaymath}
+        }
+      {\footnotesize
+        \begin{displaymath}
+          \kurt(y) < 0
+        \end{displaymath}
+        }
+        {\footnotesize
+        \begin{displaymath}
+          \kurt(y) > 0
+        \end{displaymath}
+        }
+   
+  \begin{itemize}
+    \item Consider 2-D case using the linear combination:
+      \begin{eqnarray*}
+        y        &=& \vect w^T \vect x = \vect w^T \mat A \vect s = \vect z^T \vect s = z_1 s_1 + z_2 s_2 \\
+        \kurt(y) &=& \kurt(z_1 s_1) + \kurt(z_2 s_2) = z_1^4 \kurt(s_1) + z_2^4 \kurt(s_2)            
+      \end{eqnarray*}
+    \item As $y$ has unit variance, concerning also $s_1, s_2$:
+      \begin{displaymath}
+        E\{ y^2 \} = z_1^2 + z_2^2 = 1
+      \end{displaymath}
+      which constrains $\vect z$ to the unit circle in the 2-D plane.                     
+    \item Thus, we have to find the maximum of the following function on the unit circle w.\,r.\,t.\ $\vect z$:
+      \begin{displaymath}
+        | \kurt(y) | = | z_1^4 \kurt(s_1) + z_2^4 \kurt(s_2) |
+      \end{displaymath}
+  \end{itemize}
+ 
+ \textbf {Optimization landscape for Kurtosis in 2-D plane:}
+
+  \begin{itemize}
+    \item Thick curve is the unit circle
+    \item Thin curves are isocontours of the objective function            
+    \item The maxima are located at sparse values of $\vect z$, i.\,e.\ when:
+      \begin{center}
+            $y = \pm s_i$
+      \end{center}
+  \end{itemize}
+Maximizing the non-Gaussianity of a vector $\vect w$ in practice:
+  \begin{itemize}
+    \item Start with some initial vector $\vect w$.            
+    \item Use a gradient ascent method to optimize:
+      \begin{displaymath}
+        \argmax_{\vect w:\,\|\vect w\|_2=1} \big| \kurt(\vect w^T \vect x) \big| 
+      \end{displaymath}
+    \item Plug this optimization into the ICA estimation algorithm (see above).
+  \end{itemize}
+ 
+ \textbf {Kurtosis as a function of the direction of the projection:}
+  Despite being a valid measure for non-Gaussianity, Kurtosis has some \textbf{drawbacks in practice} when it is computed on a set of measurement samples:
+  \begin{itemize}
+    \item Kurtosis can be very sensitive to outliers due to higher order statistical moments.            
+    \item Not optimal for supergaussian variables even without outliers.            
+    \item It is not a robust measure of non-Gaussianity.
+  \end{itemize}
+    
+\subsubsection{Negentropy}
+  
+ \textbf {Observations:}
+
+  \begin{itemize}
+    \item A Gaussian variable has the \textbf {largest entropy} among all random variables of equal variance.            
+    \item Entropy is \textbf {small} for distributions that are ``spiky''.            
+    \item Negentropy can be used as a measure for non-Gaussianity: it is zero for Gaussian random variables and always non-negative.
+  \end{itemize}
+ 
+ The \textit{Negentropy} $J(\vect{y})$ of a random variable $\vect{y}$ is defined as follows:
+    \begin{displaymath}
+      J(\vect{y}) = H(\vect{y}_{\mathsf{Gauss}}) - H(\vect{y})
+    \end{displaymath}
+where $\vect{y}_{\mathsf{Gauss}}$ is a Gaussian random variable with the same covariance as $\vect{y}$.\\[0.3cm]
+ \textbf{Properties of Negentropy:}
+  \begin{itemize}
+    \item Measure is well justified by statistical theory.
+    \item In theory, negentropy is an optimal statistical estimator of non-Gaussianity.     
+    \item Computing the negentropy from a measured sample set requires the estimation of the pdf.            
+    \item The (non-parametric) estimation of a pdf from samples is non-trivial and often computationally expensive.
+  \end{itemize}
+ \textbf{Approximations} for negentropy exist that are both robust and computationally more efficient than the direct pdf-based approach.
+         
+\subsubsection {Mutual Information}
+
+ \textbf {Information-theoretic approach:}
+
+  \begin{itemize}
+    \item Negentropy measures the difference in terms of information value to Gaussian random variables.            
+    \item Instead, we could measure the\textbf{statistical dependency} between the random variables directly.            
+    \item \textit{Mutual Information} is a concept to measure the\textbf {entire dependency structure} of random variables (and not only the covariance)
+  \end{itemize}
+          
+  The \textit{Mutual Information} between $n$ scalar random variables $\vect y = y_1, \ldots, y_n$ is defined as:
+    \begin{eqnarray*}
+      \MI(\vect y) &=& \sum_{i = 1}^n H(y_i) - H(\vect y) \\
+                  &=& \KL \left( p(\vect y) \| \prod_{i=1}^n p(y_i) \right)
+    \end{eqnarray*}
+    where $H$ denotes the (differential) entropy and $\KL$ the Kullback-Leibler divergence.
+  
+ \textbf{Interpretation:}
+
+  \begin{itemize}
+    \item Entropy can be regarded as a measure for code length.            
+    \item $H(y_i)$ is a measure for the code length necessary to encode $y_i$.            
+    \item $H(\vect y)$ can be regarded as the code length necessary to encode the entire vector $\vect y$.                     
+    \item In this context, $\MI$ shows the\textbf        {reduction in code length} obtained when encoding $\vect y$ instead of the components $y_i$ separately.
+  \end{itemize}
+  
+ \textbf  {Properties of $\MI$:}
+
+  \begin{itemize}
+    \item For an\textbf {invertible linear transform} $\vect y = \mat W \vect x$:
+      \begin{displaymath}
+        \MI(\vect y) = \sum_{i=1}^n H(y_i) - H(\vect x) - \log | \det \mat W |            
+      \end{displaymath}
+    \item For uncorrelated $y_i$ of unit variance, $\MI$ and negentropy differ only by a constant and a sign:
+      \begin{displaymath}
+        \MI(\vect y) = C - \sum_{i=1}^n J(y_i)
+      \end{displaymath}
+  \end{itemize}
+ 
+  Therefore, instead of maximizing the negentropy we can\textbf {minimize the Mutual Information} to compute the direction of highest non-Gaussianity.
+ 
+\subsection{Lessons Learned}
+ \begin{itemize}
+    \item ICA is a simple model based on a linear non-Gaussian latent variables         
+    \item Non-Gaussianity as key principle         
+    \item Estimation by maximizing non-Gaussianity of independent components         
+    \item Equivalence between Kurtosis, Negentropy and Mutual Information
+  \end{itemize}
+
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is the latent variables model behind independent component analysis?         
+    \item Why are whitening transformed observations not the independent components?      \item Why is non-Gaussianity so important for the independent components?         
+    \item How can non-Gaussianity be measured?
+  \end{itemize}
+          
+
+\def\PS{{\mathop{\mathsf{PS}}}}
+\newpage 
+\section{Model Assessment}\autocite{duda2001,hastie2009,sawyer2005}
+
+\textbf{Notation in this Chapter}\\
+{\small
+\begin{itemize}
+  \item $\mathcal D$: training set of size $n$ (note: elsewhere we used $S,m$).
+  \item $y=f^*(\vect x)$: true label given by the (unknown) target function $f^*$.
+  \item $h$: hypothesis (trained classifier), with predicted label $\hat y=h(\vect x)$.
+  \item $g(\vect x;\mathcal D)$: learned posterior estimate (random through $\mathcal D$).
+  \item $E_{\mathcal D}\{\cdot\}$: expectation over random training sets $\mathcal D$.
+  \item $\hat\theta=\phi_n(X)$: generic estimator computed from $n$ samples.
+  \item $m$: number of No-Free-Lunch iterations / number of CV folds (depending on context).
+\end{itemize}
+}
+
+Overall general theory is important to understand; derivations are not required for the exam.
+
+\subsection{No Free Lunch}
+
+  \begin{itemize}
+    \item In the past lectures, we have come across many learning algorithms and classification techniques.
+    \item They have properties such as
+      \begin{itemize} 
+        \item low computational complexity
+        \item incorporation of prior knowledge
+        \item linearity\,/\,non-linearity
+        \item optimality with respect to certain cost functions, etc.
+      \end{itemize}
+   \item Some compute smooth decision boundaries, some compute rather non-smooth decision boundaries.
+  \end{itemize}
+
+  We really have to ask:
+  \begin{center}
+   \textbf {Are there any reasons to favor one algorithm over another?}
+  \end{center}
+
+    Given a cost function $f \in {\mathcal{F}}$, an algorithm $A$ and costs $c_m$ for a specific sample that is iterated on $m$ times.             
+    The performance of an algorithm is the conditional probability $P(c_m | f, m, A)$.                    
+    The\textbf  {No Free Lunch Theorem} states that for any two algorithms $A_1$ and $A_2$:
+    \begin{displaymath}
+      \sum_f P(c_m | f, m, A_1) = \sum_f P(c_m | f, m, A_2)
+    \end{displaymath}
+
+          
+
+ \textbf {Consequences for classification methods:}
+
+  \begin{itemize}
+    \item If no prior assumptions about the problem are made, there is \textbf{NO} overall superior or inferior classification method!            
+    \item We should be skeptical regarding studies that demonstrate the overall superiority of a particular method.                        
+    \item We have to focus on the aspects that matter most for the classification problem:
+      \begin{itemize}
+        \item prior information
+        \item data distribution
+        \item amount of training data
+        \item cost functions
+      \end{itemize}
+  \end{itemize}
+ 
+\subsection{Off-Training Set Error}
+  \begin{itemize}
+    \item Specifies the error on samples that are not contained within the training set.
+    \item For large training data sets, the off-training set is necessarily small.
+    \item Used to compare general classification performance of algorithms.
+  \end{itemize}
+   
+  \begin{itemize}
+    \item Consider a two-class problem with training data set ${\mathcal{D}}$ consisting of patterns $\vect x_i$ and labels $y_i\in\{-1,+1\}$. 
+    \item $y_i$ is generated by an unknown target function: $F(\vect x_i) = y_i$.
+    \item The expected off-training set classification error for the $k$-th learning algorithm is:
+      \begin{displaymath}
+        E_k \{e \mid F, n\} = \sum_{\vect x \notin {\mathcal{D}}} p(\vect x) \left[ 1 - \delta(F(\vect x), h(\vect x)) \right] \, p_k(h(\vect x) \mid {\mathcal{D}})
+      \end{displaymath}
+      where $e$ is the error, $h$ the hypothesis, and $\hat y=h(\vect x)$ the predicted label. Here $\delta$ is the Kronecker delta.
+  \end{itemize}
+
+\subsection{Bias and Variance}
+An important concept for machine learning and pattern recognition. 
+
+ \begin{itemize}
+    \item The \emph{No Free Lunch Theorem} states that there is no general best classifier.            
+    \item But we have to assess the quality of a learning algorithm in terms of the\textbf        {alignment} to the classification problem.            
+    \item This can be achieved using the\textbf        {bias-variance} relation.
+  \end{itemize}
+ 
+ \textbf {Bias:}
+  \begin{itemize}
+    \item The bias measures the accuracy or quality of the match:
+     \textbf{high bias means poor match}.
+  \end{itemize}
+         
+
+ \textbf{Variance:}
+  \begin{itemize}
+    \item The variance measures the precision or specificity for the match: 
+     \textbf {high variance implies a weak match}.
+  \end{itemize}
+        
+\subsubsection{Bias and Variance for Regression}
+
+  The bias-variance relation is very demonstrative in the context of regression:
+  
+  \begin{itemize}
+    \item Let $g(\vect x ; {\mathcal{D}})$ be the regression function.            
+    \item The mean-square deviation from the true function $F(\vect x)$ is:
+      \begin{eqnarray*}
+         \lefteqn{E_{\mathcal{D}} \left\{ \big(g(\vect x; {\mathcal{D}}) - F(\vect x)\big)^2 \right\}} \\
+         & & = \underbrace{\Big(E_{\mathcal{D}} \{g(\vect x ; {\mathcal{D}})\} - F(\vect x) \Big)^2}_{\mbox{\small (\textbf{bias})}^2} + 
+               \underbrace{E_{\mathcal{D}} \left\{ \Big(g(\vect x; {\mathcal{D}}) - E_{\mathcal{D}} \left\{ g(\vect x; {\mathcal{D}} ) \right\} \Big)^2 \right\}}_{\mbox{\small\textbf{variance}}}
+      \end{eqnarray*}
+  \end{itemize}
+
+  \textbf{Derivation (add-and-subtract trick):} For fixed $\vect x$, abbreviate
+  $g=g(\vect x;\mathcal D)$, $\bar g = E_{\mathcal D}\{g\}$ and $F=F(\vect x)$. Then
+  {\small
+  \begin{align*}
+    E_{\mathcal D}\{(g-F)^2\}
+      &= E_{\mathcal D}\{\big((g-\bar g)+(\bar g-F)\big)^2\}\\
+      &= E_{\mathcal D}\{(g-\bar g)^2\} + 2(\bar g-F)\,E_{\mathcal D}\{g-\bar g\} + (\bar g-F)^2\\
+      &= E_{\mathcal D}\{(g-\bar g)^2\} + (\bar g-F)^2
+  \end{align*}
+  }
+  because $E_{\mathcal D}\{g-\bar g\}=\bar g-\bar g=0$ (and $\bar g-F$ does not depend on $\mathcal D$).
+
+ \textbf {Bias-Variance Trade-Off:}
+  \begin{itemize}
+    \item Methods with \textbf{high flexibility} to adapt to the training data
+      \begin{itemize}
+        \item generally have low bias
+        \item but yield high variance.            
+      \end{itemize}
+    \item Methods with \textbf{few parameters} and less degrees of freedom 
+      \begin{itemize}
+        \item tend to have a high bias, as they may not fit the data well. 
+        \item However, this does not change a lot between different data sets, so these methods generally have low variance.            
+      \end{itemize}
+    \item Unfortunately, we can virtually never get both zero bias and zero variance!       
+    \item We need to have as \textbf{much prior information} about the problem as possible to reduce both values.
+  \end{itemize}
+  
+\subsubsection {Bias and Variance for Classification}
+
+  Assuming a \textbf {two-class classification problem}:
+  \begin{itemize}
+    \item In a two-class problem, the target function changes to:
+      \begin{displaymath}
+        F(\vect x) = p(y = +1 \mid \vect x) = 1 - p(y = -1 \mid \vect x)
+      \end{displaymath}
+                 
+    \item We cannot compare $g(\vect x ; {\mathcal{D}})$ and $F(\vect x)$ based on the mean-square error as in regression.
+    \item For simplicity, let us assume \textbf{identical priors}: $p(y=+1)=p(y=-1)=\frac{1}{2}$.
+      \begin{itemize}
+        \item The Bayes-optimal prediction is $\hat y^*(\vect x)=+1$ if $F(\vect x)\ge 0.5$ and $-1$ otherwise.
+        \item The Bayes decision boundary is the set of points for which $F(\vect{x}) = 0.5$.
+      \end{itemize}
+  \end{itemize}
+ \textbf{Boundary error}
+    \begin{itemize}
+    \item $p(g(\vect{x}; \mathcal{D}))$ is the density of obtaining a particular estimate of the discriminant given $\mathcal{D}$ (fixed $\vect x$, randomness comes from $\mathcal D$).
+    \item Because of random variations in the training set, the boundary error depends upon this density.
+  \end{itemize}
+
+  \begin{displaymath}
+    p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big) =
+     \left\{
+       \begin{array}{l l}
+         \displaystyle{ \int_{0.5}^\infty p(g(\vect{x}; \mathcal{D})) \, \mathsf{d}g } & \mbox{if~} F(\vect{x}) < 0.5 \\
+         \displaystyle{ \int_{-\infty}^{0.5} p(g(\vect{x}; \mathcal{D})) \, \mathsf{d}g } & \mbox{if~} F(\vect{x}) \ge 0.5
+       \end{array}
+     \right.
+  \end{displaymath}
+
+  \begin{itemize}
+    \item Convenient assumption that \textbf{$p(g(\vect{x}; \mathcal{D}))$ is Gaussian}:
+      \begin{eqnarray*}
+        \lefteqn{p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big) =} \\
+        & & \Phi \Bigg[ 
+              \underbrace{\mathsf{sgn}\left(F(\vect x) - \frac{1}{2}\right) \cdot \left(E_{\mathcal{D}} \{ g(\vect x ; {\mathcal{D}}) \} - \frac{1}{2}\right) }_{\mbox{\small\textbf{boundary bias}}}
+              \cdot \underbrace{\mathsf{Var}_{\mathcal D}\!\Big[g(\vect x ; {\mathcal{D}})\Big]^{-1/2}}_{\mbox{\small\textbf{variance}}}
+            \Bigg]
+      \end{eqnarray*}
+      where $\Phi$ is the \textbf{upper tail} of the standard normal:
+      \begin{displaymath}
+        \Phi(t) = \frac{1}{\sqrt{2\pi}} \int_t^\infty e^{-\frac{1}{2} u^2} \, \mathsf{d}u
+      \end{displaymath}
+    \item $p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big)$ represents the probability of incorrect estimation of the Bayes decision at $\vect x$.
+  \end{itemize}
+ 
+ \textbf{Conclusions:}
+
+  \begin{itemize}
+    \item In \textbf{regression} the bias-variance relation is additive in (bias)$^2$ and variance.     
+    \item For \textbf {classification} the relation is multiplicative and nonlinear.        
+    \item In classification the sign of the boundary bias affects the role of the variance in the error.            
+    \item Therefore, low variance is generally important for accurate classification.
+  \end{itemize}
+         
+
+ \textbf {Variance generally dominates bias in classification!}
+  
+  \def\covA{\mat{\Sigma}_i = \left(\begin{matrix} \sigma^2_{i1} & \sigma_{i12} \\ \sigma_{i12} & \sigma^2_{i2} \end{matrix}\right)}
+  \def\covB{\mat{\Sigma}_i = \left(\begin{matrix} \sigma^2_{i1} & 0            \\ 0            & \sigma^2_{i2} \end{matrix}\right)}
+  \def\covC{\mat{\Sigma}_i = \left(\begin{matrix} 1             & 0            \\ 0            & 1             \end{matrix}\right)}
+
+\subsection{Estimating Bias and Variance}
+Resampling for Estimating Statistics
+
+ \textbf  {Problem:}
+    \begin{itemize}
+    \item Determine the bias and variance for some learning algorithm applied to a new problem with unknown distributions.
+  \end{itemize}
+   From what we have seen so far, bias and variance change with varying samples.
+         
+
+ \textbf {Resampling techniques} can be used to yield more informative estimates of a general statistics.\\
+ \textbf  {Formally:}
+ \begin{itemize}
+    \item Suppose we want to estimate a parameter $\theta$ that depends on a random sample set $X = (x_1, \ldots, x_n)$.
+    \item Assume we have an estimator $\phi_n(X)$ of $\theta$ but do not know its distribution.
+   \item Resampling methods try to estimate the bias and variance of $\phi_n(X)$ using subsamples from $X$.
+  \end{itemize}
+  
+\subsubsection{Jackknife}
+  
+  Let $\PS_i(X)$ be the $i$-th pseudovalue of $\phi_n(X)$:
+  \begin{eqnarray*}
+    \PS_i(X) 
+      &=& n \phi_n(X) - (n-1) \phi_{n-1}(X_{(i)}) \\
+      &=& \phi_n(X) - \underbrace{(n-1)( \phi_{n-1}(X_{(i)}) - \phi_n(X))}_{\mathsf{bias}_{\text{jack},i}}
+  \end{eqnarray*}
+  where $X_{(i)} = (x_1, \ldots, x_{i-1}, x_{i+1}, \ldots, x_n)$ is the set without the $i$-th element.\\
+ \textbf {Notes:}
+  \begin{itemize}
+    \item $\PS_i(X)$ can be interpreted as a bias-corrected version of $\phi_n(X)$:        
+    \item The bias trend is assumed to be in the estimators from $\phi_{n-1}(X_{(i)})$ to $\phi_n(X)$.
+  \end{itemize}
+ \textbf {Jackknife Principle:}
+  \begin{itemize}
+    \item The pseudovalues $\PS_i(X)$ are treated as independent random variables with mean $\theta$.
+    \item The jackknife estimate $\mu_{\PS}$ is approximately normal with variance $\sigma^2_{\PS}/n$.
+    \item The estimators for the mean $\mu_{\PS}$ and variance $\sigma_{\PS}^2$ of the pseudovalues are the sample estimates:
+      \begin{eqnarray*}
+        \mu_{\PS}      &=& \frac{1}{n} \sum_{i=1}^n \PS_i(X) \\
+        \sigma_{\PS}^2 &=& \frac{1}{n-1} \sum_{i=1}^n (\PS_i(X) - \mu_{\PS})^2
+      \end{eqnarray*}
+  \end{itemize}
+ 
+  \begin{example}
+    \small
+    Estimator for the sample mean: $\phi_n(X) = \frac{1}{n} \sum_{i=1}^n x_i = \overline{X}$     Pseudovalues of $\phi_n(X)$:
+    \begin{displaymath}
+      \PS_i(X) = n\overline{X} - (n-1) \overline{X_{(i)}} = x_i
+    \end{displaymath}
+    Jackknife estimates:
+    \begin{eqnarray*}
+      \mu_{\PS}      &=& \frac{1}{n} \sum_{i=1}^n \PS_i(X) = \overline{X} \\
+      \sigma_{\PS}^2 &=& \frac{1}{n-1} \sum_{i=1}^n (x_i - \overline{X})^2
+    \end{eqnarray*}
+    Estimator for sample variance: $\phi_n(X) = \frac{1}{n} \sum_{i=1}^n (x_i - \overline{X})^2$  
+    Pseudovalues of $\phi_n(X)$:
+    \begin{displaymath}
+      \PS_i(X) = \frac{n}{n-1} (x_i - \overline{X})^2
+    \end{displaymath}
+    Which implies that:
+    \begin{displaymath}
+      \mu_{\PS} = \frac{1}{n} \sum_{i=1}^n \PS_i(X) = \frac{1}{n-1} \sum_{i=1}^n (x_i - \overline{X})^2
+    \end{displaymath}
+Interestingly:\\
+    \begin{itemize}
+      \item[ $\bullet$] $E\{\phi_n(X)\} = \frac{n-1}{n}\sigma^2$ whereas $E\{ \mu_{\PS} \} = \sigma^2$
+      \item[ $\bullet$] $\mu_{\PS}$ is a bias-corrected version of $\phi_n(X)$
+    \end{itemize}
+  \end{example}
+         
+\subsubsection{Bootstrap}
+  \begin{itemize}
+    \item A \textit{bootstrap} data set is created by randomly selecting $n$ points from the sample set with replacement.            
+    \item In \textit{bootstrap estimation} this selection process is independently repeated $B$ times.            
+    \item The $B$ bootstrap data sets are treated as independent sets.
+  \end{itemize}
+
+  The bootstrap estimate of a statistic $\theta$ and its variance are the mean of the $B$ estimates $\hat{\theta}^B$ and its variance:
+  \begin{eqnarray*}
+    \mu_{\mathsf{BS}}      &=& \frac{1}{B} \sum_{i=1}^B \hat{\theta}^B_i \\
+    \sigma^2_{\mathsf{BS}} &=& \frac{1}{B-1} \sum_{i=1}^B \left( \hat{\theta}^B_i - \mu_{\mathsf{BS}} \right)^2
+  \end{eqnarray*}
+  The bias is the difference between the bootstrap estimate and the estimator $\phi_n(X)$:
+  \begin{displaymath}
+    \mathsf{bias}_{\mathsf{BS}} = \mu_{\mathsf{BS}} - \phi_n(X)
+  \end{displaymath}
+ 
+ \textbf{Properties of the bootstrap estimate:}
+  \begin{itemize}
+    \item Bootstrapping does not change the prior of the data (choose with replacement).
+    \item The larger the number $B$, the more the bootstrap estimate tends towards the ideal bootstrap estimate ($B\to\infty$).
+    \item In contrast, the jackknife estimator requires exactly $n$ repetitions: 
+      \begin{itemize}
+        \item less than $n$ repetitions yield poorer estimates
+        \item more than $n$ repetitions merely duplicate information already provided
+      \end{itemize}
+  \end{itemize}
+
+\subsection{Estimating and Comparing Classifiers}
+
+  Two reasons why we want to know the generalization rate of a classifier on a given problem:
+
+  \begin{enumerate}
+    \item to see if the classifier performs well enough to be useful
+    \item to compare its performance with a competing design
+  \end{enumerate}
+\subsubsection{Cross-Validation}
+  
+  \begin{itemize}
+    \item In \textbf{cross-validation}, the training samples are split into disjoint parts.
+    \item An \textbf{$m$-fold cross-validation} splits the data into $m$ disjoint sets of size $n/m$ (here $m$ is the number of folds):
+      \begin{itemize}
+        \item 1 set is held out.
+        \item The other $m-1$ sets are used for training.
+        \item Each set is used once as held-out set.
+      \end{itemize}
+    \item Note: if the held-out fold is used to stop training or to select parameters, it acts as a \textbf{validation} set; the final error should be reported on separate \textbf{test} data.
+    \item In the \textbf{extreme case of $m=n$}, we obtain a jackknife estimate of the classification accuracy.
+  \end{itemize}
+
+  The classifier is trained until a minimum validation error is reached (good generalization vs.\ overfitting):
+   
+\subsection{Lessons Learned}
+
+  \begin{itemize}
+    \item There is no such thing as a free lunch!              
+    \item Bias-variance trade-off              
+    \item Jackknife              
+    \item Bootstrap              
+    \item Cross-Validation
+  \end{itemize}
+
+
+\subsection{Comprehensive Questions}
+ 
+  \begin{itemize}
+    \item What is the meaning of the terms bias and variance?         
+    \item What is the difference in bias-variance trade-off between regression and classification?         
+    \item How do you estimate the bias and variance of a method?         
+    \item What is cross-validation and how can it be used to train a classifier?
+  \end{itemize}
+          
+
+\def\err{{\mathop{\overline{\mathsf{err}}}}}
+
+\section{AdaBoost}\autocite{hastie2009,freund1997,matas,viola2001,viola2004}
+
+\textbf{Notation in this Chapter}\\
+{\small
+\begin{itemize}
+  \item $\mathcal D=\{(\vect x_i,y_i)\}_{i=1}^N$: training set of size $N$.
+  \item $i$: sample index.
+  \item $m=1,\dots,M$: boosting iteration.
+  \item $y_i\in\{-1,+1\}$: true labels.
+  \item $G_m(\vect x)\in\{-1,+1\}$: weak classifier in iteration $m$.
+  \item $f_M(\vect x)=\sum_{m=1}^M \beta_m G_m(\vect x)$: additive model.
+  \item Final prediction: $\hat y = G(\vect x)=\sign(f_M(\vect x))$.
+  \item $w_i^{(m)}$: weight of sample $i$ in boosting iteration $m$.
+  \item $I(\cdot)$: indicator function.
+\end{itemize}
+}
+
+\subsection{Boosting methods}
+
+  \begin{itemize}
+    \item Boosting is one of the most powerful learning techniques introduced in the last twenty years.
+    \item Combines output of many \textbf {\textit{weak} classifiers} to produce a powerful committee.
+    \item The most popular boosting algorithm is called \textbf {\textit{AdaBoost}} \\
+      (Freund and Schapire, 1997).
+  \end{itemize}
+\textbf{Definition:} A \textbf {weak classifier} is one whose error rate is only slightly better than random guessing.
+
+ \subsubsection{Idea of boosting:}
+
+  \begin{itemize}
+    \item Sequentially apply the \emph{weak} classifier to repeatedly modified versions of the data.
+    \item This produces a sequence of classifiers.
+    \item Weighted majority vote yields the final prediction.
+    \item Consider a two-class problem with $y \in \{ -1, +1\}$.          %           
+    \item Given a set of observations $\mathcal{D} = \{(\vect{x}_i, y_i); \quad i=1,\ldots,N\}$ and a classifier $G(\vect x)$, the \textbf  {error rate} on the training sample is:
+      \begin{displaymath}
+        \err = \frac{1}{N} \sum_{i=1}^N I(y_i \neq G(\vect{x}_i))
+      \end{displaymath}
+      where $I$ is the \textbf  {indicator function}.
+    \item Sequentially applied weak classifiers produce a sequence $G_m(\vect x)$ with $m=1,2,\ldots,M$ %           
+    \item The \textbf{combined prediction} is then:
+      \begin{displaymath}
+        \hat y = G(\vect x) = \sign \left( \sum_{m=1}^M \alpha_m G_m(\vect x) \right)
+      \end{displaymath}
+      %           
+    \item The weighting factors $\alpha_1, \ldots, \alpha_M$ are computed by the boosting algorithm. %           
+    \item Each $\alpha_m$ weights the output of the corresponding classifier $G_m(\vect x)$.
+  \end{itemize}
+
+ \subsubsection{Schematic of boosting procedure:}
+
+ \textbf{Modifications on the data:}
+
+  \begin{itemize}
+    \item Each boosting step consists of applying weights $w_1, w_2, \ldots, w_N$ to the training samples.
+    \item Initially, the weights are set to $w_i = 1/N$.
+    \item Thus the first classifier in the sequence is trained the usual way. %           
+    \item For $m \geq 2$ the weights are individually modified. %           
+    \item The classifiers $G_m$, with $m \geq 2$ are trained on differently-weighted samples.
+  \end{itemize}
+ 
+ \textbf {Weighting scheme:}
+  \begin{itemize}
+    \item At step $m$ the misclassified observations from $G_{m-1}$ have increased weights.
+    \item The weights for correctly classified samples from $G_{m-1}$ have decreased weights.
+  \end{itemize}
+         
+
+ \textbf {Effects of the weighting scheme:}
+  \begin{itemize}
+    \item Observations that are difficult to classify correctly get ever-increasing influence.
+    \item Each successive classifier is forced to concentrate more on those observations that were misclassified by the previous one.
+  \end{itemize}
+ 
+\subsection{AdaBoost}
+
+ \textbf {AdaBoost algorithm:}
+%
+  \begin{centernss}
+    \small
+      \begin{struktogramm}(100,50)\\
+        \assign{Initialize weights: $w_i \gets 1/N ~,~ i=1, \ldots, N$}
+        \assign{$m \gets 1$}
+        \until{$m > M$}\\
+          \assign{{Fit classifier $G_m(\vect x)$ to training data using weights $w_1,\dots,w_N$}}\\
+          \assign{{Compute classification error:}\\
+            $ \mathsf{err}_m = \frac{\sum_{i=1}^N w_i I(y_i \neq G_m(\vect x_i))}{\sum_{i=1}^N w_i}$
+          }\\
+          \assign{{Compute classifier weights:}\\
+            $ \alpha_m = \log \left( \frac{1- \mathsf{err}_m}{\mathsf{err}_m} \right) $
+          }\\
+          \assign{{Compute new sample weights:}\\
+            $ w_i \leftarrow w_i \exp \left[ \alpha_m I(y_i \neq G_m(\vect x_i)) \right] ~,~ i = 1, \ldots, N $
+          }
+          \assign{$m \gets m + 1$}\\
+        \untilend
+        \assign{\textbf{Output:} $\hat y = G(\vect x) = \sign \left( \sum_{m=1}^M \alpha_m G_m(\vect x) \right) $}
+      \end{struktogramm}
+    
+  \end{centernss}
+ \textbf {Notes:}
+  \begin{itemize}
+    \item This version of AdaBoost is called \textbf {discrete}, because each $G_m(\vect x)$ returns a discrete class label. %           
+    \item AdaBoost can be modified to return also a real-valued prediction in the interval $[-1,+1]$.  % 
+    \item Instead of taking just any classifier for $G_m(\vect x)$, that classifier may be used that results in the smallest error at step $m$.
+  \end{itemize}
+
+  AdaBoost dramatically increases the performance of even a very weak classifier.
+ 
+\subsection{Exponential Loss}
+
+  \begin{itemize}
+    \item Boosting fits an \textbf{additive model} in a \textbf{set of elementary basis functions}:
+      \begin{displaymath}
+        f(\vect x)=\sum_{m=1}^{M} \beta_m\, b(\vect x;\vect\gamma_m),
+      \end{displaymath}
+      where $\beta_m$ are expansion coefficients and $b(\vect x;\vect \gamma_m)$ is a basis function with parameters $\vect \gamma_m$.
+    \item Additive expansions are very popular in learning techniques:
+      \begin{itemize}
+        \item single-hidden-layer neural networks(perceptron)
+        \item wavelets
+        \item classification trees
+        \item etc.
+      \end{itemize}
+  \end{itemize}
+  
+  \begin{itemize}
+    \item Expansion models are typically fit by\textbf{minimizing a loss function $L$} averaged over the training data:
+      \begin{equation} 
+        \label{eq:loss}
+        \min_{\{ \beta_m, \vect \gamma_m \}_1^M } ~ 
+        \left\{
+          \sum_{i=1}^N L \big( y_i, f_M(\vect{x}_i) \big) =
+          \sum_{i=1}^N L \left( y_i, \sum_{m=1}^M \beta_m \, b(\vect{x}_i ; \vect \gamma_m) \right)
+        \right\}
+      \end{equation}
+                           
+    \item\textbf  {Forward stagewise modeling} approximates the solution to \eqref{eq:loss}:
+      \begin{itemize}
+        \item New basis functions are sequentially added.          
+        \item Parameters and coefficients of already added functions are not changed.
+        \item At each iteration, the subproblem of fitting just a single basis function is solved.
+      \end{itemize}
+  \end{itemize}
+          
+  \begin{itemize}
+    \item The \textbf {$m$-th subproblem} may be rewritten as:              
+      \begin{center}
+            $
+              \displaystyle
+              (\beta_m, \vect \gamma_m) = \argmin_{\beta, \vect \gamma} ~\sum_{i=1}^N L\big(y_i, f_{m-1}(\vect{x}_i) + \beta \, b(\vect{x}_i ; \vect{\gamma})\big)
+            $
+      \end{center}
+    \item AdaBoost is equivalent to a forward stagewise additive modeling using an \textbf {exponential loss function}:
+      \begin{displaymath}
+        L(y, f(\vect x)) = \exp (-y \, f(\vect x))
+      \end{displaymath}
+  \end{itemize}
+  \textbf {Proof:}
+
+  \begin{itemize}
+    \item For AdaBoost, the basis functions are the classifiers $G_m(\vect x) \in \{-1,+1\}$.
+    \item Using the \textbf{exponential loss function}, one must solve at each step:
+      \begin{eqnarray*}
+        (\beta_m, G_m) = \argmin_{\beta, G} ~\sum_{i=1}^N \exp \left[ -y_i \big(f_{m-1}(\vect{x}_i) + \beta G(\vect{x}_i)\big) \right]
+      \end{eqnarray*}
+    \item Using the weight $w_i^{(m)} = \exp(-y_i \, f_{m-1}(\vect{x}_i))$ this can be rewritten as:
+      \begin{eqnarray*}
+        (\beta_m, G_m) = \argmin_{\beta, G} ~\sum_{i=1}^N w_i^{(m)} \exp (-\beta y_i G(\vect{x}_i))
+      \end{eqnarray*}
+  \end{itemize}
+
+ \textbf {Observations:}
+  \begin{itemize}
+    \item Since $w_i^{(m)}$ is independent of $\beta$ and $G(\vect x)$, it can be seen as a weight applied to each observation.
+    \item However, this weight depends on $f_{m-1}$, so the weights change with each iteration $m$.
+  \end{itemize}
+
+  \begin{eqnarray*}
+    (\beta_m, G_m) 
+      &=& \argmin_{\beta, G} ~\sum_{i=1}^N w_i^{(m)} \exp (-\beta y_i G(\vect{x}_i)) \\ 
+      &=& \argmin_{\beta, G} ~ e^{-\beta} \sum_{y_i = G(\vect{x}_i)} w_i^{(m)} + e^{\beta} \sum_{y_i \neq G(\vect{x}_i)} w_i^{(m)} \\ 
+      &=& \argmin_{\beta, G} ~ \left( e^{\beta} - e^{-\beta} \right) \sum_{i=1}^N w_i^{(m)} I(y_i \neq G(\vect{x}_i)) + e^{-\beta} \sum_{i=1}^N w_i^{(m)}
+  \end{eqnarray*}
+
+  \begin{itemize}
+    \item The weight scaling is irrelevant for selecting $G_m$ (positive scaling does not change the argmin).
+    \item Plugging the optimal $G_m(\vect x)$ into the objective function and solving for $\beta_m$ yields, with $\mathsf{err}_m$ being the \textbf{minimized weighted error rate}:
+      \begin{displaymath}
+        \mathsf{err}_m = \frac{\sum_{i=1}^N w_i^{(m)} I(y_i \neq G_m(\vect{x}_i))}{\sum_{i=1}^N w_i^{(m)}}
+      \end{displaymath}
+     \item From the update formula of the approximation:
+      \begin{eqnarray*}
+        f_m(\vect x) = f_{m-1}(\vect x) + \beta_m \, G_m(\vect x)
+      \end{eqnarray*}
+      we can calculate the \textbf{weights for the next iteration}:
+      \begin{align*}
+        w_i^{(m+1)}
+          &= w_i^{(m)} \, e^{-\beta_m y_i G_m(\vect{x}_i)} \\
+          &\qquad \text{(using: $-y_i G_m(\vect{x}_i) = 2 I(y_i \neq G_m(\vect{x}_i)) - 1$)} \\
+          &= w_i^{(m)} \, e^{\alpha_m I(y_i \neq G_m(\vect{x}_i))} \, e^{-\beta_m}
+      \end{align*}
+      with $\alpha_m = 2 \beta_m$ and thus $\hat y = \sign(f_M(\vect x))$.
+  \end{itemize}
+ 
+
+ \textbf {Compare result to initial AdaBoost algorithm:}
+
+  \begin{itemize}
+    \item\textbf {Exponential loss:}
+      \begin{eqnarray*}
+        \beta_m     &=& \frac{1}{2} \log \frac{1 - \mathsf{err}_m}{\mathsf{err}_m} \\
+        \alpha_m    &=& 2 \beta_m \\
+        w_i^{(m+1)} &=& w_i^{(m)} ~ e^{\alpha_m I(y_i \neq G_m(\vect{x}_i))} ~ e^{-\beta_m}
+      \end{eqnarray*}
+             
+    \item\textbf {AdaBoost:}
+      \begin{eqnarray*}
+        \alpha_m &=&          \log \frac{1- \mathsf{err}_m}{\mathsf{err}_m} \\
+        w_i      &\leftarrow& w_i \, e^{\alpha_m I(y_i \neq G_m(\vect{x}_i))}
+      \end{eqnarray*}
+  \end{itemize}
+          
+
+
+ 
+ \textbf {Discussion:}
+
+  \begin{itemize}
+    \item The equivalence of AdaBoost to forward stagewise additive modeling was discovered five years after its invention. %           
+    \item The AdaBoost criterion yields a monotone decreasing function of the\textbf        {margin}: $y\,f(\vect x)$.          %           
+    \item In $\{-1, 1\}$ classification, the margin plays a role similar to the \\
+      residuals $y - f(\vect x)$ in regression:
+      \begin{itemize}
+        \item Observations with $y_i \, f(\vect{x}_i) > 0$ are classified correctly
+        \item Observations with $y_i \, f(\vect{x}_i) < 0$ are misclassified 
+        \item The decision boundary is at $f(\vect x) = 0$
+     \end{itemize}
+   \item The goal of the classification algorithm is to produce positive margins as frequently as possible. % 
+    \item Thus, any loss criterion should penalize negative margins more heavily than positive ones! % 
+    \item The exponential criterion concentrates much more influence on observations with large negative margins.
+  \end{itemize}
+ 
+  Due to the exponential loss, AdaBoost performance is known to degrade rapidly:
+  \begin{itemize}
+    \item in situations of noisy data
+    \item when there are wrong class labels in the training data
+  \end{itemize}
+ 
+\subsection{Face Detection}
+
+  Famous algorithm developed by\textbf {Viola and Jones} in 2001.
+ \textbf{Contributions:}
+
+  \begin{itemize}
+    \item Integral images for feature computation.
+    \item Usage of AdaBoost for boosting.
+    \item Classifier cascade for fast rejection of non-face regions.
+  \end{itemize}
+
+  Various implementations available: for example look into \textit{OpenCV FaceDetector} sample code.
+ 
+ \textbf{Features:}
+
+  \begin{itemize}
+    \item Features are adapted from Haar basis functions. %           
+    \item They are calculated by subtracting the sum of the pixels in the white from the sum of the pixels in the gray rectangles:               %           
+  \end{itemize}
+
+ 4 types of features used:
+  \begin{itemize}
+    \item The exhaustive set of Haar-like rectangle features is very large (in the classic Viola--Jones setup this count refers to the $24\times 24$ detection window, not to the full image). %
+    \item Rectangle features can be efficiently computed using an \\
+    \textbf {Integral Image $II$}:
+      \begin{displaymath}
+        II(x,y) = \sum_{x' \leq x, y' \leq y} I(x', y')
+      \end{displaymath}
+  \end{itemize}
+
+Computation of the sum of intensities for any rectangle D  with just 3 basis operations based on the integral image: refer to slides for details.\\
+ \textbf {Boosting:}\\
+
+  \begin{itemize}
+    \item The classification functions are restricted to each depend on a single feature only. %           
+    \item This way, AdaBoost can be interpreted as an effective feature selecting algorithm:
+      \begin{itemize}
+        \item The single rectangle feature is selected which best separates the observations. %  
+        \item For each feature, the weak learner determines the optimal threshold classification function.
+      \end{itemize}
+     \item A weak classifier $G_j(\vect x)$ consists of a \textbf{feature $x_j$}, an \textbf {optimal threshold $\theta_j$}, and a \textbf{parity $s_j$} to indicate the direction of the inequality:
+      \begin{displaymath}
+        G_j(\vect x) = \begin{cases}
+                        +1 \quad \mbox{if} ~s_j f_j(\vect x) < s_j \theta_j \\
+                        -1 \quad \mbox{otherwise}
+                      \end{cases}
+      \end{displaymath}
+      with $\vect x$ being a sub-window of an image.
+    \item Very aggressive process to discard the vast majority of features.
+ \item Best feature selected by AdaBoost:
+  \end{itemize}
+ \textbf {Classifier Cascade:}
+
+  \begin{itemize}
+    \item Despite the efficiency of the feature computation, the complexity of the problem is still huge. %           
+    \item Evaluating the full AdaBoost sequence on all sub-windows of the image takes too much time.
+    \item Idea of cascaded classifiers:
+    \begin{itemize}
+      \item Simpler classifiers used to reject the majority of sub-windows. %           
+      \item Each stage is again created by AdaBoost. %           
+      \item Stage 1 uses the two features shown before; detects 100\,\% faces with \\ false positive rate (FPR) of around 40\,\%.
+    \end{itemize}
+  \end{itemize}
+
+  \begin{itemize}
+    \item The cascade has the overall shape of a degenerated decision tree:         
+    \item A negative classification at any stage yields an immediate rejection of the sub-window.
+    \item Structure of cascade reflects the (usually) overwhelming majority of negative sub-windows in an image. %           
+    \item Goal is to reject as many negatives as possible at the earliest stage of the processing.
+  \end{itemize}
+  
+ \textbf {Training of the cascade:}
+
+  \begin{itemize}
+    \item Subsequent classifiers are trained using only those examples which pass through all the previous stages. %           
+    \item The next classifier faces a more difficult task than the previous one. 
+    \item Trade-off between more features achieving higher detection rates and lower false positive rates while requiring more computation time.
+  \end{itemize}
+ \textbf {Final classifier:}
+refer to slides for more details. 
+  \begin{itemize}
+    \setlength\itemsep{0.5cm}
+    \item 32 layer cascade of increasingly strong boosted classifiers
+    
+    \begin{center}
+      \begin{tabular}{r@{}l r c c}
+        \multicolumn{2}{c}{\structure{Layer}} & 
+       \textbf        {\# Features} & 
+       \textbf        {TPR} &
+       \textbf        {FPR}\\
+        \hline
+           &1  &   2~~~~~ & 100\,\% & 40\,\% \\
+           &2  &   5~~~~~ & 100\,\% & 20\,\% \\
+         3-&5  &  20~~~~~ & \\
+         6-&7  &  50~~~~~ & \\
+         8-&12 & 100~~~~~ & \\
+        13-&32 & 200~~~~~ & \\ %           
+      \end{tabular}
+    \end{center}
+
+    \item Number of stages and features adapted until false positive rate on validation was nearly zero while maintaining high correct rate.
+  \end{itemize}
+
+\subsection{Lessons Learned}
+
+  \begin{itemize}
+    \item Boosting of weak classifiers can yield a powerful combined classifier          
+    \item AdaBoost algorithm              
+    \item Weights of the classifiers and on the data are adjusted              
+    \item AdaBoost minimizes an exponential loss function
+    \item Viola \& Jones face detection algorithm
+  \end{itemize}
+
+
+          

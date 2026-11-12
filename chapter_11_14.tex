@@ -1,0 +1,929 @@
+% !TeX root = main.tex
+\section{Optimization}
+
+\subsection{Motivation}
+
+  \begin{itemize}
+    \item Optimization is crucial for many solutions in pattern recognition, pattern analysis, machine learning, artificial intelligence, etc. 
+    \item Optimization has many faces: 
+      \begin{itemize}
+        \item discrete optimization,
+        \item combinatorial optimization,
+        \item genetic algorithms,
+        \item gradient descent,
+        \item unconstrained and constrained optimization,
+        \item linear programming,
+        \item convex optimization, etc. 
+      \end{itemize}
+    \item There is no lecture on pattern recognition without a refresher course on optimization techniques. 
+    \item Each researcher has his own favorite optimization algorithm.
+  \end{itemize}
+
+\textbf{Notation in this Chapter} \\
+This chapter follows the notation of Boyd \& Vandenberghe (\emph{Convex Optimization}).\autocite{boyd2004,nocedal1999}
+{\small
+\begin{itemize}
+  \item $\vect x\in\real^d$: generic \textbf{optimization variable} (\textbf{not} a feature vector); $\vect y$ in the convexity definition is a second point in $\mathsf{dom}(f)$ (\textbf{not} a class label).
+  \item $f:\real^d\rightarrow\real$: objective function; $\nabla f$ its gradient, $\nabla^2 f$ its \textbf{Hessian}.
+  \item $\vect x^*$: optimal point (minimizer) of $f$.
+  \item Superscript $(k)$: iteration index, e.\,g.\ $\vect x^{(k)}$ is the estimate in the $k$-th iteration.
+  \item $t^{(k)}\in\real$: step length (step size) in the $k$-th iteration.
+  \item $\Delta\vect x^{(k)}\in\real^d$: search direction in the $k$-th iteration.
+  \item $\vect u\in\real^d$: candidate direction (unit vector w.\,r.\,t.\ a chosen norm $\|\cdot\|$).
+  \item $\alpha,\beta$: parameters of the backtracking line search (not SVM parameters).
+\end{itemize}
+}
+
+\subsection{Unconstrained Optimization}
+ 
+ \textbf{Definition}
+
+    A function $f: \real^d \rightarrow \real$ is \textbf{\emph{convex}} if the domain $\mathsf{dom}(f)$ of $f$ is a convex set \\
+    and if $\forall \vect x, \vect y \in \mathsf{dom}(f)$, and $\theta$ with $0 \leq \theta \leq 1$, we have
+    \begin{displaymath}
+      f(\theta \vect x + (1-\theta) \vect y) \leq \theta f(\vect x) + (1-\theta) f(\vect y)
+    \end{displaymath}
+A function $f: \real^d \rightarrow \real$ is   \textbf{\emph{concave}} if $-f$ is convex.
+   
+ \textbf{Geometric interpretation:} The line segment between $(\vect x, f(\vect x))$ and $(\vect y, f(\vect y))$ lies above the graph of $f$. Let us assume in the following that we have to compute the minimum of a convex function
+  \begin{displaymath}
+    f: \real^d \rightarrow \real
+  \end{displaymath}
+  that is twice differentiable. The unconstrained optimization problem is just the solution of the minimization problem
+  \begin{displaymath}
+    \vect x^* = \argmin_{\vect x} f(\vect x)
+  \end{displaymath}
+  where $\vect x^*$ denotes the optimal point.  For this particular family of functions, a necessary and sufficient condition \\
+  for the  minumum are the zero-crossings of the function's gradient:
+  \begin{displaymath}
+    \nabla f(\vect x^*) = \vect 0.
+  \end{displaymath}
+ Most methods follow an \textbf{iterative scheme}:
+  \begin{eqnarray*}
+    \mbox{initialization} & & \vect x ^{(0)}\\
+    \mbox{iteration step} & & \vect x^{(k+1)}= g(\vect x^{(k)}) 
+  \end{eqnarray*}
+  where $g: \real^d\rightarrow \real^d$ is the update function. \\   
+
+  The iterations  \textbf{terminate}, if 
+  \begin{displaymath}
+    \|\vect x^{(k+1)} - \vect x^{(k)}\| < \epsilon,
+  \end{displaymath}
+  i.\,e.\ no further significant change.
+ 
+\subsection{Descent Methods}
+ We now consider iteration schemes that produce a sequence of estimates \\
+  according to the update function  
+  \begin{displaymath}
+    \vect x^{(k+1)} = g(\vect x^{(k)}) = \vect x^{(k)} + t^{(k)}\Delta \vect x^{(k)} .
+  \end{displaymath}  
+  where 
+%  
+  \begin{eqnarray*}
+    \Delta \vect x^{(k)}\in \real ^d: & & \quad \mbox{is the   \textbf{search direction} in the $k$-th iteration}\\
+    t^{(k)}\in \real:                & & \quad \mbox{denotes the   \textbf{step length} in the $k$-th iteration}
+  \end{eqnarray*}  
+  and where we expect 
+%  
+  \begin{displaymath}
+    f( \vect x^{(k+1)} ) < f(\vect x^{(k)}) \quad \text{requires a descent direction, i.e. } \nabla f(\vect x^{(k)})^T \Delta \vect x^{(k)} < 0.
+  \end{displaymath}  
+  except ~~$ \vect x^{(k+1)}=\vect x^{(k)}=\vect x^*$.
+  
+\subsubsection{Taylor Approximation}
+  For many problems it is always good to know the   \textbf{second order Taylor approximation}:
+  \begin{displaymath}
+    f(\vect x + t\cdot \Delta\vect x) 
+    \approx f(\vect x) + t\cdot \nabla f(\vect x)^T \Delta \vect x +
+      \frac{1}{2} t^2\cdot\Delta \vect x^T \nabla^2 f(\vect x)\Delta \vect x
+  \end{displaymath}
+  \begin{algorithmic}
+    \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$\\
+    \STATE Initialize: $k:=0$\\
+    \Repeat
+      \STATE Select (or compute) descent direction \\
+      \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
+      \STATE Update:
+        \begin{displaymath}
+          \vect x^{(k+1)} = \vect x^{(k)} + t^{(k)}\Delta \vect x^{(k)}
+        \end{displaymath}
+      \STATE $k:=k+1$\\
+    \Until{$\|\vect x^{(k)} - \vect x^{(k-1)}\| < \epsilon$}\\
+    \STATE \textbf{Output:} $\vect x^{(k)}$
+  \end{algorithmic}
+ 
+\subsection{Backtracking Line Search}
+
+  \begin{itemize}  
+    \item Multivariate optimization in its described form requires a proper line search method.
+    \item Exact line search along the straight line $\{\vect x + t\Delta \vect x ~|~ t \geq 0\}$ has to solve
+      \begin{displaymath}
+        t^* = \argmin_{t\geq 0} f(\vect  x + t\Delta \vect x)
+      \end{displaymath}
+      and is rarely used.
+    \item An overview of methods can be found in numerical recipes.
+  \end{itemize}
+  Setting $t^{(k+1)}= \frac{1}{2} t^{(k)}$ and starting with $t^{(0)} = 0.5$:\\
+  The Armijo-Goldstein line search algorithm: 
+
+  \begin{algorithmic}
+    \STATE \textbf{Input:} function $f$, search direction $\Delta\vect x$\\
+    \STATE Initialize: $t:=1$\\
+    \STATE Select: $\alpha\in (0,0.5)$ and $\beta\in (0,1)$.\\
+    \While{$f(\vect x + t\Delta \vect x) > f(\vect x) +  \alpha t \cdot \nabla f(\vect x)^T\Delta\vect x$}
+      \STATE $t := \beta t$\\
+    \EndWhile
+    \STATE \textbf{Output:} $t$
+  \end{algorithmic}
+ 
+\subsection{Gradient Descent Methods}
+ The most commonly used in machine learning. important to understand how this works. A natural choice of the search direction is the   \textbf{negative gradient}:
+  
+  \begin{displaymath}
+    \Delta \vect x^{(k)} = -\nabla f(\vect x^{(k)})
+  \end{displaymath}
+\textbf{Rule of thumb:} The negative gradient is the steepest descent direction.
+
+  \begin{algorithmic}
+    \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$\\
+    \STATE intialize: $k:=0$\\
+    \Repeat
+      \STATE Set descent direction: $\Delta\vect x^{(k)}=- \nabla f(\vect x^{(k)}) $\\
+      \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
+      \STATE Update:
+        \begin{displaymath}
+          \vect x^{(k+1)} = \vect x^{(k)} + t^{(k)}\Delta \vect x^{(k)} .
+        \end{displaymath}
+      \STATE $k:= k+1$\\
+    \Until{$\|\vect x^{(k)} - \vect x^{(k-1)}\|_2 < \epsilon$}\\
+    \STATE \textbf{Output:} $\vect x^{(k)}$\\
+  \end{algorithmic}
+ 
+\subsection{Steepest Descent Methods}
+
+\subsubsection{Algorithm}
+\textbf{(Normalized) steepest descent, what does it mean?} \\
+We search for the unit vector that shows the largest decrease in the linear approximation of $f$:
+\begin{displaymath}
+  \Delta \vect x = \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\| = 1\}
+\end{displaymath}
+for a chosen norm $\|\cdot\|$ (e.\,g.\ $L_1$, $L_2$, $L_\infty$, or the quadratic norm $\|\cdot\|_{\mat P}$).
+
+\textbf{Conclusions:}
+  \begin{itemize}
+    \item The steepest descent direction depends on the chosen norm.
+    \item The negative gradient is not necessarily the best choice for the search direction.
+  \end{itemize}
+  We consider now the first order Taylor approximation of $f(\vect x +\vect u)$ around the selected position $\vect x$:
+  \begin{displaymath}
+    f(\vect x+\vect u) \approx f(\vect x) + \nabla f(\vect x)^T \vect u.
+  \end{displaymath}
+  \begin{itemize}
+    \item Here $ \nabla f(\vect x)^T \vect u$ is the directional derivative at $\vect x$ in direction $\vect u$.
+    \item The vector $\vect u$ denotes a descent direction if the inner product with the gradient vetor is negative, i.\,e.
+      \begin{displaymath}
+        \nabla f(\vect x)^T \vect u < 0~.
+      \end{displaymath}
+  \end{itemize}
+ 
+  \begin{algorithmic}
+    \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$, norm $\|.\|$\\
+    \STATE intialize: $k:=0$\\
+    \Repeat
+      \STATE Compute highest descent direction: $\Delta \vect x ^{(k)}= \argmin_{\vect u} \{\nabla f(\vect x^{(k)})^T \vect u ; \ \| \vect u\| = 1\}$\\
+      \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
+      \STATE Update:
+        \begin{displaymath}
+          \vect x^{(k+1)} = \vect x^{(k)} + t^{(k)}\Delta \vect x^{(k)} .
+        \end{displaymath}
+      \STATE $k:=k+1$\\
+    \Until{$\|\vect x^{(k)} - \vect x^{(k-1)}\| < \epsilon$}\\
+    \STATE \textbf{Output:} $\vect x^{(k)}$\\
+  \end{algorithmic}
+ 
+\subsubsection{$L_2$-norm}
+  For the $L_2$-norm the steepest descent direction is the direction of the negative gradient:
+  \begin{displaymath}
+    \Delta \vect x
+    = \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\|_2 = 1\}
+    = -\frac{\nabla f(\vect x)}{\|\nabla f(\vect x)\|_2}
+  \end{displaymath}
+  {\small (In practice the unnormalized $\Delta\vect x = -\nabla f(\vect x)$ is used; the line search adapts the step length.)}
+
+\subsubsection{$L_1$-norm}
+
+  The unit ball for the $L_1$-norm: see in slides
+   \begin{itemize}
+    \item The steepest descent for the $L_1$-norm selects in each iteration 
+      the component of $\nabla f(\vect x)$ with maximum absolute value and then 
+      decreases or increases dependent on the sign of the selected component.   
+    \item Let $i$ be the index of the gradient component with maximum absolute 
+      value, and let $\vect e_i\in\real^d$ denote the corresponding base vector.
+      The steepest descent direction is given by:
+      \begin{eqnarray*}
+        \Delta \vect x &=& \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\|_1 = 1\} \\
+                      &=& -\mbox{sgn}\left(\frac{\partial}{\partial x_i} f(\vect x)\right)\vect e_i
+      \end{eqnarray*}
+        
+    \item  \textbf{Note:} Steepest descent using the $L_1$-norm results in the {\em coordinate descent algorithm}.
+  \end{itemize}
+   
+\subsubsection{$L_\infty$-norm}
+
+  The unit ball for the $L_\infty$-norm: see in slides 
+  
+\subsubsection{Quadratic norm \texorpdfstring{$\|\cdot\|_{\mat P}$}{quadratic norm}}
+
+The unit ball for the quadratic norm $\|\vect u\|_{\mat P} = (\vect u^T\mat P\vect u)^{\frac{1}{2}}$, where $\mat P\in\real^{d\times d}$ is symmetric positive definite.
+
+The \textbf{steepest descent} for the norm $\|\cdot\|_{\mat P}$ is given by:
+\begin{eqnarray*}
+  \Delta \vect x
+    &=& \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\|_{\mat P} = 1\} \\   
+    &=& \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ;\  (\vect u^T{\mat P}\vect u)^{\frac{1}{2}} = 1\} \\   
+    &=& \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ;\ \| {\mat P}^{\frac{1}{2}} \vect u\|_2 = 1\}~.
+\end{eqnarray*}
+
+As we did in the LDA transform, we introduce a change of variables that makes the unit ball \textbf{spherical}:
+\begin{displaymath}
+  \vect x' = {\mat P}^{\frac{1}{2}} \vect x, \qquad \vect u' = {\mat P}^{\frac{1}{2}} \vect u \quad (\mbox{thus } \|\vect u\|_{\mat P} = \|\vect u'\|_2)
+\end{displaymath}
+
+and define the transformed objective
+\begin{displaymath}
+  f'(\vect x') = f({\mat P}^{-\frac{1}{2}}\vect x') = f(\vect x)~.
+\end{displaymath}
+
+Instead of $f(\vect x)$ we now minimize $f'(\vect x')$ using the $L_2$-norm and back-transform the result:
+\begin{eqnarray*}
+  \Delta \vect x'
+    &=& \argmin_{\vect u'} \{\nabla f'(\vect x')^T \vect u' ; \ \| \vect u'\|_{2} = 1\} \\[.15cm]
+    &\propto& -\nabla f'(\vect x') \\[.15cm]
+    &=& -\mat P^{-\frac{1}{2}}\nabla f({\mat P}^{-\frac{1}{2}}\vect x') \\[.15cm]
+    &=& - {\mat P}^{-\frac{1}{2}}\nabla f(\vect x)
+\end{eqnarray*}
+{\small $\propto$: equal up to a positive scale factor (the normalization), which is absorbed by the line search.}
+
+Now we get for $\Delta \vect x$:
+\begin{eqnarray*}
+  \Delta \vect x
+    &=& {\mat P}^{-\frac{1}{2}} \Delta \vect x' \\[.15cm]
+    &\propto& {\mat P}^{-\frac{1}{2}} \left( - {\mat P}^{-\frac{1}{2}}\nabla f(\vect x) \right) \\[.15cm]
+    &=& - \mat{P}^{-1} \nabla f(\vect x)~.
+\end{eqnarray*}
+
+\textbf{Conclusion:} The (unnormalized) steepest descent direction for the norm $\|\cdot\|_{\mat P}$ is
+\begin{displaymath}
+   \Delta \vect x = -\mat{P}^{-1} \nabla f(\vect x)~.
+\end{displaymath}
+
+\subsection{Newton's Method}
+   \textbf{The idea:}
+  \begin{itemize}
+    \item Select a point.
+    \item Compute the minimum of the second order Taylor approximation.
+  \end{itemize}
+ Second order Taylor approximation:
+  \begin{displaymath}
+    f(\vect x+\Delta \vect x) 
+    \approx f(\vect x) + \nabla f(\vect x)^T \Delta \vect x + \frac{1}{2} \Delta \vect x^T (\nabla^2 f(\vect x))\Delta \vect x 
+  \end{displaymath}
+  Now we select $\Delta \vect x$ such that 
+  \begin{displaymath}
+    \nabla\{  f(\vect x) + \nabla f(\vect x)^T \Delta \vect x + \frac{1}{2}\Delta \vect x^T (\nabla^2 f(\vect x))\Delta \vect x\} 
+    = 0
+  \end{displaymath}
+  Obviously the gradient is
+  \begin{displaymath}
+    \nabla f(\vect x)+ \nabla^2 f(\vect x)\Delta \vect x 
+    = 0
+  \end{displaymath}
+  and thus
+  \begin{displaymath}
+    \Delta \vect x 
+    = -(\nabla^2 f(\vect x))^{-1} \nabla f(\vect x)
+  \end{displaymath} 
+\textbf{Conclusion:} \\
+  Newton's method is an $\vect x$-dependent steepest descent method regarding the quadratic norm $\|\cdot\|_{\mat P}$, where $\mat P = \nabla^2 f(\vect x)$ is the Hessian (assumed positive definite).
+  
+  \subsubsection{Damped Newton's Method}
+  
+  \begin{algorithmic}
+    \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$\\
+    \STATE intialize: $k:=0$\\
+    \Repeat
+      \STATE Compute Newton step: $\Delta \vect x^{(k)}= -\nabla^2 f(\vect x^{(k)})^{-1} \nabla f(\vect x^{(k)})$\\
+      \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
+      \STATE Update:
+        \begin{displaymath}
+          \vect x^{(k+1)} = \vect x^{(k)} + t^{(k)}\Delta \vect x^{(k)}
+        \end{displaymath}
+      \STATE $k:=k+1$\\
+    \Until{$\|\vect x^{(k)} - \vect x^{(k-1)}\| < \epsilon$}\\
+    \STATE \textbf{Output:} $\vect x^{(k)}$\\
+  \end{algorithmic}
+ 
+\subsection{Lessons Learned}
+
+  \begin{itemize}
+    \item Gradient descent is widely applied.
+    \item Gradient descent and coordinate descent are special cases of steepest descent methods. 
+    \item Steepest descent method depends on the chosen norm.
+  \end{itemize}
+
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is the general formulation for an unconstrained optimization problem? 
+    \item Why do we need a line search in gradient descent approaches? 
+    \item What is the Armijo-Goldstein line search algorithm? 
+    \item What are the steepest descent directions if we apply the $L_\infty$, $L_1$, $L_2$, and the quadratic norm $\|\cdot\|_{\mat P}$?
+  \end{itemize}
+Now we make a small deviation into SVMs before continuing with the optimization chapter. It is important to understand SVMs to continue.
+
+\newpage
+\section{Support Vector Machines I}
+
+This is an important chapter for the exam.\autocite{vapnik2000,hastie2009,bishop2006,schoelkopf2002}
+
+\subsection{Motivation}
+
+  \begin{itemize}
+  \item Assume two linearly separable classes. 
+  \item Computation of linear decision boundary that allows the separation of 
+    training data and that generalizes well.
+  \item Vapnik: Optimal separating hyperplane separates two classes and maximizes the distance to the closest point from either class. This results in
+    \begin{itemize}
+      \item unique solution for hyperplanes, and
+      \item (in most cases) better generalization.
+    \end{itemize}
+  \end{itemize}
+  
+  \subsection{Remarks on Linear Algebra}
+
+  Assume we have an affine \textbf{decision function}:
+  \begin{eqnarray*}
+    f(\vect x) &=& \vect \alpha^T \vect x + \alpha_0
+  \end{eqnarray*}
+  The \textbf{decision boundary} is the hyperplane $\{\vect x : f(\vect x)=0\}$.
+  \begin{itemize}
+    \item For any point $\vect x$ on the hyperplane, we have $f(\vect x)= 0$.      
+    \item A necessary condition for two points on the hyperplane is:
+      \begin{displaymath}
+        f(\vect x_1) = f(\vect x_2) \quad \mbox{and thus} \quad \vect \alpha^T (\vect x_1-\vect x_2) =0.
+      \end{displaymath}
+    \item The  \textbf {normal vector $\vect n$} of the hyperplane is $\vect n= \vect \alpha/\|\vect \alpha\|_2$.
+
+    \item \textbf{Derivation of the signed distance:} Let $\vect x_\perp$ be the orthogonal projection of $\vect x$ onto the hyperplane $\{\vect x:f(\vect x)=0\}$.
+          Decompose $\vect x$ along the unit normal $\vect n=\vect\alpha/\|\vect\alpha\|_2$:
+          {\small
+          \[
+            \vect x = \vect x_\perp + d\,\vect n, \qquad f(\vect x_\perp)=0~.
+          \]
+          }
+          Applying $f(\cdot)=\vect\alpha^T(\cdot)+\alpha_0$ gives
+          {\small
+          \[
+            f(\vect x)=f(\vect x_\perp)+d\,\vect\alpha^T\vect n
+            = 0 + d\,\frac{\vect\alpha^T\vect\alpha}{\|\vect\alpha\|_2}
+            = d\,\|\vect\alpha\|_2,
+            \quad\Rightarrow\quad d=\frac{f(\vect x)}{\|\vect\alpha\|_2}~.
+          \]
+          }
+
+      \begin{displaymath}
+        d = 
+        \frac{\|\vect \alpha\|_2}{\vect \alpha^T\vect \alpha} \cdot f(\vect x) = 
+        \frac{1}{\|\vect \alpha\|_2}\cdot f(\vect x)  =
+        \frac{1}{\|\nabla f(\vect x)\|_2}\cdot f(\vect x)  
+      \end{displaymath}
+
+    \item Assume points $\vect x_1, \vect x_2$ on either side of the margin satisfy $f(\vect x_1)= +1$ and $f(\vect x_2)=-1$. Thus we have:
+      \begin{displaymath}
+        \vect \alpha^T (\vect x_1 - \vect x_2) = 2 \quad \mbox{and} \quad
+        \frac{\vect \alpha^T}{\|\vect \alpha\|_2} (\vect x_1-\vect x_2) 
+        = \frac{2}{\|\vect \alpha\|_2}
+      \end{displaymath}
+      i.\,e.\ the \textbf{margin} (width between the hyperplanes $f(\vect x)=\pm 1$) is $2/\|\vect\alpha\|_2$.
+  \end{itemize}
+  
+\subsection{Hard Margin Problem}
+
+Training set $S=\{(\vect x_i, y_i)\}_{i=1}^m$, $\vect x_i\in\real^d$, with \textbf{labels $y_i\in\{-1,+1\}$}.
+The \textbf{predicted label} of a feature vector $\vect x$ is
+\begin{displaymath}
+  \hat y = \sign(f(\vect x)) = \sign(\vect\alpha^T\vect x+\alpha_0)~.
+\end{displaymath}
+
+\textbf{Constraints:}
+  \begin{itemize}
+    \item Separation of classes has to be done with margin:
+      \begin{eqnarray*}
+        \vect \alpha^T \vect x_i+\alpha_0 &\leq& -1, \quad \mbox{if} \quad y_i= -1 \\
+        \vect \alpha^T \vect x_i+\alpha_0 &\geq& +1, \quad \mbox{if} \quad y_i= +1
+      \end{eqnarray*}
+    \item This is equivalent to:
+      \begin{displaymath}
+        y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) \geq 1
+      \end{displaymath}
+  \end{itemize}
+  The  \textbf{maximization} of the margin $2/\|\vect\alpha\|_2$ corresponds to the following optimization problem with linear constraints:
+  \begin{center}
+        $\begin{aligned}
+           \displaystyle 
+           \mbox{maximize}   &\qquad \frac{1}{\|\vect \alpha\|_2} \\
+           \mbox{subject to} &\qquad \forall i:~ y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) \geq 1
+        \end{aligned}$
+  \end{center}
+ \textbf {Note:}
+  \begin{itemize}
+    \item The linear constraints enforce that every training sample lies at least one margin unit away from the decision boundary; the objective then maximizes that margin.
+    \item Basically we compute the distance of the convex hulls of feature sets. 
+    \item We need constrained optimization methods to solve the problem.
+  \end{itemize}
+  The optimization problem is equivalent to 
+  \begin{center}
+       $\begin{aligned}
+           \displaystyle 
+           \mbox{minimize}   &\qquad \frac{1}{2} {\|\vect \alpha\|^2_2} \\
+           \mbox{subject to} &\qquad \forall i:~ y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1 \geq 0
+        \end{aligned}$
+   \end{center}
+  \textbf {Remarks on the optimization problem:}
+  
+  \begin{itemize}
+    \item Convex optimization problem 
+    \item Efficient algorithms for solving the convex optimization problem (interior point method) 
+    \item Standard libraries can be used for minimization 
+    \item Solution is unique
+  \end{itemize}
+
+\subsection{Soft Margin Problem}
+
+ If classes are not linearly separable, we have to introduce  \textbf {\emph{slack variables}}. \\ 
+\textbf {Convex optimization problem:}
+  
+  \begin{center}
+        $\begin{aligned}
+           \displaystyle 
+           \mbox{minimize}    &\qquad \frac{1}{2} {\|\vect \alpha\|^2_2} + \mu \sum_i \xi_i \\
+            \mbox{subject to} &\qquad \forall i:~ -(y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1+\xi_i) \leq 0~,\\
+                              &\qquad \forall i:~ -\xi_i \leq 0
+        \end{aligned}$
+  \end{center}
+  
+{\small where $\xi_i\geq 0$ is the slack variable of sample $\vect x_i$ (amount of margin violation), and $\mu>0$ is a user-chosen weight (meta-parameter) trading margin width against violations.}
+
+\subsection{Lessons Learned}
+  \begin{itemize}
+    \item Support vector machine 
+    \item Hard and soft margin problem 
+    \item Convex optimization 
+  \end{itemize}
+ 
+\subsection{Comprehensive Questions}
+ 
+  \begin{itemize}
+    \item What is the concept of a SVM? 
+    \item What is the difference between a hard and soft margin SVM? 
+    \item What is the convex optimization problem of the hard margin SVM? 
+    \item What is the convex optimization problem of the soft margin SVM?
+  \end{itemize}
+  
+\section{Duality in Optimization}
+
+\textbf{Notation in this Chapter} \\
+This chapter follows the notation of Boyd \& Vandenberghe (\emph{Convex Optimization}).\autocite{boyd2004}
+{\small
+\begin{itemize}
+  \item $\vect x\in\real^n$: \textbf{optimization variable} (not a feature vector; $n$ replaces $d$ here).
+  \item $f_0$: objective function.
+  \item $f_i$, $i=1,\dots,m$: inequality constraint functions -- here $m$ is the number of \textbf{constraints}, not the number of training samples.
+  \item $h_i$, $i=1,\dots,p$: equality constraint functions ($p$ is a count, not a probability).
+  \item $\vect\lambda\in\real^m$, $\vect\nu\in\real^p$: Lagrange multipliers (dual variables).
+  \item $p^*$, $d^*$: optimal values of the primal and of the dual problem.
+  \item $\vect\lambda\succeq 0$: componentwise inequality, i.\,e.\ $\lambda_i\geq 0$ for all $i$.
+\end{itemize}
+}
+
+\subsection{The Primal Problem}
+
+  \begin{itemize}
+    \item Consider the \textbf{\emph{primal optimization problem}}: 
+      \begin{center}
+            $\begin{aligned}
+               \displaystyle 
+               \mbox{minimize~}  & \qquad f_0(\vect{x}) \\[.3cm]
+               \mbox{subject to} & \qquad f_i(\vect{x}) \leq 0, \quad i=1,2,\dots, m \\
+                                 & \qquad h_i(\vect{x}) = 0,    \quad i=1,2,\dots, p
+             \end{aligned}$
+      \end{center}
+      with variable $\vect{x}\in\real^n$. 
+    \item The function $f_0(\vect{x})$ is \textbf{not} required to be \textbf{convex}.
+  \end{itemize}
+
+\subsection{The Lagrangian}
+
+    The \textbf{\emph{Lagrangian} $\mathcal L$} of the aforementioned problem is defined as
+    \begin{displaymath}
+      \mathcal L(\vect{x},\vect{\lambda}, \vect{\nu}) = 
+      f_0(\vect{x}) + \sum_{i=1}^m \lambda_i f_i(\vect{x}) + \sum_{i=1}^p \nu_i h_i(\vect{x})
+    \end{displaymath}
+    \begin{itemize}
+      \item $\lambda_i$ is the Lagrange multiplier associated with the $i$-th \textbf{inequality} \\
+        constraint $f_i(\vect{x})\leq 0$. \\[.15cm]  
+      \item $\nu_i$ is the Lagrange multiplier associated with the $i$-th \textbf{equality} constraint $h_i(\vect{x})= 0$. \\[.15cm]  
+      \item The vectors $\vect{\lambda}$ and $\vect{\nu}$ are called {\em Lagrange multiplier vectors} \\
+        or simply \textbf{\emph{dual variables}}. 
+    \end{itemize}
+  
+\subsubsection{Lagrange Dual Function}
+
+      The \textbf{\emph{Lagrange dual function}} is defined as the infimum of the Lagrangian over $\vect{x}$
+     \begin{eqnarray*}
+       g(\vect{\lambda},\vect{\nu}) 
+         & = & \inf_{\vect{x}}\mathcal L(\vect{x},\vect{\lambda}, \vect{\nu}) \\   
+         & = & \inf_{\vect{x}} \left(   
+                                f_0(\vect{x}) + \sum_{i=1}^m\lambda_i f_i(\vect{x}) +     \sum_{i=1}^p\nu_i h_i(\vect{x})
+                              \right)
+    \end{eqnarray*}
+  \textbf{Note:} 
+  \begin{itemize}
+    \item The Lagrange dual function is the \textbf{pointwise infimum of a family of affine functions} of the dual variables $(\vect\lambda,\vect\nu)$ (one for each $\vect x$). 
+    \item The \textbf{Lagrange dual function is concave} (even if the original problem is not convex).
+  \end{itemize}
+
+  \subsubsection{Optimal Value and Lower Bound}
+
+  \begin{lemma}
+    Let $p^*$ be the optimal value of the optimization problem. \\
+    For any $\vect\lambda \succeq 0$ and any $\vect \nu$ the following bound is valid:
+    \begin{displaymath}
+      g(\vect{\lambda},\vect{\nu}) \leq p^* 
+    \end{displaymath} 
+  \end{lemma}
+   
+   \begin{itemize}
+        \item Neither $f_0(x)$ nor $f_1(x)$ is convex,
+        \item but the dual function $g(\lambda)$ is concave!
+      \end{itemize}
+  Let $\tilde{\vect{x}}$ be a \textbf{feasible point} of the optimization problem. \\[.3cm]
+  If $\vect{\lambda}\succeq 0$, we have due to the \textbf{$m$ inequality} and \textbf{$p$ equality} constraints:
+  \begin{displaymath}
+    \sum_{i=1}^m \lambda_i f_i(\tilde{\vect{x}}) + 
+    \sum_{i=1}^p\nu_i h_i(\tilde{\vect{x}}) 
+    \leq 0~,
+  \end{displaymath}
+  Thus we have
+  \begin{displaymath}
+    \mathcal L(\tilde{\vect{x}},\vect{\lambda},\vect{\nu}) =
+    f_0 ({\tilde{\vect{x}}}) + 
+    \sum_{i=1}^m\lambda_i f_i(\tilde{\vect{x}}) + \sum_{i=1}^p\nu_i h_i(\tilde{\vect{x}}) 
+    \leq f_0 ({\tilde{\vect{x}}})~.
+  \end{displaymath}
+  Using the \textbf{definition of the dual function} we get:
+  \begin{displaymath}
+    g(\vect{\lambda},\vect{\nu}) = 
+    \inf_{{\vect{x}}} \mathcal L({\vect{x}},\vect{\lambda}, \vect{\nu}) \leq
+    \mathcal L(\tilde{\vect{x}}, \vect{\lambda}, \vect{\nu}) \leq
+    f_0(\tilde{\vect{x}})
+  \end{displaymath}
+  The inequality $g(\vect{\lambda},\vect{\nu}) \leq f_0(\tilde{\vect{x}})$ holds for \textbf{every feasible point $\tilde{\vect{x}}$}. Consequently, the dual function $g(\vect{\lambda},\vect{\nu})$ is also smaller or equal to the optimal value $p^*$:
+
+  \begin{displaymath}
+    g(\vect{\lambda},\vect{\nu}) \leq p^*
+  \end{displaymath}
+  \hfill $\blacksquare$
+ 
+\subsubsection{The Lagrange Dual Problem}
+
+ \textbf{Problem:} how to find the best lower bound for the primal problem. The Lagrange dual problem is given by the optimization problem:
+  
+  \begin{align*}
+    \text{maximize} \quad & g(\vect{\lambda}, \vect{\nu}) \\
+    \text{subject to} \quad & \vect{\lambda} \succeq 0
+  \end{align*}
+  \textbf{Optimal duality gap}
+
+Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal value of the Lagrange dual problem. 
+    
+    \begin{itemize}
+      \item The difference $p^*-d^*$ is the \textbf{\emph{optimal duality gap}}.
+      \item If $p^*=d^*$, the duality gap is zero. In this case we talk about \textbf{\emph{strong duality}}.
+      \item \textbf{\emph{Weak duality}} $d^*\leq p^*$ always holds. If $p^*> d^*$, the duality gap is positive (strong duality fails).
+     \end{itemize}
+ 
+\subsection{Slater's condition}
+
+\textbf{Theorem}
+
+    Given a \textbf{\emph{convex} primal optimization problem}:
+    \begin{eqnarray*}
+      \mbox{minimize~}  & & \quad f_0(\vect{x}) \\
+      \mbox{subject to} & & \quad f_i(\vect{x}) \leq 0, \quad i=1,2,\dots, m \\
+                        & & \quad \mat{A} \vect{x} = \vect{b}
+    \end{eqnarray*}
+    with $f_0, f_1, \ldots, f_m$ being convex. 
+
+    If there exists an $\vect{x} \in \text{relint}~\big\{\mathcal{D} = \cap_{i=0}^m \text{dom}(f_i) \big\}$ with
+    \begin{align*}
+      & f_i(\vect{x}) < 0, \quad i=1,\dots,m \\
+      & \mat{A}\vect{x} = \vect{b} 
+    \end{align*}
+    then \textbf{strong duality} holds.
+   
+  \subsubsection{Refinement of Slater's Condition}
+
+ \textbf{Theorem}
+
+    Given a \textbf{\emph{convex} primal optimization problem}. If the first $k$ constraint functions $f_1, \ldots, f_k$ are \textbf{\emph{affine}}, and 
+    if there exists an $\vect{x} \in \text{relint}~\mathcal{D}$ with
+    \begin{displaymath}
+      \renewcommand\arraystretch{1.4}      
+      \begin{array}{l l}
+        f_i(\vect{x}) \le 0, \quad i=1,\dots,k                   & \text{\footnotesize (affine constraints)}\\
+        f_i(\vect{x}) <   0, \quad i=k+1, \ldots, m \qquad \quad & \text{\footnotesize (convex constraints)}\\
+        \mat{A}\vect{x} = \vect{b} & \\
+      \end{array}
+    \end{displaymath}
+    then \textbf{strong duality} holds.
+  
+   \textbf{Note:} the refined Slater's condition reduces to \textbf{feasibility} when the constraints are all linear equalities and inequalities, and $\text{dom}(f_0)$ is open.  
+ 
+\subsection{KKT Optimality Conditions}
+
+  Let $\vect x^*$ be a primal and $(\vect \lambda^*, \vect \nu^*)$ dual optimal points with zero duality gap. For the primal optimal point $\vect x^*$, the gradient with respect to $\vect x$ of $\mathcal L(\vect x, \vect \lambda^*, \vect \nu^*)$ is $\vect{0}$:
+ 
+  \begin{displaymath}
+    \nabla \mathcal L(\vect x^*, \vect \lambda^*, \vect \nu^*) = 
+    \nabla f_0(\vect{x}^*) + 
+    \sum_{i=1}^m \lambda_i^* \nabla f_i(\vect{x}^*) + 
+    \sum_{i=1}^p \nu_i^* \nabla h_i(\vect{x}^*) =  \vect{0}
+  \end{displaymath}
+  The following four conditions are called KKT conditions: 
+  \begin{enumerate}
+    \item \textbf{Primal constraints:} 
+      \begin{itemize}
+        \item $f_i(\vect{x}) \leq 0, \quad i = 1, 2, \dots, m$
+        \item $h_i(\vect{x}) =    0, \quad i = 1, 2, \dots, p$  
+      \end{itemize}
+    \item \textbf{Dual constraints:} $\vect \lambda \succeq 0$  
+    \item \textbf{Complementary slackness:} $ \lambda_i \, f_i(\vect{x})= 0$   
+    \item \textbf{Gradient of the Lagrangian $\mathcal L$ is zero:}
+      \begin{displaymath}
+        \nabla \mathcal L(\vect x, \vect \lambda, \vect \nu) = 
+        \nabla f_0(\vect{x}) + 
+        \sum_{i=1}^m\lambda_i \nabla f_i(\vect{x}) +        
+        \sum_{i=1}^p\nu_i \nabla h_i(\vect{x}) = 
+        \vect{0}
+      \end{displaymath}
+  \end{enumerate}
+   If strong duality holds and if $\vect x^*$ and $(\vect \lambda^*, \vect \nu^*)$ are optimal points, then the KKT conditions hold.\\
+  
+    \textbf{Complementary slackness:}\\ { $\lambda_i^* \cdot f_i(\vect{x}^*) = 0$}\\
+    Important to understand this concept of complementary slackness. 
+     
+   \subsection{Conclusions \scriptsize ~(Boyd 2004, Sec. 5.5.3)}
+
+  \begin{itemize}
+    \item For \textbf{\emph{any} optimization problem} with differentiable objective and constraint functions for which strong duality obtains, any pair of primal and dual optimal points must satisfy the KKT conditions.  
+    \item For \textbf{any \emph{convex} optimization problem} with differentiable objective and and constraint functions, any points that satisfy the KKT conditions are primal and dual optimal, and have zero duality gap.  
+    \item If a \textbf{\emph{convex} optimization problem} with differentiable objective and constraint functions satisfies Slater's condition, then the KKT conditions provide necessary and sufficient conditions for optimality.
+  \end{itemize}
+
+\subsection{Lessons Learned}
+ 
+  \begin{itemize}
+    \item Formalization of the primal problem using the Lagrangian 
+    \item Lagrange dual function 
+    \item Duality gap 
+    \item Karush-Kuhn-Tucker optimality conditions
+  \end{itemize}
+
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is the Lagrangian of a constrained objective function? 
+    \item What is the Lagrange dual function?
+    \item What is the duality gap? 
+    \item What are the Karush-Kuhn-Tucker optimality conditions?
+  \end{itemize}
+   
+\newpage
+\section{Support Vector Machines II}\autocite{hastie2009,bishop2006,schoelkopf2002}
+
+\subsection{Hard Margin Problem}
+  The hard margin SVM optimization problem is formulated as:
+  \begin{eqnarray*}
+     \mbox{minimize}   & \frac{1}{2} {\|\vect \alpha\|^2_2}\\ 
+    \mbox{subject to} & \forall i: \quad y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1 \geq 0
+  \end{eqnarray*}
+
+\subsection{Soft Margin Problem}
+
+  The soft margin SVM optimization problem is formulated as:
+  \begin{eqnarray*}
+    \mbox{minimize}   & \frac{1}{2} {\|\vect \alpha\|^2_2} + \mu \sum_i \xi_i\\
+    \mbox{subject to} & \forall i: \quad -(y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1+\xi_i) \leq 0~, \\
+    &                    \forall i: \quad -\xi_i \leq 0
+  \end{eqnarray*}
+
+  with slack variables $\xi_i$, slack weight (meta-parameter) $\mu>0$, training samples $(\vect x_i, y_i)$, $i=1,\dots,m$, and labels $y_i\in\{-1,+1\}$.
+
+\subsection{Lagrangian}
+
+  The solution of the \textbf{constrained convex optimization problem} requires the Lagrangian:
+
+  \begin{eqnarray*}
+    \mathcal L(\vect \alpha, \alpha_0, \vect \xi, \vect \lambda, \vect \eta)
+     & = & \frac{1}{2} {\|\vect \alpha\|^2_2} + \mu \sum_i \xi_i  -\sum_i \eta_i \xi_i\\
+     &   & \quad - \sum_i \lambda_i (y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1+\xi_i)
+  \end{eqnarray*}
+
+  where $\lambda_i\geq 0$ are the Lagrange multipliers of the margin constraints and $\eta_i\geq 0$ the Lagrange multipliers of the constraints $\xi_i\geq 0$. \\
+  {\normalfont The meta-parameter (slack weight) $\mu$ is also called $C$ in the literature.}
+   \textbf{Partial derivatives  I:}
+ 
+  \begin{displaymath}
+    \frac{\partial  \mathcal L(\vect \alpha, \alpha_0, \vect \xi, \vect \lambda, \vect \eta)}{\partial \vect \alpha} ~=~ 
+    \vect \alpha - \sum_i \lambda_i y_i \vect x_i ~\stackrel{!}{=}~ 
+    \vect 0.
+  \end{displaymath}
+  Thus we have:
+  \begin{displaymath}
+    \vect \alpha = \sum_i \lambda_i y_i \vect x_i~.
+  \end{displaymath}
+  \textbf{Partial derivatives  II:}
+  
+  \begin{displaymath}
+    \frac{\partial  \mathcal L(\vect \alpha, \alpha_0, \vect \xi, \vect \lambda, \vect \eta)}{\partial \alpha_0} ~=~
+   -\sum_i \lambda_i y_i ~\stackrel{!}{=}~ 
+   0
+  \end{displaymath}
+  \textbf{Partial derivatives  III:}
+  
+  \begin{displaymath}
+    \frac{\partial  \mathcal L(\vect \alpha, \alpha_0, \vect \xi, \vect \lambda, \vect \eta)}{\partial \xi_i} ~=~ 
+    \mu - \eta_i - \lambda_i ~\stackrel{!}{=}~ 
+    0
+  \end{displaymath}
+  
+\subsection{Lagrange Dual}
+  \textbf{Hard margin case} ($\xi_i=0$): we insert the stationarity conditions 
+  $\vect\alpha=\sum_i\lambda_i y_i\vect x_i$ and $\sum_i\lambda_i y_i=0$ into the Lagrangian $\mathcal L(\vect\alpha,\alpha_0,\vect\lambda)$:
+  
+  \begin{align*}
+    \mathcal L(\vect\alpha,\alpha_0,\vect\lambda)
+    &= \frac{1}{2}\,\vect \alpha^T \vect \alpha - \sum_i \lambda_i \big(y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1\big)\\
+    &= \frac{1}{2}\,\vect \alpha^T \vect \alpha - \big(\underbrace{\sum_i \lambda_i y_i\, \vect x_i}_{=\vect\alpha}\big)^T \vect \alpha - \underbrace{\sum_i \lambda_i y_i}_{=0}\,\alpha_0 + \sum_i \lambda_i\\
+    &= -\frac{1}{2} \sum_i \sum_j \lambda_i \lambda_j y_i y_j \, \vect x_i^T\vect x_j +  \sum_i \lambda_i ~=:~ \mathcal L_\text{D}(\vect\lambda)
+  \end{align*}
+  $\vect\alpha$ and $\alpha_0$ are eliminated: the \textbf{dual Lagrangian} $\mathcal L_\text{D}$ depends on $\vect\lambda$ only.
+
+  \medskip
+  \textbf{Soft margin: same dual objective + box constraint.} \\
+  Using the three stationarity conditions from above
+  ($\vect\alpha=\sum_i\lambda_i y_i\vect x_i$, $\sum_i\lambda_i y_i=0$, $\mu-\eta_i-\lambda_i=0$) in the 
+  \emph{soft-margin} Lagrangian, the term $\sum_i(\mu-\eta_i-\lambda_i)\xi_i$ vanishes, so the dual objective is still $\mathcal L_\text{D}(\vect\lambda)$.
+  Only the constraints change:
+  $\lambda_i\ge 0$ and $\eta_i=\mu-\lambda_i\ge 0$ imply the \textbf{box constraint}
+  \[
+    0\le \lambda_i \le \mu,\qquad \sum_i \lambda_i y_i = 0\,.
+  \]
+
+  \textbf{Benefits of the dual representation}
+  \begin{itemize}
+    \item The model can be reformulated using kernels.
+    \item SVMs can be applied efficiently to feature spaces whose dimensionality exceeds the number of samples.
+  \end{itemize}
+
+  From Bishop: Pattern Recognition and Machine Learning
+  The solution to a quadratic programming problem in $d$ variables in general has computational complexity that is $\mathcal{O}(d^3)$.
+  In going to the dual formulation we have turned the original optimization problem, which involved minimizing
+  \begin{eqnarray*}
+    & \mbox{minimize}   & \frac{1}{2} {\|\vect \alpha\|^2_2} \\[.3cm]
+    & \mbox{subject to} & \forall i: \quad y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) -1 \geq 0
+  \end{eqnarray*}
+  over $d$ variables, into the dual problem, which has $m$ variables.
+  For a fixed set of basis functions whose number $d$ is smaller than the number $m$ of data points, the move to the dual problem appears disadvantageous. 
+  However, it allows the model to be reformulated using kernels, and so the maximum margin classifier can be applied efficiently to feature spaces whose dimensionality exceeds the number of data points, including infinite feature spaces.
+  The kernel formulation also makes clear the role of the constraint that the kernel function $k(\vect{x},\vect{x}')$ be positive definite, because this ensures that the Lagrangian function $\mathcal L_\text{D}$ is bounded below, giving rise to a well-defined optimization problem.
+
+  For convex optimization problems with differentiable objective and constraint functions, the duality gap is zero, if the KKT conditions are satisfied. Especially the \textbf{complementary slackness} condition is interesting for us:
+  \begin{displaymath}
+    \forall i: \quad \lambda_i \, f_i(\vect{x}) = 0 
+  \end{displaymath}
+  \textbf{Complementary slackness for hard margin SVMs:}
+
+  \begin{displaymath}
+    \forall i: \quad \lambda_i \, (y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) - 1) = 0  
+  \end{displaymath}
+  \textbf{Implications:} 
+  
+  \begin{enumerate}
+    \item If $\lambda_i>0$, then $y_i \, (\vect{\alpha}^T \vect{x}_i + \alpha_0) - 1=0$, and thus:
+      \begin{displaymath}
+        y_i(\vect{\alpha}^T \vect{x}_i + \alpha_0) = 1~.
+      \end{displaymath}
+      All $\vect x_i$ with $\lambda_i>0$ are elements at the boundary of the slab (hard margin; for the soft margin see the box-constraint discussion above); \\
+      these samples are called \textbf{\emph{support vectors}}. \\  
+    \item We have seen that $  \vect \alpha = \sum_i \lambda_i y_i \vect x_i $, thus the norm vector of the decision boundary is a linear combination of support vectors.
+  \end{enumerate}
+  \textbf{Conclusion:} \\
+ 
+  Feature vectors only appear in inner products, both in the learning and the classification phase.
+  
+\subsection{Feature Transforms}
+ \textbf{Linear decision boundaries} in its current form have serious \textbf{limitations}:
+  \begin{itemize}
+    \item  Non-linearly separable data cannot be classified.
+    \item  Noisy data cause problems. 
+    \item  Formulation deals with vectorial data only.
+  \end{itemize}
+  \textbf{Possible solution:} 
+  \begin{itemize}
+    \item Map data into richer feature space using non-linear feature transform, \\
+      then use a linear classifier.
+  \end{itemize}
+  We select a feature transform 
+  \begin{displaymath}
+    \phi: \real^d \rightarrow \real^D, \quad D \ge d
+  \end{displaymath}
+  such that the resulting features 
+  \begin{displaymath}
+    \phi(\vect x_i), \quad i = 1, 2, \dots, m
+  \end{displaymath}
+  are linearly separable.
+
+    Example: Assume the decision boundary is given by the quadratic function
+    \begin{displaymath}
+      f(\vect x) = a_0 + a_1 x_1^2 + a_2 x_2^2 + a_3 x_1 x_2 + a_4 x_1+a_5 x_2.
+    \end{displaymath}
+    Obviously this is not a linear decision boundary. By the following mapping, we get features that have a linear decision boundary:
+    \begin{displaymath}
+      \phi(\vect x) = \left(\begin{array}{c}
+                             1 \\ x_1^2 \\ x_2^2 \\ x_1x_2 \\ x_1 \\ x_2
+                           \end{array}
+                     \right)
+    \end{displaymath}
+  These feature transforms can be easily incorporated into SVMs:
+  \begin{itemize}
+    \item \textbf{Decision boundary:}
+      {\small
+        \begin{displaymath}
+          f(\vect x) = \sum_i \lambda_i y_i \cdot  \langle\phi(\vect x_i), \phi(\vect x) \rangle + \alpha_0  
+        \end{displaymath}
+      }
+    \item The Lagrange dual problem is given by the \textbf{optimization problem}:
+      {\small
+        \begin{eqnarray*}
+          \mbox{maximize} & -\frac{1}{2} \sum_i \sum_j \lambda_i \lambda_j y_i y_j \cdot \langle\phi(\vect x_i),\phi(\vect x_j)\rangle + \sum_i \lambda_i \\   
+          \mbox{subject to}  & \vect{\lambda}\succeq 0, \quad \sum_{i} \lambda_i \, y_i = 0
+        \end{eqnarray*}
+      }
+  \end{itemize}
+ 
+\subsection{Kernel Functions}
+
+  We now define \textbf{kernel functions}:
+  \begin{displaymath}
+    k(\vect x, \vect x') =  \langle \phi(\vect x), \phi(\vect x') \rangle
+  \end{displaymath}
+  Typical kernel functions are:
+  \begin{itemize}
+    \item \textbf{Linear:} 
+      \begin{displaymath}
+        k(\vect x, \vect x') =~ \langle\vect x, \vect x'\rangle
+      \end{displaymath}
+    \item \textbf{Polynomial:} 
+      \begin{displaymath}
+        k(\vect x, \vect x') = (\langle\vect x, \vect x'\rangle + 1)^k
+      \end{displaymath}
+    \item \textbf{Radial basis function:} 
+      \begin{displaymath}
+        k(\vect x, \vect x') = e^{-\gamma\|\vect x- \vect x'\|_2^2}
+      \end{displaymath}
+    \item \textbf{Sigmoid kernel:} 
+      \begin{displaymath}
+        k(\vect x, \vect x') =\mbox{tanh}({ \alpha \langle\vect x, \vect x'\rangle + \beta})
+      \end{displaymath}
+  \end{itemize}
+  
+\subsection{Lessons Learned}
+
+  \begin{itemize}
+    \item Lagrangian formulation of the hard and soft margin problems    
+    \item Langrange dual representation    
+    \item Idea of feature transforms
+  \end{itemize}
+
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is the Lagrangian of the hard margin SVM? 
+    \item What are the KKT optimality conditions for the hard margin SVM? 
+    \item How do we apply the KKT conditions to the Lagrange Dual? 
+    \item What can we conclude from this reformulated Lagrange Dual?
+  \end{itemize}
+  
+

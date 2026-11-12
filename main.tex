@@ -1,0 +1,232 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{comment}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{lmodern} % Latin Modern fonts
+\usepackage{bm} % bold math symbols (e.g., bold Greek)
+
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,arrows.meta,intersections}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots,fillbetween}
+\pgfplotsset{compat=1.18}
+\usepackage{struktex} % for centernss/struktogramm and \assign/\until etc.
+% slide-source color aliases used in some figures
+\definecolor{cA}{HTML}{3B82F6} % blue-ish
+\definecolor{cB}{HTML}{10B981} % green-ish
+% additional slide palette names used in some tikz nodes
+\definecolor{bl1}{HTML}{DBEAFE} % light blue background
+\definecolor{bl3}{HTML}{1D4ED8} % darker blue text
+
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{float} % provides [H] to force figures/tables to stay 'here'
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+% compatibility with some slide-style sources
+\providecommand{\STATE}{\State}
+
+\usepackage{newunicodechar}
+\newunicodechar{́}{\'}
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator{\sign}{sign}
+\providecommand{\err}{\mathsf{err}}
+% Commands used in the included chapter files (ported from slide-style sources)
+\providecommand{\real}{\mathbb{R}}
+\providecommand{\structure}[1]{\textbf{#1}}
+\providecommand{\vorsicht}{\textbf{Warning:} }
+
+% --- Lab notation (global) ---
+% scalars: plain (e.g. $a$)
+% vectors: bold lowercase (e.g. $\vec x$)
+% matrices: bold uppercase (e.g. $\mat A$)
+% inner products: use transpose, e.g. $\vec x^T\vec y$
+% Reverted: keep the standard LaTeX arrow accent for \vec.
+% Bold lab-notation macros (robust both inside/outside $...$ and in moving arguments):
+\DeclareRobustCommand{\vect}[1]{\ensuremath{\mathbf{#1}}}
+\DeclareRobustCommand{\mat}[1]{\ensuremath{\mathbf{#1}}}
+\providecommand{\trans}{\mathsf{T}}
+
+% parameter vector shorthand used in some chapters
+\providecommand{\p}{\bm{\theta}}
+\providecommand{\hatp}{\hat{\bm{\theta}}}
+\providecommand{\BiasField}{\p} % slide-source macro used as a generic parameter
+% other slide-source shorthands
+\providecommand{\PS}{\mathsf{PS}} % pseudovalue symbol used in resampling sections
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{sublemma}{Lemma}[lemma]
+\newtheorem{example}{Example}
+% Clickable links in the PDF (TOC entries and page numbers)
+\usepackage[hidelinks]{hyperref}
+\hypersetup{linktoc=all} % make both the TOC text and the page number clickable
+
+% References / citations
+\usepackage{csquotes}
+\usepackage[backend=biber,style=authoryear,autocite=footnote,maxcitenames=2]{biblatex}
+\addbibresource{references.bib}
+
+\title{PatternRecognitionNotes}
+\author{sheethal.bhat@fau.de}
+\date{October 2026}
+
+\begin{document}
+
+
+\maketitle 
+
+\tableofcontents
+\section{Introduction}
+
+These are supplementary notes derived directly from the PR class lecture slides provided by Prof. Andreas Maier. However they are not fully proof read, yet and intended for additional understanding only. 
+
+\subsection{Application areas of Pattern recognition}
+PR used in many areas. 
+Speech processing, Image processing, Fingerprint identification, Optical character recognition, Industrial workflows, Quality control, sorting, etc. 
+
+\subsection{Important components of PR}
+\subsubsection{Features}
+The distinguishing characteristics that help to identify and separate an object or class from each other. for example: the features of flowers could be size, color, number of petals, etc. 
+
+\subsubsection{Preprocessing}
+involves the stage of processing and preparing the data for pattern recognition task. can include algorithms such as segmentation, denoising, etc
+
+\subsubsection{Feature extraction}
+the act of extracting important relevant information to reduce the dimensionality of the samples that needs to be processed. for example, a 1024x1024 image is a very large feature vector and reducing to an array of 256 is a large reduction. This saves compute power and processing time. 
+
+Care should be taken not to add unnecessary noisy features. The best features are those that help find an optimal decision boundary between the samples. An example: record input camera/microphone signal -> digitization with sampling and quantization, pre-processing and computation of features.
+
+\subsubsection{Classification}
+A classifier that works on the extracted features to seperate out the samples into different classes. 
+
+The classifier should generalize to unseen data. It is not sufficient if the classifier works well with the data given to us, it should be able to classify all samples that are unseen as well.
+
+\subsection{6 postulates of PR}
+\begin{itemize}
+%consider rewording
+    \item Representitive sample of \textbf{patterns} should be available. This means , they should exist... cannot classify randomly varying noisy data!
+    For example in the classification of flowers, there should be clear size in sepal width or length for one flower type vs the other. If its randomly varying and unpredictable without any 'pattern', it will be impossible to build a classifier for it. 
+     \begin{displaymath}
+           \omega = \{{}^1\vec{f}(\vec{x}),\ldots,{}^N\vec{f}(\vec{x})\} \subseteq \Omega
+        \end{displaymath}
+        {\footnotesize (Niemann's notation: here $\vec x$ is a position (e.\,g.\ in the image), not a feature vector; $N$ is the number of patterns in $\omega$.) \autocite{niemann1983}}
+
+        where $\omega$ denotes the set of patterns, $\Omega$ the (feature) pattern space, and $\vec f(\vec x)$ the feature vector extracted at position $\vec x$.
+    \item A (simple) pattern should have \textbf{features} that clearly indicates its membership in one class or the other. For example, the sepal width or length in classifications of flowers. 
+    \item Compact domain in feature space of the same class. The features of same class should be close together and that cluster should be far away from the cluster of features of another class. 
+    Intra and Inter class distances.
+    \item A (complex) pattern consists of \textbf{simpler constituents}, which have certain relations to each other. A pattern may be decomposed into these constituents. Not any arrangement of simple constituents is a valid pattern. Many patterns may be represented with relatively few constituents. For example, any random arrangement of words do not make a sentence. If sentence is a complex pattern, then it is made up of words which are the simpler constituents and then the sentences can be classified. 
+    \item Two patterns are similar if their features or their simpler constituents are similar. 
+\end{itemize}
+
+\subsection{Performance Evaluation}
+
+
+Feature vectors are used as input for the classifier.
+Classification results are a discrete class index.{\footnotesize Source: \autocite{duda2001,hastie2009}}
+
+A confusion matrix collects how often a true class (reference) is mapped to a predicted class (hypothesis). Let $n_{\kappa\lambda}$ denote the number of samples with true class $y=\kappa$ that are predicted as $\hat y=\lambda$.
+
+The special case for two classes is:
+
+\begin{table}
+  \caption{Confusion matrix for the two-class case (rows: reference/true class $y$, columns: hypothesis/predicted class $\hat y$).}
+  \label{tab:confusion_2class}
+      \centering
+      \small
+      \begin{tabular}{c c | c c }
+          & \multicolumn{1}{c}{}  & \multicolumn{2}{c}{\textbf{Hypothesis} (predicted $\hat y$)}                         \\
+          &                       & {Positive}                     & {Negative} \\
+         \cline{2-4}
+         \multirow{2}{*}{\textbf{Reference} ($y$)}
+          & {Positive} & True Positive                             & False Negative        \\
+          & {Negative} & False Positive                            & True Negative         \\
+      \end{tabular}
+   \end{table}
+   
+Evaluation of classifiers can be done using following metrics
+\begin{itemize}
+    \item Accuracy / Recognition rate
+     \small
+              \begin{displaymath}
+                 \mathsf{RR} := \frac{1}{N} \sum_{\kappa=1}^{K}n_{\kappa\kappa} \cdot 100\,\%
+              \end{displaymath}
+    \item Recall / Precision
+    \small
+              \begin{eqnarray*}
+                 \mathsf{recall}_\kappa    & = & \frac{n_{\kappa\kappa}}{\sum_{i=1}^K n_{\kappa i}}
+                 = \frac{n_{\kappa\kappa}}{N_\kappa} \\
+                 \\
+                 \\
+                 \mathsf{precision}_\kappa & = & \frac{n_{\kappa\kappa}}{\sum_{i=1}^K n_{i \kappa}}
+              \end{eqnarray*}
+    \item Unweighted Average Recall
+    \small
+              \begin{displaymath}
+                 \mathsf{UAR} := \frac{1}{K} \sum_{\kappa=1}^K \frac{n_{\kappa\kappa}}{N_\kappa} \cdot 100\,\%
+              \end{displaymath}
+              where $N$ is the total number of samples, $K$ is the number of classes, $\kappa\in\{1,\dots,K\}$ is a class index, and $N_\kappa$ is the number of samples in class $\kappa$.
+    \item For the 2 class case following apply -
+    \begin{itemize}
+        \item True positive rate (hit rate, \textbf{recall}, \textbf{sensitivity}): $\frac{\#\mathsf{TP}}{\#\mathsf{TP} + \#\mathsf{FN}}$
+      \item False positive rate (false alarm rate, fall-out): $\frac{\#\mathsf{FP}}{\#\mathsf{FP} + \#\mathsf{TN}}$
+      \item Positive predictive value (\textbf{precision}): $\frac{\#\mathsf{TP}}{\#\mathsf{TP} + \#\mathsf{FP}}$
+      \item Negative predictive value: $\frac{\#\mathsf{TN}}{\#\mathsf{TN} + \#\mathsf{FN}}$
+      \item True negative rate (\textbf{specificity}): $\frac{\#\mathsf{TN}}{\#\mathsf{FP} + \#\mathsf{TN}}$ = 1 $-$ false positive rate
+       \item Accuracy:
+        {\small
+        \begin{displaymath}
+           \mathsf{ACC} = \frac{\#\mathsf{TP} + \#\mathsf{TN}}{\#\mathsf{TP} + \#\mathsf{FP} + \#\mathsf{FN} + \#\mathsf{TN}}
+        \end{displaymath}
+        }
+    \item F-measure: harmonic mean of recall and precision:
+        {\small
+        \begin{displaymath}
+           F = \frac{2 \cdot \mathsf{recall} \cdot \mathsf{precision}}{\mathsf{recall} + \mathsf{precision}}
+        \end{displaymath}
+        }
+\end{itemize}
+\item Receiver Operating characteristics (ROC):
+Classification is a threshold decision on the posterior of the positive class (in general at $0.5$), equivalently a threshold $t$ on the measurement (e.g.\ eye pressure). The true positive rate (TPR) and false positive rate (FPR) can be computed for different thresholds $t$ (e.g.\ $t\in[0,40]$). Plotting TPR vs.\ FPR yields the ROC curve.
+
+\item AUC: Area under the ROC curve (AUC) summarizes the ROC curve.
+
+The TPR and FPR do not depend on the total number of samples and are independent of the class priors. Recall--precision curves depend on the class priors.
+    \end{itemize}
+    
+\subsection{Types of classifiers}
+There are different types of classifiers such as statistical, parametric, non parametric, linear, non linear, etc. 
+
+The learning phase is really important for a classifier. A classifier is only as good as the training data. There is a difference between supervised, unsupervised and weakly supervised learning. 
+
+\subsection{Comprehensive questions}
+\begin{itemize}
+    \item what are feature vectors
+    \item what are the postulates of pattern recognition
+    \item why do we need training samples
+    \item how we test the performance of a classifier
+\end{itemize}
+
+\newpage
+\include{chapter_01_04}
+\newpage
+\include{chapter_05_07}
+\newpage
+\include{chapter_08_10}
+\newpage
+\include{chapter_11_14}
+\newpage
+\include{chapter_15_18}
+\newpage
+\include{chapter_19_21}
+\newpage
+\printbibliography
+
+\end{document}
+

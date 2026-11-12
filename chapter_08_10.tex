@@ -1,0 +1,632 @@
+% !TeX root = main.tex
+\section{Norms and Norm Dependent Linear Regression}
+
+This topic relates to optimization techniques and how to find the maxima or the minima of a curve, how to influence the selection of the parameters. for eg, when reducing the error , there could be many parameters $\vect \theta$ that satisfy an objective function. How do we decide which is the best one, or how do we influence the selection of parameters that satisfy additional criteria such as sparcity ? the norms are the kinds of objective functions that force the optimizing methods to select the parameters that satisfy both the objective function and the norm criteria. It will be clearer with the next 4 chapters on optimization techniques. reading additional material is encouraged, since this forms the basis of machine learning.\footnote{\url{https://medium.com/codex/how-norms-drive-the-direction-of-your-optimization-bdbcd619256b}}
+\footnote{\url{https://web.stanford.edu/~sidford/courses/20fa_opt_theory/sidford_2020fa_mse213_cs269o_lec8.pdf}}
+\footnote{\url{https://utexas.instructure.com/files/43781366/download?download_frd=1}}
+
+Sparcity constraint - means we want to force as many dimensions of the parameter vector as possible to zero. 
+
+\subsection{Motivation}
+
+  \begin{itemize}
+    \item Different norms and similarity measures play an important role in machine learning and pattern recognition. 
+    \item In this chapter we summarize important definitions and facts on norms. 
+    \item We consider the problem of linear regression for different norms.
+    \item We will briefly look into associated optimization problems.
+  \end{itemize}
+  
+\subsection{Notation in this Chapter}
+
+This chapter follows the notation of numerical linear algebra and optimization (Boyd \& Vandenberghe).\autocite{boyd2004}
+
+\begin{itemize}
+  \item $\vect x$, $\vect y$ in the definitions of inner products and norms: generic vectors (not feature vectors / labels).
+  \item $\mat A\in\real^{m\times d}$: data (design) matrix -- corresponds to $\mat X$ in the regression part of Chapter \emph{Discriminant Analysis II}.
+  \item $\vect x$ in regression problems: unknown parameter vector (optimization variable), not a feature vector -- corresponds to $\vect\theta$.
+  \item $\vect b\in\real^m$: target values -- corresponds to $\vect y$.
+  \item $\hat{\vect x}$: estimate of the parameter vector, $\vect x_0$: true parameter vector.
+  \item $\vect r = \mat A\vect x-\vect b$: residual vector; $\phi$: penalty function (not the LDA feature transform).
+\end{itemize}
+
+\subsection{Inner Product}
+
+ \textbf{Definition}
+
+The \textbf{\emph{inner product of vectors}} $\vect x, \vect y\in \real^d$ is defined by \autocite{trefethen1997,golub1996}
+    \begin{displaymath}
+      \langle\vect x, \vect y\rangle = \vect x^T \vect y = \sum_{i=1}^d x_iy_i \quad .
+    \end{displaymath}
+Example: The \textbf{\emph{Euclidean norm} ($L_2$-norm)} can be written in terms of an inner product:
+    \begin{displaymath}
+      \| \vect x \|_2 = \sqrt{\langle \vect x, \vect x \rangle } = 
+      \sqrt{ \vect x^T \vect x} = 
+      \sqrt{\sum_{i=1}^d x_i^2 }\quad .
+    \end{displaymath}
+\textbf{Definition}
+
+    The \emph{inner product of matrices} $\mat X, \mat Y\in \real^{m\times n}$ is defined by 
+    \begin{displaymath}
+       \langle \mat X, \mat Y \rangle = 
+       \mbox{tr}(\mat X^T \mat Y) = 
+       \sum_{i=1}^m \sum_{j=1}^n x_{i,j} y_{i,j} \quad
+    \end{displaymath}
+ Example:  The \emph{Frobenius norm} can be written in terms of an inner product:
+    \begin{displaymath}
+      \| \mat X \|_F = 
+      \sqrt{ \langle \mat X, \mat X \rangle } =
+      \sqrt{ \mbox{tr}(\mat X^T \mat X)} =
+      \sqrt{ \sum_{i=1}^m \sum_{j=1}^n x_{i,j}^2} \quad
+    \end{displaymath}
+
+\subsection{Norms}
+ \textbf{Definition}
+
+    The function $\lVert\cdot\rVert$ %: \real^d\rightarrow \real$ 
+    is called a \textbf{\emph{norm}} if it 
+   
+    \begin{enumerate}
+      \item is \textbf{nonnegative}: $\forall \vect x:~ \lVert\vect x\rVert\geq 0$ 
+      \item is \textbf{definite}: $\|\vect x\| =0$ only if $\vect x=\vect 0$ 
+      \item is \textbf{homogeneous}: $\| a\vect x\|= |a|\cdot \|\vect x\|$ where $a\in \real$ 
+      \item fulfills the \textbf{triangle inequality}:
+      \begin{displaymath}
+        \forall \vect x, \vect y:~\|\vect x+\vect y\| \leq \|\vect x\|+ \|\vect y\|
+      \end{displaymath}
+    \end{enumerate}
+    \begin{itemize}
+      \item The \textbf{$L_0$-norm} of a $d$-dimensional vector denotes the number of    non-zero entries. Despite its name, the $L_0$-norm is not a norm because it is not homogeneous.
+      \item The \textbf{$L_p$-norm} ($p \geq 1$) of a $d$-dimensional vector is defined as 
+        \begin{displaymath}
+          \| \vect x\|_p = \left( \sum_{i=1}^d  |x_i|^p \right)^{\frac{1}{p}}
+        \end{displaymath}
+    \item \textbf{$L_1$-norm:} sum of absolute values
+      \begin{displaymath}
+        \| \vect x\|_1 = \sum_{i=1}^d |x_i|
+      \end{displaymath}
+    
+    \item \textbf{$L_2$-norm:} square root of the sum of squared values
+      \begin{displaymath}
+        \| \vect x\|_2 = \left(\sum_{i=1}^d x_i^2\right)^{\frac{1}{2}}
+      \end{displaymath}
+    \item \textbf{$L_\infty$-norm:} maximum norm
+      \begin{displaymath}
+        \| \vect x\|_\infty = 
+        \lim_{p\rightarrow \infty} \left( \sum_{i=1}^d  |x_i|^p \right)^{\frac{1}{p}} =
+        \max_i \{ |x_i| \ ; \ i=1,2, \dots, d \}
+      \end{displaymath}
+  \end{itemize}
+  \textbf{Definition}
+    Let $\mat P$ be a symmetric positive definite matrix.    The \emph{quadratic $L_{\mat P}$-norm} is defined by 
+    \begin{displaymath}
+      \| \vect x\|_{\mat P} = 
+      \sqrt{ \vect x^T \mat P \vect x} = 
+      \sqrt{ (\mat P^\frac{1}{2} \vect x)^T \mat P^\frac{1}{2} \vect x} =
+      \| \mat P^\frac{1}{2} \vect x\|_2
+    \end{displaymath}
+  \textbf{Note:} 
+
+  \begin{itemize}
+    \item The $L_2$-norm is the same as the quadratic $L_{\mat I}$-norm, where $\mat I$ is the identity matrix.
+    \item The \textbf{Mahalanobis distance} between two vectors $\vect x$ and $\vect y$ based on the covariance matrix $\mat \Sigma$ is given by the quadratic $L_{\mat \Sigma^{-1}}$-norm:
+      \begin{displaymath}
+        \| \vect x - \vect y\|_{\mat \Sigma^{-1}} = 
+        \sqrt{ (\vect x - \vect y)^T \mat\Sigma^{-1} (\vect x - \vect y)}
+      \end{displaymath}
+    \item A norm is a measure for the length of a vector. It can also be used to measure the distance between two vectors $\vect x$ and $\vect y$:
+      \begin{displaymath}
+        \mbox{dist}(\vect x, \vect y) = \| \vect x - \vect y\|
+      \end{displaymath}
+  \end{itemize}
+  \textbf{Norms of matrices} can be defined by norms of vectors.
+  
+  \textbf{Definition}
+    \small
+    Let $\|.\|_p$ and $\|.\|_q$ be norms for vectors in $\real^m$ and $\real^n$. \\
+    The \textbf{\emph{operator norm}} of a matrix $\mat X\in \real^{m\times n}$  is defined by
+ 
+    \begin{displaymath}
+      \| \mat X\|_{p,q} = \sup\{ \| \mat X \vect u\|_p ; \  \| \vect u\|_q\leq 1 \}
+    \end{displaymath}
+  Example: If $p=q=2$, i.\,e.\ we use the $L_2$-norm twice, the operator norm of $\mat X$ results in the maximum singular value:
+    
+    \begin{displaymath}
+      \| \mat X\|_{2,2}=   \| \mat X\|_{2} = \sigma_{\max}{(\mat X)}= \sqrt{\lambda_{\max}(\mat X^T\mat X)}
+    \end{displaymath}
+
+\subsection{Unit Balls}
+
+The space to which the parameters are optimized to , by using that particular norm. so L1 norm results in one unit ball and L2 results in other. This shows the range in which the parameters can lie in finally. 
+
+  \textbf{Definition}
+    The set
+    \begin{displaymath}
+      {\cal B} = \{ \vect x; \|\vect x\| \leq 1\}
+    \end{displaymath}
+    of all vectors $\vect x$ of length less or equal to one according to the norm $\|.\|$  is called the \textbf{\emph{unit ball}}.
+   
+ The unit balls for different norms are shown in the slides. \textbf{Exam notes:} It is important to know the difference and to understand what are unit balls.Remember that the $L_{0.5}$- and the $L_0$-norm are not norms
+
+\subsection{Norm Dependent Linear Regression}
+
+  In pattern recognition and pattern analysis (as in many other fields) one of the most important norm dependent linear regression problems is:
+
+  \begin{displaymath}
+   \mbox{minimize}\quad \| \mat A \vect x -\vect b\|
+  \end{displaymath}
+  or alternatively
+  \begin{displaymath}
+   \hat{\vect x} = \argmin_{\vect x} \| \mat A \vect x -\vect b\|
+  \end{displaymath}
+ \begin{itemize}
+    \item Different norms will lead to different results. 
+    \item The estimation error $\epsilon\in \real$ is defined by $\epsilon= \|\vect x_0-\hat{\vect x}\|$, where $\vect x_0$ denotes the correct (true) value. 
+    \item The \textbf{residual} $\vect r= (r_1, r_2, \dots, r_m)^T$ is defined by $\vect r= \mat A \vect x -\vect b$. \\
+    \item If $\vect b$ is in the range of $\mat A$, the residual will be the zero vector.
+  \end{itemize}
+  
+\subsubsection{Least-Squares Linear Regression}
+
+  \textbf{Minimization of the residual using the $L_2$-norm:}
+  \begin{eqnarray*}
+    \hat{\vect x} &=& \argmin_{\vect x} \| \mat A \vect x -\vect b\|_2 \\
+                 &=& \argmin_{\vect x} \sum_{i=1}^m r_i^2 \\
+                 &=& \argmin_{\vect x} \ (\mat A \vect x -\vect b)^T (\mat A \vect x -\vect b) \\
+                 &=& \argmin_{\vect x} \ \big( \vect x^T \mat A^T \mat A\vect x - \vect x^T\mat A^T \vect b - \vect b^T \mat A\vect x + \vect b^T \vect b \big) \\
+                 &=& \argmin_{\vect x} \ \big( \vect x^T \mat A^T \mat A\vect x - 2 \vect b^T \mat A\vect x + \vect b^T \vect b \big) \\
+  \end{eqnarray*}
+  The \textbf{partial derivatives} are:
+  \begin{displaymath}
+    \frac{\partial}{\partial \vect x} \ \left( \vect x^T \mat A^T \mat A\vect x - 2 \vect b^T \mat A\vect x + \vect b^T \vect b \right)
+    = 2 \mat A^T \mat A \vect x - 2 \mat A^T \vect b = \vect{0}
+  \end{displaymath}
+  Using the partial derivatives we get a \textbf{closed form solution} for the $L_2$-norm: 
+  \begin{displaymath}
+    \hat{\vect x} = (\mat A^T \mat A)^{-1}\mat A^T \vect b
+  \end{displaymath}
+  if the columns of $\mat A$ are linearly independent.
+ 
+\subsubsection{Chebyshev Linear Regression}
+
+  \textbf{Minimization of the residual using the $L_\infty$-norm:}
+  \begin{displaymath}
+    \mbox{minimize}\quad \Bigg\{ \| \mat A \vect x -\vect b\|_\infty = \max\ \{ |r_1|, |r_2|, \dots, |r_m|\} \Bigg\}
+  \end{displaymath}
+  This optimization problem can be rewritten in terms of a LP-problem:
+  \begin{eqnarray*}
+    \begin{array}{lcl}
+     \mbox{minimize}& & r\\
+     \mbox{subject to} & &   - r\cdot \vect 1 \preceq \mat A \vect x - \vect b \preceq r\cdot \vect 1
+    \end{array}
+  \end{eqnarray*}
+  where $r\in \real$, $\vect 1 \in \{1\}^m$ is the all-ones vector, and $\preceq$ denotes componentwise inequality.
+
+  % (The constraints above are equivalent to $|r_i|\le r$ for all residual components.)
+
+  
+\subsubsection{Sum of Absolute Residuals}
+\textbf{Minimization of the residual using the $L_1$-norm:}
+  \begin{displaymath}
+    \mbox{minimize}\quad \Bigg\{ \| \mat A \vect x -\vect b\|_1 = \sum_{i=1}^m  |r_i| \Bigg\}
+  \end{displaymath}
+  This optimization problem can be rewritten in terms of a LP-problem:
+  \begin{eqnarray*}
+    \begin{array}{lcl}
+      \mbox{minimize}   & & \vect 1^T \vect r \\
+      \mbox{subject to} & & - \vect r \preceq  \mat A \vect x -\vect b\preceq \vect  r
+    \end{array}
+  \end{eqnarray*}
+  where $\vect r\in \real^m$ and $\vect 1 \in \{1\}^m$.
+ 
+\subsubsection{Ridge Regression and Unit Balls}
+\textbf{Ridge regression} is defined via the optimization problem
+  \begin{displaymath}
+    \mbox{minimize} \quad \|\mat A\vect x -\vect b\|_2^2+\lambda \cdot\|\vect x\|_2^2
+  \end{displaymath}
+ 
+\subsubsection{Lasso and Unit Balls}
+  The \textbf{lasso} (Tibshirani 1996) is defined via the optimization problem
+  \begin{displaymath}
+    \mbox{minimize} \quad \|\mat A\vect x -\vect b\|_2^2+\lambda \cdot\|\vect x\|_1
+  \end{displaymath}
+
+\subsubsection{Compressed Sensing}\autocite{candes2008,boyd2004}
+\begin{itemize}
+    \item In the previous chapter we motivated regularized linear regression. 
+    \item Assume we have fewer measurements than required to estimate the parameter vector $\vect x$. 
+    \item Solution of the underdetermined case required. 
+    \item We call a vector $S$-sparse if its support, i.\,e.\ the number of non-zero entries, is less or equal to $S$  
+    \item The vector $\vect x$ can be recovered mostly always by solving the convex optimization problem (it can be rewritten as a linear program):
+      \begin{eqnarray*}
+        \mbox{minimize}   & &\quad \|\vect x\|_1\\
+        \mbox{subject to} & & \quad \mat A\vect x =\vect b.
+      \end{eqnarray*}
+  \end{itemize}
+
+\newpage
+\subsection{Convex and Non-Convex Penalty Functions}
+
+  Motivated by the discussion of different norms, we now introduce and study \textbf{penalty functions}. This is different from norms in intent. A norm dictates the primary objective function that is used for optimization and penalty function is additional constraints introduced to further guide the optimization. In general functions need to be convex to be optimized. more details are in later chapters about convex optimizations and what happens with non-convex functions.\\[0.3cm]
+  
+  \textbf{Definition}\\
+The \emph{penalty function approximation problem} is defined as follows:
+    \begin{eqnarray*}
+      \mbox{minimize}   & &\sum_{i=1}^m \phi(r_i) \\
+      \mbox{subject to} & & \vect r= (r_1, r_2, \dots, r_m)^T = \mat A\vect x -\vect b,
+    \end{eqnarray*}
+    where $\phi:\real \rightarrow \real$ is the penalty function for the components of the \\
+    residual vector.
+    
+  \textbf{Note:} 
+  \begin{itemize}
+    \item The penalty function $\phi$ assigns \textbf{costs} to residuals. 
+    \item If $\phi$ is a convex function, the penalty function approximation problem is a convex optimization problem.
+  \end{itemize}
+  Penalty functions of the $L_1$-,  $L_2$-norms:
+  \begin{displaymath}
+    \phi_{L_1}(r) = |r|;  \qquad \qquad \qquad \qquad \qquad \phi_{L_2}(r) = r^2
+  \end{displaymath}
+  \begin{itemize}
+    \item In $L_1$ small deviations are weighted higher than using $L_2$.
+    \item In $L_1$ large deviations are weighted lower than using $L_2$.
+  \end{itemize}
+ \textbf{Log barrier function} with parameter $a>0$
+  \begin{displaymath}
+    \phi_\mathsf{barrier}(r) = 
+      \left\{
+        \begin{array}{cl}
+          -a^2\log \left(1-\left( \frac{r}{a}\right)^2 \right),  & \quad \mbox{if} \quad |r| < a\\
+          \infty,                                                & \quad \mbox{otherwise}
+        \end{array}
+      \right.
+  \end{displaymath}   
+  \textbf{Dead zone linear penalty function} with parameter $a>0$
+  \begin{displaymath}
+    \phi_\mathsf{dz}(r) = 
+      \left\{
+        \begin{array}{cl}
+          0,     & \quad \mbox{if} \quad |r| \leq a\\
+          |r|-a, & \quad \mbox{otherwise}
+        \end{array}
+      \right.
+  \end{displaymath}
+  \textbf{Large error penalty function}
+  \begin{displaymath}
+    \phi_\mathsf{e}(r) = 
+      \left\{
+        \begin{array}{cl}
+          r^2, & \quad \mbox{if} \quad |r| \leq a \\
+          a^2, & \quad \mbox{otherwise}
+        \end{array}
+      \right.
+  \end{displaymath}
+  \textbf{Huber function} with parameter $a>0$
+  \begin{displaymath}
+    \phi_\mathsf{Huber}(r) = 
+      \left\{
+        \begin{array}{cl}
+          r^2,            & \quad \mbox{if} \quad |r| \leq a \\
+          a\cdot(2|r|-a), & \quad \mbox{otherwise}
+        \end{array}
+      \right.
+  \end{displaymath}
+  
+\subsection{Lessons Learned}
+  \begin{itemize}
+    \item We have considered vector and matrix norms in more detail. 
+    \item Important vector norms: $L_1$, $L_2$, $L_\infty$, and $L_{\mat P}$. 
+    \item Unit balls 
+    \item Linear regression for different norms: range from closed form solution to LP-problem.
+    \item Regularized linear regression: range from closed form solution through QP-problem up to combinatorial optimization. 
+    \item We need to know the basics of algorithms for unconstrained and constrained optimization as well as convex optimization.
+  \end{itemize}
+
+\subsection{Comprehensive Questions}
+  \begin{itemize}
+    \item What is the difference between the $L_p$- (p $\ge$ 1) and the $L_{\mat P}$-norm? 
+    \item How do the unit balls look like for $L_{\infty}$-, $L_4$-, $L_2$-, $L_1$- and $L_0$-norm? 
+    \item What is the benefit of using the $L_1$- over the $L_2$-norm for sparse, underdetermined problems? 
+    \item What specific property of penalty functions is of special interest and why do we need different penalty functions at all? 
+  \end{itemize}
+
+\newpage
+\section{Rosenblatt's Perceptron (1957)}\autocite{hastie2009,ripley1996,rosenblatt1958}
+
+\subsection{Motivation}
+
+  \begin{itemize}
+    \item We want to compute a linear decision boundary.
+    \item We assume that classes are linearly separable.
+    \item Computation of a linear separating hyperplane that minimizes the distance of misclassified feature vectors  to the decision boundary.
+  \end{itemize}
+
+\subsection{Objective Function}
+
+  Assume the following:
+  \begin{itemize}
+    \item True class labels are $y_i\in\{-1,+1\}$.
+    \item The decision boundary is a linear function with prediction
+      \begin{displaymath}
+        \hat y = \mbox{sgn}(\vect \alpha^T\vect x + \alpha_0).
+      \end{displaymath}
+    \item Parameters $\alpha_0$ and $\vect \alpha$ are chosen according to the optimization problem 
+      \begin{center}
+        $\displaystyle \mbox{minimize} \quad \bigg\{ D(\alpha_0, \vect \alpha)= -\sum_{i\in {\cal M}} y_i \cdot (\vect \alpha^T\vect x_i + \alpha_0) \bigg\}$
+      \end{center}
+      where $\cal M$ is the set of \textbf{indices} of misclassified samples.
+     \item The elements of the sum in the objective function depend on the set $\cal M$.          
+    \item In each iteration step the cardinality of $\cal M$ might change.          
+    \item The cardinality of $\cal M$ is a discrete variable.
+    \item \textbf{Competing variables:} continuous parameters of linear decision boundary and the discrete cardinality of $\cal M$.
+  \end{itemize}
+ 
+\subsection{Minimization of Objective Function}
+
+  Remember the objective function $D(\alpha_0, \vect \alpha)$:
+  \begin{displaymath}
+    \mbox{minimize} \quad \quad D(\alpha_0, \vect \alpha)= -\sum_{i\in {\cal M}} y_i \cdot (\vect \alpha^T\vect x_i + \alpha_0)
+  \end{displaymath}
+ 
+  The gradient of the objective function is:          
+  \begin{eqnarray*}
+    \frac{\partial}{\partial \alpha_0} \ D(\alpha_0, \vect \alpha)&=&  -\sum_{i\in {\cal M}} y_i \\          
+    \frac{\partial}{\partial \vect\alpha} \ D(\alpha_0, \vect \alpha)&=& -\sum_{i\in {\cal M}} y_i\cdot  \vect x_i \\
+  \end{eqnarray*}
+  We want to take an update step right after having visited each misclassified observation.
+  The update rule in the $(k+1)$-st iteration step is:
+
+  \begin{displaymath}
+    { \alpha_0^{(k+1)} \choose \vect \alpha^{(k+1)}} =            { \alpha_0^{(k)} \choose \vect \alpha^{(k)}} + \eta {y_i \choose y_i\cdot \vect x_i}
+  \end{displaymath} 
+  Here $\eta>0$ is the learning rate (step size; denoted $\eta$ in the MLP chapter) and can be set to $1$ without loss of generality.
+ 
+  \begin{algorithmic}
+    \STATE\textbf{Input:} training data: $S = \{(\vect x_i,y_i)\}_{i=1}^m$ with $y_i\in\{-1,+1\}$.
+    \STATE initialize  $k=0$, $\alpha^{(0)}_0=0$ and $\vect \alpha^{(0)}=  \vect 0$
+    \Repeat
+      \STATE select pair $(\vect x_i, y_i)$ from training set.
+      \If{$y_i\cdot (\vect x_i^T \vect\alpha^{(k)} + \alpha_0^{(k)})\leq 0$}
+        \STATE
+        \STATE $\displaystyle{ \alpha_0^{(k+1)} \choose \vect \alpha^{(k+1)}} =  { \alpha_0^{(k)} \choose \vect \alpha^{(k)}} +  {y_i \choose y_i\cdot \vect x_i}$
+        \STATE
+        \STATE $k\leftarrow k+1$
+      \EndIf
+
+    \Until{$y_i\cdot (\vect x_i^T \vect\alpha^{(k)} + \alpha_0^{(k)})> 0 \quad \mbox {for all} \quad i$}
+    \STATE \structure{Output:} $\alpha_0^{(k)}$ and $\vect \alpha^{(k)}$
+  \end{algorithmic}
+
+\subsection{Remarks on Perceptron Learning}
+
+  \begin{itemize}
+    \item The update rule is extremely simple. \\[.3cm]
+    \item Nothing happens if we classify all $\vect x_i$ correctly using the given linear decision boundary. 
+    \item The parameter $\vect \alpha$ of the decision boundary is a linear combination of feature vectors. 
+    \item The decision boundary thus is:
+    \begin{displaymath}
+       F(\vect x) = \left (\sum_{i\in \cal E} y_i\cdot \vect x_i \right)^T \vect x + \sum_{i\in \cal E} y_i \quad 
+                 = \quad \sum_{i\in \cal E} y_i\cdot \langle \vect x_i, \vect x\rangle + \sum_{i\in \cal E} y_i 
+    \end{displaymath}
+    where $\cal E$ is the list of indices that required an update (indices may appear more than once). 
+    \item The final linear decision boundary depends on the initialization, \\
+      i.\,e.\ $\alpha_0^{(0)}$ and $\vect \alpha^{(0)}$. 
+    \item The number of iterations can be rather large. 
+    \item If data are not linearly separable, the proposed learning algorithm will not converge. The algorithm will end up in hard to detect cycles.
+  \end{itemize}
+
+\subsection{Convergence of Learning Algorithm}
+
+derivation is not important for exam. it is important to understand that there is an upper bound for the number of iterations required to converge. simply means it, based on the all the variables introduced below, we can calculate exactly the max number of iterations required for convergence. this is useful to design the right system. 
+
+ Convergence Theorem of Rosenblatt and Novikoff\\
+    Assume that for all $i=1,2, \dots, m$
+    \begin{displaymath}
+      y_i(\vect x_i^T\vect \alpha^* +\alpha^*_0)\geq \rho
+    \end{displaymath}
+    where $\rho>0$ and $\|\vect \alpha^*\|=1$.
+    Let $M= \max_i \|\vect x_i\|_2$. \\
+    
+The perceptron learning algorithm converges to a linear decision boundary after $k$ iterations, where $k$ is bounded by
+    \begin{displaymath}
+      k \leq \frac{(\alpha_0^{*2}+1)(1+M^2)}{\rho^2}.
+    \end{displaymath}
+  Let us look at the estimated parameters after $k$ iterations and how the parameters change with iterations:
+
+  \begin{eqnarray*}
+    {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{\alpha_0^* \choose \vect \alpha^*} 
+      &=&           \left( { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} +  {y_i \choose y_i\cdot \vect x_i}\right)^T {\alpha_0^* \choose \vect \alpha^*}\\          
+      &=& { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{\alpha_0^* \choose \vect \alpha^*} +  {y_i \choose y_i\cdot \vect x_i}^T {\alpha_0^* \choose \vect \alpha^*} \\          
+      &\geq& { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{\alpha_0^* \choose \vect \alpha^*} + \rho \\         &\geq& k\rho
+  \end{eqnarray*}
+\textbf{Conclusion:} The more iterations (i.\,e.\ misclassifications) we have, the more the vectors are aligned. Now we apply the Cauchy-Schwarz inequality for inner products:
+
+  \begin{eqnarray*}
+    {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{\alpha_0^* \choose \vect \alpha^*} 
+      &\leq& \left\|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \left\| {\alpha_0^* \choose \vect \alpha^*}\right\|_2 \\[.5cm]          
+      &=&\left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}
+  \end{eqnarray*}
+  The norm of the vector estimated in the $k$-th iteration step is:
+  \begin{eqnarray*}
+    & &  \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2^2 =
+   \left\| { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} +  {y_i \choose y_i\cdot \vect x_i}\right\|_2^2 \\         
+   & & \vspace*{-2cm} = { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{ \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} 
+           + 2 { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}}^T{y_i \choose y_i\cdot \vect x_i}
+          + {y_i \choose y_i\cdot \vect x_i}^T{y_i \choose y_i\cdot \vect x_i}
+  \end{eqnarray*}
+  We only go into iteration step $(k+1)$ if we did a mistake in iteration $k$. A misclassification implies:
+  
+  \begin{displaymath}
+    { \alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{y_i \choose y_i\cdot \vect x_i}
+    = y_i\cdot (\vect x_i^T \vect\alpha^{(k)} + \alpha_0^{(k)})\quad \leq \quad 0
+  \end{displaymath}
+  (The non-strict inequality is needed, e.g.\ with the zero initialization the first update typically happens at equality.)
+  And thus we get
+  \begin{displaymath}
+    \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2^2 
+    \leq { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{ \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} 
+           + {y_i \choose y_i\cdot \vect x_i}^T{y_i \choose y_i\cdot \vect x_i}
+    \leq k(1+M^2)
+  \end{displaymath}
+  Wrap-up:
+  \begin{displaymath}
+    k\rho 
+    \leq {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{\alpha_0^* \choose \vect \alpha^*} 
+    \leq \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}
+  \end{displaymath}
+  Using the Cauchy-Schwarz inequality:
+  \begin{displaymath}
+    k\rho\quad
+    \leq \quad \left \| {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}\quad \leq \quad  \sqrt{k(1+M^2)(\alpha_0^{*2}+1)}
+  \end{displaymath}
+  shows:
+  \begin{displaymath}
+    k \quad \leq\quad \frac{(\alpha_0^{*2}+1)(1+M^2)}{\rho^2}
+  \end{displaymath}
+  
+\subsection{Lessons Learned}
+
+  \begin{itemize}
+    \item Objective function changes in each iteration step. 
+    \item Optimization problem is discrete.
+    \item Very simple learning rule.
+    \item \vorsicht \structure{Very important:} Number of iterations does \structure{not} depend on the dimension of the feature vectors.
+  \end{itemize}
+ 
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is Rosenblatt's perceptron? 
+    \item What is the objective function for Rosenblatt's perceptron? 
+    \item Why is the optimization of the objective function nonlinear? 
+    \item When and how does Rosenblatt's perceptron algorithm converge?
+  \end{itemize}
+ 
+ \newpage
+\section{Multi-Layer Perceptrons}
+
+The basics of neural networks, activation functions, and backpropagation (covered in greater detail in the Deep Learning course).\autocite{bishop2006,hastie2009}
+
+\subsection{Topology and Activation Functions}
+
+\textbf{Notation}
+{\small
+\begin{itemize}
+  \item Layers $l=0,1,\dots,L$: layer $0$ is the input layer, layer $L$ the output layer ($L$: number of non-input layers).
+  \item $M^{(l)}$: number of neurons in layer $l$.
+  \item $y_j^{(l)}$: output of neuron $j$ in layer $l$; the input layer passes the feature vector through: $y_i^{(0)} = x_i$, i.\,e.\ $\vect y^{(0)}=\vect x$.
+  \item $w_{ij}^{(l)}$: weight of the connection from neuron $i$ in layer $l-1$ to neuron $j$ in layer $l$; $w_{0j}^{(l)}$: threshold (bias) of neuron $j$; $\vect w$: vector of all weights.
+  \item $\text{net}_j^{(l)}$: net input of neuron $j$ in layer $l$; $f$: activation function.
+  \item \textbf{Network output (prediction):} $\hat y_k = y_k^{(L)}$, $k=1,\dots,M^{(L)}$.
+  \item \textbf{Target (true value)} of a training pattern $(\vect x, \vect y)$: $y_k$ (no layer superscript), $k=1,\dots,M^{(L)}$.
+\end{itemize}
+}
+
+\textbf{Activation Functions}
+\begin{displaymath}
+  \text{net}_j^{(l)} = \sum_{i=1}^{M^{(l-1)}} y_i^{(l-1)} w_{ij}^{(l)} - w_{0j}^{(l)},
+  \qquad
+  y_j^{(l)} = f(\text{net}_j^{(l)})
+\end{displaymath}
+{\small The threshold $w_{0j}^{(l)}$ enters with a negative sign: neuron $j$ ``fires'' if the weighted input exceeds $w_{0j}^{(l)}$ (equivalently: a constant input $y_0^{(l-1)}=-1$ with weight $w_{0j}^{(l)}$).}
+
+\subsection{Backpropagation Algorithm}
+
+  \subsubsection{Supervised Learning Algorithm}
+
+  \begin{itemize}
+    \item Gradient descent to adjust the weights reducing the training error $\varepsilon$:
+      \begin{displaymath}
+        \Delta w_{ij}^{(l)} = - \eta \, \frac{\partial \varepsilon}{\partial w_{ij}^{(l)}}
+      \end{displaymath}
+      where $\eta>0$ is the \textbf{learning rate}.
+
+    \item Typical error function: \textbf{squared error} of one training pattern $(\vect x, \vect y)$
+      \begin{displaymath}
+        \varepsilon(\vect w) = \frac{1}{2} \sum_{k=1}^{M^{(L)}} (y_k - \hat y_k)^2, \qquad \hat y_k = y_k^{(L)}
+      \end{displaymath}
+      where $\vect w$ denotes the vector of all weights. Summing (averaging) over all training patterns gives the (mean) squared error of the training set.
+  \end{itemize}
+
+\renewcommand{\err}{\varepsilon}
+\newcommand{\net}[2]{\text{net}_{#1}^{(#2)}}
+\newcommand{\w}[2]{w_{#1}^{(#2)}}
+\newcommand{\y}[2]{y_{#1}^{(#2)}}
+
+Adjusting the weights $\w{jk}{L}$ of the output layer
+      \footnotesize
+      \begin{displaymath}
+        \frac{\partial \err}{\partial \w{jk}{L}} =
+        \frac{\partial \err}{\partial \net{k}{L}} \cdot \frac{\partial \net{k}{L}}{\partial \w{jk}{L}} =
+        - \delta_k^{(L)} \cdot y_j^{(L-1)}
+      \end{displaymath}
+   The \emph{sensitivity} $\delta_k^{(L)}$ (with $\hat y_k = \y{k}{L}$):
+
+      \footnotesize
+      \begin{eqnarray*}
+        \delta_k^{(L)}
+        & = & - \frac{\partial \err}{\partial \net{k}{L}}
+          =   - \frac{\partial \err}{\partial \hat y_k} \cdot \frac{\partial \hat y_k}{\partial \net{k}{L}} \\
+        & = & (y_k - \hat y_k) \, f'(\net{k}{L})
+      \end{eqnarray*}
+
+Adjusting the weights $\w{ij}{l}$ of the hidden layers
+  \begin{itemize}
+    \item Desired output values for the hidden layers are not known.
+    \item For the weights $\w{ij}{L-1}$ of the last hidden layer:
+  \end{itemize}
+      \footnotesize
+      \begin{eqnarray*}
+        \frac{\partial \err}{\partial \w{ij}{L-1}} & = &
+        \frac{\partial \err}{\partial \y{j}{L-1}} \cdot
+        \frac{\partial \y{j}{L-1}}{\partial \net{j}{L-1}} \cdot
+        \frac{\partial \net{j}{L-1}}{\partial \w{ij}{L-1}} \\
+        & = & \frac{\partial \err}{\partial \y{j}{L-1}} \cdot
+        f'(\net{j}{L-1}) \cdot \y{i}{L-2}
+      \end{eqnarray*}
+
+   \begin{itemize}
+     \item {\small The differentiation of $\partial \err$ w.\,r.\,t.\ $\y{j}{L-1}$ can be computed as the sum of the sensitivity values $\delta_k^{(L)}$ of the layer above weighted by the weights $\w{jk}{L}$:}
+   \end{itemize}
+   \footnotesize
+      \begin{eqnarray*}
+        \frac{\partial \err}{\partial \y{j}{L-1}} & = &
+        \frac{\partial}{\partial \y{j}{L-1}} \Bigg[
+          \frac{1}{2} \sum_{k=1}^{M^{(L)}} (y_k - \hat y_k)^2  \Bigg] \\ 
+        & = & - \sum_{k=1}^{M^{(L)}} (y_k - \hat y_k) \, \frac{\partial\hat y_k}{\partial\y{j}{L-1}} \\
+        & = & - \sum_{k=1}^{M^{(L)}} (y_k - \hat y_k) \, \frac{\partial\hat y_k}{\partial\net{k}{L}} \cdot    \frac{\partial\net{k}{L}}{\partial\y{j}{L-1}} \nonumber \\
+        & = & - \sum_{k=1}^{M^{(L)}} (y_k - \hat y_k) \, f'(\net{k}{L}) \, \w{jk}{L} \\
+        & = & - \sum_{k=1}^{M^{(L)}} \delta_k^{(L)} \w{jk}{L}
+      \end{eqnarray*}
+
+  Sensitivity $\delta_j^{(l)}$ for any hidden layer $l$, $0<l<L$:
+  \begin{displaymath}
+    \delta_j^{(l)} = f'(\net{j}{l}) \, \sum_{k=1}^{M^{(l+1)}} \w{jk}{l+1} \, \delta_k^{(l+1)}
+  \end{displaymath}
+
+  \textbf{Update rule}
+  \begin{displaymath}
+    \Delta\w{ij}{l} = \eta \, \delta_j^{(l)} \, \y{i}{l-1}
+  \end{displaymath}
+\textbf{Linear Network in Matrix Notation}
+	\begin{itemize}
+		\item Fully connected layers can be expressed as matrix multiplications. For a linear network (no activation function, no bias) with three layers:
+		\begin{align*}
+		\hat{\vect y}= \vect f_{3}(\vect f_{2}(\vect f_{1}(\vect x))) = \mat W_3 \mat W_2 \mat W_1\vect x, \qquad \vect f_l(\vect z) = \mat W_l\vect z,
+		\end{align*}
+		{\small where the layer index is written as a subscript and $(\mat W_l)_{ji} = w_{ij}^{(l)}$.}
+		\item Associated loss function for a training pattern $(\vect x,\vect y)$ with target $\vect y$:
+			\begin{align*}
+			\mathcal{L}(\vect \theta)= \frac{1}{2} \| \mat W_3 \mat W_2  \mat W_1 \vect x - \vect y \|_2^2
+			\end{align*}
+		\item Gradients?
+	\end{itemize}
+Understand the concepts of neural networks, backpropagation, update rule, how the weights are updated, fully connected layers, activation functions, and why non-linearity is required.
+  
+\subsection{Lessons Learned}
+  \begin{itemize}  
+    \item Physiological background: neurons, synapses, action potentials, 
+    \item Topology of multi-layer perceptrons
+    \item Activation functions 
+    \item Backpropagation algorithm: gradient descent method
+  \end{itemize}
+  

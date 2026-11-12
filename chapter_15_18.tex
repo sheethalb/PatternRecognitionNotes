@@ -1,0 +1,1421 @@
+% !TeX root = main.tex
+
+\section{Kernels}\autocite{schoelkopf2002,shawetaylor2004}
+
+\subsection{Motivation}
+
+	Linear decision boundaries in its current form have serious limitations:  
+
+	\begin{itemize}
+		\item too simple to provide good decision boundaries  
+		\item non-linearly separable data cannot be classified     
+		\item noisy data cause problems     
+		\item formulation deals with vectorial data only
+	\end{itemize}
+
+	\textbf{Possible solution:} \\
+
+	\begin{itemize}
+		\item Map data into a higher dimensional feature space using a \textbf{non-linear feature transform},
+		      then use a linear classifier.
+	\end{itemize}
+     
+  
+	\subsubsection{Dual Representation}
+
+	\begin{itemize}
+		\item The SVM \textbf{decision function} can be rewritten in dual form:
+		      {\small
+		      \begin{displaymath}
+			      f(\vec x) =
+			      \vec \alpha^T\vec x +\alpha_0 =
+			      \sum_i \lambda_i y_i \, \vec x_i^T \vec x + \alpha_0
+		      \end{displaymath}
+		      }
+		      with predicted label $\hat y = \sign(f(\vec x))$, true training labels $y_i\in\{-1,+1\}$, and Lagrange multipliers $\lambda_i\ge 0$, and where we have used the identity:
+		      {\small
+		      \begin{displaymath}
+			      \vec \alpha = \sum_i \lambda_i y_i \, \vec x_i~.
+		      \end{displaymath}
+		      }
+		\item The Lagrange dual problem is given by the \textbf{optimization problem}:
+		      {\small
+		      \begin{eqnarray*}
+			      \mbox{maximize}   & & -\frac{1}{2} \sum_i \sum_j \lambda_i \lambda_j y_i y_j \cdot \vec x_i^T\vec x_j + \sum_i \lambda_i \\
+			      \mbox{subject to} & & \vec{\lambda}\succeq 0, \quad \sum_{i} \lambda_i \, y_i = 0  
+		      \end{eqnarray*}
+		      }
+	\end{itemize}
+
+	\textbf {Conclusion:}\\
+	feature vectors $\vec x_i, \vec x_j$, and $\vec x$ only appear in   \textbf{inner products}, both in the learning and the classification phase.
+     
+	\subsubsection{Inner Product and the Perceptron}
+	The decision function that we get for the perceptron can also be written in terms of inner products:
+	\begin{align*}
+		F(\vec x)
+		&= \left (\sum_{i\in \cal E} y_i\cdot \vec x_i \right)^T \vec x + \sum_{i\in \cal E} y_i \\
+		&= \sum_{i\in \cal E} y_i\cdot \langle \vec x_i, \vec x\rangle + \sum_{i\in \cal E} y_i
+	\end{align*}
+	where $\cal E$ is the list of indices of training samples that required an update during perceptron training (indices may appear more than once), and the predicted label is $\hat y = \sign(F(\vec x))$.
+
+\subsection{Feature Transforms}
+
+  	We select a   \textbf{feature transform $\phi: \real^d \rightarrow \real^D$}, $D \ge d$, such that the resulting features $\phi(\vec x_i)$, $i=1,2,\dots, m$, are linearly separable.  
+	\textbf {Second Example:} data is not centered\\ \phantom{q}
+
+	\textbf {Example}
+		Assume the decision boundary is given by the quadratic function
+		\begin{displaymath}
+			f(\vec x) = a_0 + a_1 {x_1}^2 + a_2 {x_2}^2 + a_3 x_1 x_2 + a_4 x_1+a_5 x_2.
+		\end{displaymath}
+		Obviously this is not a linear decision boundary.    
+
+		By the following mapping, we get features that have a linear decision boundary:
+		\footnotesize
+		\begin{displaymath}
+			\phi(\vec x) = \left(
+			\begin{matrix}
+				%1 \\
+				{x_1}^2 \\[1mm] {x_2}^2 \\ x_1 \cdot x_2 \\ x_1 \\ x_2
+			\end{matrix}
+			\right)
+		\end{displaymath}
+
+	Consider distances in the transformed feature space: \\
+	%
+	\begin{align*}
+		\| \phi(\vec x)-\phi (\vec x')\|_2^2
+		&= \left\langle \big(\phi(\vec x)-\phi (\vec x')\big), \big(\phi(\vec x)-\phi (\vec x')\big)\right\rangle \\
+		&= \langle \phi(\vec x), \phi(\vec x)\rangle - 2 \langle \phi(\vec x), \phi(\vec x') \rangle + \langle \phi(\vec x'), \phi(\vec x') \rangle
+	\end{align*}
+   
+
+	\textbf {Conclusion:} Distances can be computed by just evaluating inner products.
+ 	These feature transforms can be easily incorporated into SVMs: \\
+	\begin{itemize}
+		\item \textbf{Decision function} and predicted label $\hat y = \sign(f(\vec x))$:
+		      \begin{center}
+			      \small
+			      \tikz[baseline]{
+				      \node[fill=bl1!100,anchor=base,rounded corners=3pt] (d1) {
+					      \color{bl3}
+					      $\displaystyle
+						      f(\vec x) = \sum_i \lambda_i \cdot y_i \cdot  \langle\phi(\vec x_i), \phi( \vec x)\rangle + \alpha_0
+					      $
+				      };
+			      }
+		      \end{center}
+		      
+		\item The Lagrange dual problem is given by the   \textbf{optimization problem}:
+		      {\small
+		      \begin{eqnarray*}
+			      \mbox{maximize}   &  -\frac{1}{2} \sum_i \sum_j \lambda_i \lambda_j y_i y_j \cdot \langle\phi(\vec x_i),\phi(\vec x_j)\rangle + \sum_i \lambda_i \\     
+			      \mbox{subject to} &  \vec{\lambda}\succeq 0, \quad \sum_{i} \lambda_i \, y_i = 0
+		      \end{eqnarray*}
+		      }
+	\end{itemize}
+
+\subsection{Kernel Functions}
+
+	 \textbf{Definition}
+		A \textbf{\emph{kernel function}} $k: {\cal X} \times {\cal X}\rightarrow \real$ on the input space ${\cal X}$ (e.\,g.\ ${\cal X}=\real^d$) is a symmetric function that maps a pair of features to a real number. For a kernel function the following property holds:
+		\begin{displaymath}
+			k(\vec x, \vec x') = \langle\phi(\vec x), \phi(\vec x')\rangle
+		\end{displaymath}
+		for some feature mapping $\phi$.\\
+
+	\textbf {Note:} \\
+
+	Usually the evaluation of the kernel function is much easier than the computation of transformed features followed by the inner product.\\
+   \textbf{Definition}\\
+
+		For a given set of feature vectors $\vec x_1, \vec x_2, \dots, \vec x_m$, we define the \\
+		\textbf {\emph{kernel matrix}}
+		\begin{eqnarray*}
+			\mat K &=& [K_{i,j}]_{i,j=1,2,\dots,m}~, \quad \mbox{where} \quad K_{i,j} = \langle\phi(\vec x_i), \phi(\vec x_j)\rangle.
+		\end{eqnarray*}
+
+	\textbf {Note:} \\
+	The entries of the matrix are similarity measures for transformed feature pairs.
+     
+	\begin{lemma}
+		The kernel matrix is positive semidefinite.
+	\end{lemma}
+   \textbf {Proof:} We need to show $\forall \vec c\in\real^m:~\vec c^T \mat K \vec c \geq 0$~:  
+
+	\small
+	\begin{eqnarray*}
+		\vec c^T \mat K \vec c
+		&=& \sum_{i,j=1}^m c_ic_j K_{i,j}
+		=  \sum_{i,j=1}^m c_ic_j\ \langle\phi(\vec x_i), \phi(\vec x_j)\rangle \\  
+		&=& \sum_{i,j=1}^m  \langle c_i\phi(\vec x_i), c_j\phi(\vec x_j)\rangle \\  
+		&=& \left \langle \sum_{i=1}^m c_i\phi(\vec x_i), \sum_{j=1}^m c_j\phi(\vec x_j)\right\rangle
+		=  \left\|\sum_{i=1}^m c_i\phi(\vec x_i)\right\|_2^2
+		\geq 0
+	\end{eqnarray*}
+     
+	\textbf {Typical kernel functions:}  
+
+	\begin{itemize}
+		\item Linear: $k(\vec x, \vec x') = \langle\vec x, \vec x'\rangle$     
+		\item Polynomial: $k(\vec x, \vec x') = (\langle\vec x, \vec x'\rangle+1)^q$, \quad $q\in\mathbb{N}$
+		\item Laplacian radial basis function: $k(\vec x, \vec x') = e^{-\frac{\|\vec x- \vec x'\|_1}{\sigma^2}}$     
+		\item Gaussian radial basis function: $k(\vec x, \vec x') = e^{-\frac{\|\vec x- \vec x'\|_2^2}{\sigma^2}}$     
+		\item Sigmoid kernel: $k(\vec x, \vec x') =\mbox{tanh}({ \alpha\langle\vec x, \vec x'\rangle+\beta})$
+	\end{itemize}
+	\textbf {Question:} \\
+	Can we compute for any kernel function $k(\vec x, \vec x')$ a feature mapping $\phi$ such that the kernel function can be written as an inner product?
+  	   
+    The mercers theorem is interesting , but not very important for the exam. \\
+	\textbf{Mercer's Theorem}\\
+	For any symmetric function $k: {\cal X}\times {\cal X}\rightarrow \real$ that is square integrable on its domain and which satisfies
+		\begin{displaymath}
+			\int_{{\cal X}\times {\cal X}} f(\vec x)\,f(\vec x')\,k(\vec x, \vec x')\ \mathsf{d}\vec x\, \mathsf{d} \vec x' \geq 0
+		\end{displaymath}
+
+		for all square integrable functions $f$, there exist transforms $\phi_i: {\cal X}\rightarrow \real$ and $\lambda_i\geq 0$ such that:
+		\begin{displaymath}
+			k(\vec x, \vec x') = \sum_i \lambda_i \,\phi_i(\vec x)\,\phi_i(\vec x')
+		\end{displaymath} for all $\vec x$ and $\vec x'$.
+
+	\textbf {The Kernel Trick} \\
+	In \emph{any} algorithm that is formulated in terms of a positive semidefinite kernel $k$, we can derive an alternative algorithm by replacing the kernel function $k$ by another positive semidefinite kernel $k'$.
+
+	\subsubsection{Kernel SVMs with Soft Margins}
+		\textbf {Linear kernel $\langle\vec x, \vec x'\rangle$:}
+		\begin{itemize}
+			\item the complexity parameter $C$ controls the number of support vectors and
+			\item hence the width of the margin and
+			\item the orientation of the decision boundary   
+		\end{itemize}
+
+	\textbf{Gaussian RBF kernel $e^{-0.1\|\vec x-\vec x'\|_2^2}$:}{}
+
+\subsection{Kernel PCA}
+	\textbf {PCA revisited}  
+
+	\begin{itemize}
+		\item Let $\vec x_1, \vec x_2, \dots, \vec x_m\in \real^d$ be the feature vectors with zero mean.  
+		\item Compute the   \textbf{scatter matrix} (covariance matrix):
+		      \begin{displaymath}
+			      \mat \Sigma =
+			      \frac{1}{m}\sum_{i=1}^m \vec x_i \vec x_i^T \quad
+			      \in \quad \real^{d\times d}  
+		      \end{displaymath}
+		\item Compute the   \textbf{eigenvectors} and   \textbf{eigenvalues}:
+		      \begin{displaymath}
+			      \mat \Sigma \vec e_i = \lambda_i \vec e _i  
+		      \end{displaymath}
+		\item   \textbf{Sort} eigenvectors with decreasing eigenvalues.  
+		\item Subsequent   \textbf{projection} of features to the eigenvectors.
+	\end{itemize}
+  	\textbf {Facts from linear algebra:} \\ 
+
+	\begin{itemize}
+		\item The eigenvectors $\vec e_i$ span the same space as the feature vectors.
+		\item For eigenvalues $\lambda_i\neq 0$, each eigenvector $\vec e_i$ can be written as a linear combination of feature vectors:
+		      \begin{displaymath}
+			      \vec e_i = \sum_{n=1}^m a_{i,n} \, \vec x_n.
+		      \end{displaymath}
+	\end{itemize}
+   The eigenvector/-value problem for the PCA computation can now be rewritten:
+
+	\begin{eqnarray*}
+		\mat \Sigma \vec e_i
+		&=& \lambda_i \vec e _i \\  
+		\left( \frac{1}{m}\sum_{j=1}^m \vec x_j \vec x_j^T\right) \cdot \sum_{n=1}^m a_{i,n} \, \vec x_n
+		&=& \lambda_i \sum_{n=1}^m a_{i,n} \, \vec x_n \\ 
+		\sum_{j=1}^m\sum_{n=1}^m a_{i,n} \, \vec x_j \vec x_j^T\vec x_n
+		&=& m \cdot \lambda_i \sum_{n=1}^m a_{i,n} \, \vec x_n
+	\end{eqnarray*}
+     
+	\begin{itemize}
+		\item The following equations have to be fulfilled for all projections on $\vec x_l$ for all indices $l$:
+		      \begin{displaymath}
+			      \sum_{j=1}^m\sum_{n=1}^m a_{i,n}\vec x_l^T \vec x_j \vec x_j^T\vec x_n =
+			      m \cdot \lambda_i \sum_{n=1}^m a_{i,n} \vec x_l^T\vec x_n
+		      \end{displaymath}
+		\item \textbf{Wow} -- now all feature vectors show up in terms of inner products and the kernel trick can be applied, \textbf{if \emph{transformed} features $\phi(\vec x)$ have zero mean}. \\ 
+		\item For \emph{any} kernel $k(\vec x, \vec x')$, we get the \textbf{key equation for Kernel PCA}: \\
+		      \begin{center}
+			      \tikz[baseline]{
+				      \node[fill=bl1!100,anchor=base,rounded corners=3pt] (d1) {
+					      \color{bl3}
+					      $\displaystyle \sum_{j=1}^m\sum_{n=1}^m a_{i,n} \cdot k(\vec x_l, \vec x_j) \cdot k( \vec x_j,\vec x_n) =
+						      m \cdot \lambda_i \cdot \sum_{n=1}^m a_{i,n} \cdot k(\vec x_l, \vec x_n)$
+				      };
+			      }
+		      \end{center}
+	\end{itemize}
+ 	This can be written in \textbf{matrix notation} using the symmetric, positive semi-definite kernel matrix $\mat K\in \real^{m\times m}$ and the vector $\vec a_i = (a_{i,1}, a_{i,2}, \dots, a_{i,m})^T$:
+
+	\begin{eqnarray*}
+		\mat K^2 \vec a_i        &=& m\cdot \lambda_i \mat K \vec a_i\\
+		\mat K (\mat K \vec a_i) &=& m\cdot \lambda_i ( \mat K \vec a_i)
+	\end{eqnarray*}
+	
+  	This is equivalent to
+	\begin{displaymath}
+		\mat K (\mat K {\vec a}_i - m\cdot \lambda_i \vec a_i) = \vec 0
+	\end{displaymath}
+
+	\begin{itemize}
+		\item For $\lambda_i\neq 0$, we may choose $\vec a_i$ in the range of $\mat K$ such that
+		      $\mat K\vec a_i = m\lambda_i\,\vec a_i$.
+		\item (In general, $\vec a_i$ is only defined up to addition of a null-space component of $\mat K$.)
+	\end{itemize}
+  	The coefficient vector $\vec a_i$ for the principal components can be computed by solving the \textbf{eigenvalue/-vector problem} for $i$: \\
+
+	\begin{center}
+		$\mat K {\vec a}_i = m \lambda_i  \, \vec a_i$
+	\end{center}
+  
+	\textbf {Note:}\\
+
+	\small
+	\begin{itemize}
+		\item Kernel PCA (and thus the classical PCA as well) can be computed by solving an eigenvector/-value problem for an $(m\times m)$-matrix, where $m$ is the \textbf{cardinality of the training feature set}.
+		\item The principal components cannot be computed easily, because only the kernel is known, but \textbf{not} $\phi(\vec x)$.
+		\item However, the projection $c$ of the transformed feature vector $\phi(\vec x)$ on principal component $\vec e_i= \sum_{n=1}^m a_{i,n}  \, \phi(\vec x_n)$ is easily computed by:
+		      \begin{displaymath}
+			      c \quad = \quad
+			      \phi( \vec x)^T \vec e_i   \quad = \quad
+			      \sum_{n=1}^m a_{i,n} \, \phi(\vec x)^T\phi(\vec x_n) \quad   = \quad
+			      \sum_{n=1}^m a_{i,n} \, k(\vec x, \vec x_n)
+		      \end{displaymath}
+		\item Normalization: choose the eigenvector scaling such that $\|\vec e_i\|_2=1$, i.e.\ $\vec a_i^T\mat K\vec a_i = 1$ (this requires $\lambda_i\neq 0$).
+	\end{itemize}
+     
+It is assumed that the transformed features have   \textbf{zero mean}:
+
+	\begin{displaymath}
+		\frac{1}{m}\sum_{k=1}^m \phi(\vec x_k) = \vec 0.  
+	\end{displaymath}
+
+	This can be enforced by the   \textbf{normalization step}:
+	%%
+	\begin{eqnarray*}
+		\tilde\phi(\vec x_i) &=& \phi(\vec x_i) - \frac{1}{m}\sum_{k=1}^m \phi(\vec x_k)
+	\end{eqnarray*}
+   
+	Implication for the components of the   \textbf{centered kernel matrix $\tilde {\mat K}$}:
+
+	\small
+	\begin{eqnarray*}
+		\tilde{K} _{i,j}
+		&=& \tilde\phi(\vec x_i) ^T  \tilde\phi(\vec x_j) \\  
+		&=& \left( \phi(\vec x_i) - \frac{1}{m}\sum_{k=1}^m \phi(\vec x_k) \right)^T
+		\left( \phi(\vec x_j) - \frac{1}{m}\sum_{k=1}^m \phi(\vec x_k) \right) \\  
+		&=& \phi(\vec x_i)^T \phi(\vec x_j) -
+		\frac{1}{m}\sum_{k=1}^m \phi(\vec x_i)^T \phi(\vec x_k) -
+		\frac{1}{m}\sum_{k=1}^m \phi(\vec x_k)^T  \phi(\vec x_j) + \\
+		& & \quad + \frac{1}{m^2}\sum_{k,l=1}^m \phi(\vec x_k)^T \phi(\vec x_l) \\  
+		&=& K_{i,j} -
+		\frac{1}{m}\sum_{k=1}^m K_{i,k} -
+		\frac{1}{m}\sum_{k=1}^m K_{k,j} +
+		\frac{1}{m^2}\sum_{k,l=1}^m K_{k,l}
+	\end{eqnarray*}
+   {Example: classical vs. kernel PCA}
+		\small
+		Consider $m=50$ images with $1024^2$ pixels.
+		The pixels define $1024^2$-dimensional feature vectors:
+		\begin{displaymath}
+			\vec x_1, \vec x_2, \dots, \vec x_{50} \in \real^{2^{20}}  
+		\end{displaymath}
+
+		The kernel PCA using the linear kernel
+		\begin{displaymath}
+			k(\vec x_i, \vec x_j) = \vec x_i^T \vec x_j
+		\end{displaymath}
+		requires the eigenvalue/-vector decomposition of the $(50\times 50)$ kernel matrix. \\
+		The classical PCA requires the eigenvalue/-vector decomposition of a $(2^{20} \times 2^{20})$ matrix.
+
+\subsection{String Kernels}
+	\subsubsection{Kernels for Feature Sequences}
+
+	 \textbf{Example: string kernels}
+		\begin{itemize}
+			\item In speech recognition we do not have feature vectors but sequences of feature vectors.
+			\item In order to use kernel methods we need a kernel for time series.
+			\item Feature vectors are considered in $\real^d =\cal X$.
+			\item Sequences of feature vectors are elements of $\cal X^*$.
+			\item   \textbf{Problem:} How to define a kernel over the sequence space $\cal X^*$?  
+		\end{itemize}
+
+		\textbf {Implications:}
+		\begin{itemize}
+			\item PCA on feature sequences -- COOL!
+			\item SVM for feature sequences -- EVEN COOLER!
+		\end{itemize}
+		Comparison of sequences via \emph{dynamic time warping} (DTW): \\
+
+		Given two feature sequences $X, X'\in {\cal X^*}$ (with time index $t$):
+		\begin{eqnarray*}
+			X   &=& \langle \vec x(1), \vec x(2), \dots, \vec x(p)\rangle \, ,\\
+			X'  &=& \langle \vec x'(1), \vec x'(2), \dots, \vec x'(q)\rangle~.
+		\end{eqnarray*}
+		\begin{itemize}
+			\item Distance is computed by DTW (schematically):
+			      \begin{displaymath}
+				      D_{\text{DTW}}(X,X') = \frac{1}{p}\sum_{t=1}^{p} \| \vec x\big(v(t)\big)- \vec x'\big(w(t)\big) \|_2
+			      \end{displaymath}
+			      where $v, w$ define the time-warping (mapping of indices to indices).
+			\item The DTW kernel can be defined as:
+			      \begin{displaymath}
+				      k(X,X') = e^{-D_{\text{DTW}}(X,X')}\qquad (\text{not positive semidefinite in general}).
+			      \end{displaymath}
+		\end{itemize}
+
+\subsection{Fisher Kernels}
+	Now we design kernels building on probability density functions $p(\vec x;\vec  \theta)$.
+
+	\begin{itemize}
+		\item   \textbf{Fisher score (score function):}
+		      \begin{displaymath}
+			      \vec u_{\vec\theta}(\vec x) \,=\, \frac{\partial}{\partial \vec \theta} \log p(\vec x; \vec \theta)
+		      \end{displaymath}
+		\item   \textbf{Fisher information matrix:}
+		      \begin{displaymath}
+			      \mathcal I(\vec\theta) \,=\, E_{\vec x} \big[\vec u_{\vec\theta}(\vec x)\, \vec u_{\vec\theta}^T(\vec x)\big]
+		      \end{displaymath}
+	\end{itemize}
+
+	\textbf {Note:} \\
+	The Fisher information matrix is the curvature of the Kullback-Leibler divergence. The Fisher kernel can be defined in   \textbf{two different ways}:
+
+	\begin{displaymath}
+		k(\vec x, \vec x') = \vec u_{\vec\theta}^T(\vec x)\, \vec u_{\vec\theta}(\vec x')
+	\end{displaymath}
+
+	or
+
+	\begin{displaymath}
+		k(\vec x, \vec x') =  \vec u_{\vec\theta}^T(\vec x)\, \mathcal I ^{-1}(\vec\theta)\, \vec u_{\vec\theta}(\vec x')
+	\end{displaymath}
+	\textbf {Application:} learning from partially labeled data  
+
+	\small
+	\begin{itemize}
+		\item Some classification approaches require   \textbf{huge collections of data}  (e.\,g.\ for text or speech recognition).  
+		\item Labeling of the data can be   \textbf{time-consuming} and   \textbf{costly}.  
+		\item If the data can be modeled with a small number of well separated components  (with each component corresponding to a distinct category),  little labeled data would suffice to assign a proper label to each of them.  
+		\item A machine learning approach that makes use of only partially labeled data usually achieves much better classification performance than using only the labeled data alone.  
+		\item Fisher kernels describe a generative model that can be used in a discriminative approach (e.\,g.\ SVM).
+	\end{itemize}
+  
+\subsection{Lessons Learned}
+
+	\begin{itemize}
+		\item Limitations of linear decision boundaries 
+		\item Non-linear feature transforms
+		\item Kernel function and kernel matrix 
+		\item Kernel trick 
+		\item Probabilities and kernels
+	\end{itemize}
+  
+\subsection{Comprehensive Questions}
+	\begin{itemize}
+		\item What are the properties of kernel functions? 
+		\item What is the kernel matrix?  
+		\item What is the kernel trick?  
+		\item How can we use kernels for string comparison?
+	\end{itemize}
+ 
+ \newpage 
+\section{Laplacian Support Vector Machines}\autocite{belkin2006,melacci2011}
+
+Modification of SVMs for different kind of data distribution. 
+
+\subsection{Motivation}
+  \textbf{Example: two class ``clock'' data set}
+  refer to slides for images. 
+ 
+\subsection{Learning from Labeled and Unlabeled Data}
+    \textbf{Training data: $\mathcal{S} = \mathcal{L} \cup \mathcal{U}$}
+    \begin{itemize}
+    \item labeled data: $\mathcal{L} = \{(\vec{x}_i, y_i)\}_{i=1}^{l}$ with true labels $y_i\in\{-1,+1\}$
+    \item unlabeled data: $\mathcal{U} = \{\vec{x}_i\}_{i=l+1}^{m}$, with $m=l+u$
+  \end{itemize}
+
+    \textbf{Graph Laplacian $\mat{L}$ associated with $\mathcal{S}$:}
+   \begin{itemize}
+    \item $\mat{L} = \mat{D} - \mat{W}$
+    \item adjacency matrix $\mat{W}$ with edge weights $w_{ij}\ge 0$ (e.\,g.\ heat kernel $w_{ij}=\exp(-\|\vec x_i-\vec x_j\|_2^2/(4t))$)
+    \item diagonal matrix $\mat{D}$ with the degree of each node: $d_{ii} = \sum_{j=1}^m w_{ij}$
+  \end{itemize}
+
+    \textbf{Kernel matrix $\mat{K}$:} $k_{ij} = k(\vec{x}_i, \vec{x}_j)$\\
+    \textbf{Decision function $f(\vec{x})$, predicted label $\hat y=\sign(f(\vec x))$:} $\vec{f} = [f(\vec{x}_i),~i=1,\ldots,m]^T$\\
+    \textbf{Regularization framework for function learning:}\\
+  
+  \begin{center}
+        $\displaystyle
+          f^* = \argmin_{f \in \mathcal{H}_k} 
+          \sum_{i=1}^l V(\vec{x}_i, y_i, f) + 
+          \gamma_\text{A} \, \|f\|^2_\text{A} +
+          \gamma_\text{I} \, \|f\|^2_\text{I}
+        $\\
+        {\small where $\mathcal H_k$ is the reproducing kernel Hilbert space (RKHS) of the kernel $k$ and $\mathcal M$ denotes the data manifold.}
+  \end{center}
+\textbf{Loss function $V(\vec{x}_i, y_i, f)$}
+  
+  \begin{itemize}
+    \item Squared loss function   \textbf{$(y_i - f(\vec{x}_i))^2$} for Regularized Least Squares (RLS)
+    \item Hinge loss function   \textbf{$\max [0, 1-y_i f(\vec{x}_i)]$} for SVM
+  \end{itemize}
+ 
+\textbf{Regularization framework for function learning:}
+\textbf{Regularization terms}
+  
+  \begin{itemize}
+    \item \emph{Ambient} norm $\|\cdot\|_\text{A}$: 
+      \begin{itemize}
+        \item norm of the function $f$ in the Reproducing Kernel Hilbert Space (RKHS) enforces a smoothness condition on the possible solutions   
+      \end{itemize}
+    \item \emph{Intrinsic} norm $\|\cdot\|_\text{I}$:
+      \begin{itemize}
+        \item norm of the function $f$ in the low dimensional manifold enforces a smoothness along the sampled $\mathcal{M}$
+      \end{itemize}
+  \end{itemize}
+
+
+  Reproducing Kernel Hilbert Spaces (RKHS)    \textbf{Hilbert space}
+
+  \begin{itemize}
+    \item   \textbf{abstract vector space} with any finite or   \textbf{infinite} number of dimensions
+    \item possesses the structure of the   \textbf{inner product}
+    \item allows the measurement of  \textbf{angles} and   \textbf{lengths}
+    \item is   \emph{complete}    
+  \end{itemize}
+\vspace{0.3cm}
+\textbf{Reproducing Kernel Hilbert Space}
+  \begin{itemize}
+    \item Hilbert space of functions
+    \item can be defined by kernels
+  \end{itemize}
+    
+  \subsubsection{Manifolds}
+  
+  A   \textbf{manifold} is a topological space that on a small enough scale resembles  the Euclidean space. it is roughly the shape of the distribution of the features.  \\
+\textbf{The Swiss Roll Problem} where the data is distributed in the shape of a swiss roll. look at slides and video for more details. 
+
+\textbf{Intrinsic norm $\|\cdot\|_\text{I}$:}
+  
+  \begin{displaymath}
+    \|f\|_\text{I}^2 = 
+    \sum_{i=1}^m \sum_{j=i}^m w_{ij} \big( f(\vec{x}_i) - f(\vec{x}_j) \big)^2 = 
+    \vec{f}^T \mat{L} \, \vec{f}
+  \end{displaymath}
+    \textbf{Representer Theorem} (Kimeldorf and Wahba, 1970):    
+  
+  The solution $f^*$ of this optimization problem has the form:
+
+  \begin{displaymath}
+    f^*(\vec{x}) = \sum_{i=1}^m \beta_i^* \cdot k(\vec{x}_i, \vec{x}) + \beta_0^*
+  \end{displaymath}
+ 
+\subsection{Laplacian Support Vector Machines}
+Constrained primal optimization problem based on the dual form:\\
+\textbf{Lagrange function $L$:}
+  
+  \begin{eqnarray*}
+    L(\vec\beta,\beta_0,\vec\xi,\vec\lambda,\vec\nu) 
+    &=& \sum_{i=1}^l \xi_i +
+        \frac{1}{2} \vec{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vec{\beta} -{} \\
+    & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_j \, k(\vec{x}_i,\vec{x}_j) + \beta_0\Bigg) - 1 + \xi_i\right) -{} \\
+    & & {}- \sum_{i=1}^l \nu_i \xi_i
+  \end{eqnarray*}
+     
+    \textbf{KKT condition:} the gradient w.\,r.\,t. the primal variables $\vec{\beta}, \beta_0, \vec{\xi}$ has to vanish
+   
+  
+  \begin{itemize}
+    \item Partial derivative w.\,r.\,t. $\beta_0$:
+      \begin{displaymath}
+        \frac{\partial L}{\partial \beta_0} \stackrel{!}{=} 0  \quad \Rightarrow \quad
+        \sum_{i=1}^l \lambda_i y_i = 0
+      \end{displaymath}
+       
+    \item Partial derivative w.\,r.\,t. $\xi_i$:
+      \begin{displaymath}
+        \frac{\partial L}{\partial \xi_i} \stackrel{!}{=} 0  \quad \Rightarrow \quad
+        1 - \lambda_i - \nu_i = 0 \quad \Rightarrow \quad
+        0 \leq \lambda_i \leq 1
+      \end{displaymath}
+  \end{itemize}
+  
+    \textbf{Simplifying the Langrangian using the two identities above:}
+  
+  {\small
+    \begin{eqnarray*}
+      L(\vec{\beta}, \vec{\lambda}) 
+      &=& \frac{1}{2} \vec{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vec{\beta} -{} \\
+      & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_i k(\vec{x}_i,\vec{x}_j) + \beta_0\Bigg) - 1 \right) \\
+      &=& \frac{1}{2} \vec{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vec{\beta} -
+          \vec{\beta}^T \mat{K} \mat{J}_{\mathcal{L}}^T \mat{Y} \vec{\lambda} +
+          \sum_{i=1}^l \lambda_i
+    \end{eqnarray*}
+  }
+  
+  with $\mat{J}_{\mathcal{L}} = [\mat{I}_l~\mat{0}] \in \real^{l\times m}$:
+  \begin{itemize}
+    \item identity matrix $\mat{I}_l \in \real^{l \times l}$
+    \item rectangular matrix $\mat{0} \in \real^{l \times u}$ with all entries being 0
+  \end{itemize}
+  and diagonal matrix $\mat{Y} \in \real^{l \times l}$ composed by the $l$ class labels $y_i$\\
+\textbf{Partial derivative w.\,r.\,t. $\vec{\beta}$:}
+  
+  \begin{eqnarray*}
+    \frac{\partial L}{\partial \vec{\beta}} \stackrel{!}{=} \vec{0} \\
+    &\Rightarrow& 
+    (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vec{\beta} -
+    \mat{K} \mat{J}_{\mathcal{L}}^T \mat{Y} \vec{\lambda} = \vec{0}   \\
+    &\Rightarrow& \text{(assuming $\mat K$ is invertible)} \\
+    \vec{\beta} = (2 \gamma_\text{A} \mat{I}_m + 2 \gamma_\text{I} \mat{L}\mat{K})^{-1} 
+    \mat{J}_{\mathcal{L}}^T \mat{Y} \vec{\lambda}
+  \end{eqnarray*}
+   
+    \textbf{Note:} direct relationship between parameters $\vec{\beta}$ and Lagrange multipliers $\vec{\lambda}$\\
+   Substituting back in the Lagrangian expression leads to the dual problem
+  \begin{displaymath}
+    \max_{\vec\lambda}\ \sum_{i=1}^{l}\lambda_i - \frac{1}{2}\,\vec\lambda^T\mat Q\vec\lambda
+    \quad\text{s.t.}\quad \sum_{i=1}^{l}\lambda_i y_i = 0,\ \ 0\le \lambda_i \le 1.
+  \end{displaymath}
+   where
+  {\small
+  \begin{displaymath}
+    \mat{Q} = \mat{Y} \mat{J}_{\mathcal{L}} \mat{K}
+    (2 \gamma_\text{A} \mat{I}_m + 2 \gamma_\text{I} \mat{L}\mat{K})^{-1}
+    \mat{J}_{\mathcal{L}}^T \mat{Y}.
+  \end{displaymath}
+  }
+ This is not to be memorized for the exam. 
+ 
+\subsection{Lessons Learned}
+   \textbf{Laplacian SVM:}
+  
+  \begin{itemize}
+    \item Ongoing research topic   
+    \item Extension of the Kernel SVM   
+    \item Additional regularization term   
+    \item Derivation of the dual problem
+  \end{itemize}
+ 
+  \newpage 
+\section{The Expectation Maximization Algorithm}\autocite{dempster1977,bishop2006,hastie2009}
+
+An important chapter for the exam. understand the steps, and if possible do the exercise to understand better. 
+
+\subsection{Parameter Estimation}
+\textbf{Goal:} Derivation of a parameter estimation technique that can deal with
+  \begin{itemize}
+    \item high dimensional parameter spaces and
+    \item latent, hidden, incomplete data.
+  \end{itemize}
+  
+  Parameter estimation techniques known from statistics: 
+  \begin{enumerate}
+    \item   \textbf{Maximum likelihood estimation (ML estimation)}
+      \begin{itemize}
+        \item All observations are assumed to be mutually statistically independent. 
+        \item The observations are kept fixed.
+        \item The (log-)likelihood function is optimized regarding the parameters.       
+      \end{itemize}
+    \item   \textbf{Maximum a-posteriori estimation (MAP estimation)}
+      \begin{itemize}
+        \item The probability density function of the parameters $p(\vec{\theta})$ to be estimated is known.
+      \end{itemize}
+  \end{enumerate}
+  
+  Let $X$ be the observed random variable and $\p$ the parameter set. The estimates of $\p$ are denoted by $\hatp$.
+  Let $x$ be a realization (observed value) of $X$.
+%
+  \begin{itemize}
+    \item   \textbf{ML estimation:} $\displaystyle \hatp= \argmax_{\p}\ p(x; \p) = \argmax_{\p}\ \log p(x; \p)$
+    \item   \textbf{MAP estimation:}
+      {\small
+        \begin{eqnarray*}
+          \hatp &=& \argmax_{\p}\ p(\p|{x})\\
+                &=& \argmax_{\p}\ \frac{p(\p)\,p(x|\p)}{\int p(\p')\,p(x|\p')\,\mathsf{d}\p'}\\
+                &=& \argmax_{\p}\ \log p(\p) + \log p(x|\p)
+        \end{eqnarray*}
+      }
+    \item[] Here $\p$ is considered as a random variable and its probability density function $p(\p)$ is known.
+  \end{itemize}
+     
+
+  \subsubsection{ML Estimation: Example}
+
+    Let us assume a Gaussian distributed random vector:
+%
+    \begin{displaymath}
+      p(\vec{x};\vec{\mu}, \mat{\Sigma}) = \frac{1}{\sqrt{\det(2\pi\mat{\Sigma})}}
+        e^{-\frac{1}{2}(\vec{x}-\vec{\mu})^T \mat{\Sigma}^{-1} (\vec{x}-\vec{\mu})}  
+    \end{displaymath}
+%    
+    \begin{itemize}
+      \item We observe the random vectors $\vec{x}_1, \vec{x}_2, \dots, \vec{x}_m$ (training data).  
+      \item Based on these training data, we have to estimate the mean vector $\vec{\mu}$ and the covariance matrix $\mat{\Sigma}$.
+    \end{itemize}
+
+    \small
+    The ML estimator assumes   \textbf{mutually independent observations} and optimizes the pdf for the given set of training data:
+%
+    {\footnotesize
+      \begin{eqnarray*}
+        \{\hat{\vec{\mu}}, \hat{\mat{\Sigma}}\}
+          &=& \argmax_{\vec{\mu},\mat{\Sigma}}\ \prod_{i=1}^m p(\vec{x}_i;\vec{\mu}, \mat{\Sigma}) \\   
+          &=& \argmax_{\vec{\mu},\mat{\Sigma}}\ \sum_{i=1}^m \log p(\vec{x}_i;\vec{\mu}, \mat{\Sigma}) \\  
+          &=& \argmax_{\vec{\mu},\mat{\Sigma}} L(\vec{x}_1, \vec{x}_2, \dots, \vec{x}_m; \vec{\mu}, \mat{\Sigma})  
+      \end{eqnarray*}
+    }
+%
+    where the   \textbf{log-likelihood function} is defined by
+%
+    \begin{displaymath}
+        L:= L(\vec{x}_1, \vec{x}_2, \dots, \vec{x}_m; \vec{\mu}, \mat{\Sigma}) =
+        \sum_{i=1}^m \log p(\vec{x}_i;\vec{\mu}, \mat{\Sigma})
+      \end{displaymath}\\
+    \textbf{Necessary conditions} for the estimation of the parameters are:\\
+       \begin{displaymath}
+         \frac{\partial L}{\partial \vec{\mu}} \stackrel{!}{=} \vec{0} 
+         \quad \quad \mbox{and} \quad \quad
+         \frac{\partial L}{\partial \mat{\Sigma}} \stackrel{!}{=} \vec{0}  
+       \end{displaymath}\\
+     Now we get for the mean vector:\\%  
+       \begin{displaymath}
+         \frac{\partial L}{\partial \vec{\mu}} = 
+         \sum_{i=1}^m \mat{\Sigma}^{-1}(\vec x_i-\vec{\mu}) \stackrel{!}{=} 
+         \vec{0}  
+       \end{displaymath}\\
+     and thus the   \textbf{ML estimate for the mean vector} meets our expectation:\\
+      \begin{displaymath}
+         \vec{\hat{\mu}} = \frac{1}{m}\sum_{i=1}^m \vec{x}_i
+      \end{displaymath}\\
+   \small
+    Along the same lines, we get the   \textbf{estimator of the covariance matrix} by computation of the zero crossings of the partial derivatives w.\,r.\,t.\ the components of the covariance matrix:
+ 
+    \begin{displaymath}
+      \hat{\mat{\Sigma}} = \frac{1}{m} \sum_{i=1}^m (\vec x_i-\hat{\vec{\mu}})
+                                                    (\vec x_i-\hat{\vec{\mu}})^T
+    \end{displaymath}
+  
+\subsection{Gaussian Mixture Models}
+
+recommend to implement this exercise. theory is important for the exam. So far, we have considered parameter estimation for statistical models with:  
+  \begin{itemize}
+    \item one class-dependent distribution component  
+    \item uni- or multivariate feature vectors  
+    \item the type was mostly Gaussian (normally distributed features)
+  \end{itemize}
+   
+  Now we extend this model by representing the observations with a set of $K$ multivariate Gaussian distributions:\\
+ \textbf{Problem description:} \\
+  
+  Given $m$ feature vectors in an $d$ dimensional space, find a set of $K$ multivariate Gaussian distributions that best represent the observations. GMMs are an example of classification by   \textbf{\emph{unsupervised learning}}:  
+
+  \begin{itemize}
+    \item It is not known which feature vectors are generated by which of the $K$ Gaussians  
+    \item The desired output is, for each feature vector, an estimate of the probability that it is generated by distribution $k$
+  \end{itemize}
+     
+ \textbf{GMM parameter estimation:} parameters $\vec\theta=\{\pi_k,\vec\mu_k,\mat\Sigma_k\}_{k=1}^K$
+%  
+  \begin{eqnarray*}
+    \vec\mu_k    &\phantom{=}& \mbox{the $K$ means} \\
+    \mat\Sigma_k &\phantom{=}& \mbox{the $K$ covariance matrices of size $d \times d$} \\
+    \pi_k          &\phantom{=}& \mbox{mixture weights, with $\pi_k\ge 0$ and $\sum_k \pi_k=1$} \\
+    z_i          &\phantom{=}& \mbox{hidden component label of $\vec x_i$, $z_i\in\{1,\dots,K\}$}\\
+    \gamma_{ik}       &\phantom{=}& p(z_i=k\mid \vec x_i;\hat{\vec\theta})\ \mbox{(responsibility)}
+  \end{eqnarray*}
+    \textbf{Additional estimates:}
+%  
+  \begin{eqnarray*}
+    p(\vec x;\vec\theta) &\phantom{=}& \mbox{density of observing a feature vector $\vec x$} \\
+    \ell(\vec\theta)         &\phantom{=}& \mbox{overall log-likelihood function of the parameter set}
+  \end{eqnarray*}
+     
+  \subsubsection{GMM -- Expectation}
+  
+  The key to the estimation problem is the \textbf{overall log-likelihood objective function $\ell(\vec\theta)$}:
+  \begin{displaymath}
+    \ell(\vec\theta) = \sum_{i = 1}^{m} \log p(\vec x_i;\vec\theta)
+  \end{displaymath}
+  
+  Split $p(\vec x_i;\vec\theta)$ into its contributions from the $K$ Gaussians:
+  \begin{displaymath}
+    p(\vec x_i;\vec\theta) = \sum_{k=1}^{K} \pi_k \, {\mathcal N}(\vec x_i; \vec \mu_k, \mat \Sigma_k)
+  \end{displaymath}
+
+  Individual probabilities for the $K$ contributions (responsibilities):
+  \begin{displaymath}
+    \gamma_{ik} = p(z_i=k\mid\vec x_i;\hat{\vec\theta}) = \frac{ \pi_k\,{\mathcal N}(\vec x_i; \vec \mu_k, \mat \Sigma_k)}{p(\vec x_i;\hat{\vec\theta})}
+  \end{displaymath}
+     
+ \subsubsection{GMM -- Maximization}
+  
+    \textbf{Problem:} How do we get $\vec \mu_k, \mat \Sigma_k$ and $\pi_k$?  
+
+  \begin{itemize}
+    \item Similar to the ML estimate for the Gaussian, we maximize the log-likelihood by deriving w.\,r.\,t.\ the unknowns.     
+    \item The   \textbf{ML estimates} are:
+      \begin{eqnarray*}
+        \hat{\vec \mu}_k 
+          &=& \frac{\sum_i \gamma_{ik} \vec x_i}{\sum_i \gamma_{ik}} \\
+        \hat{\mat \Sigma}_k 
+          &=& \frac{\sum_i \gamma_{ik} (\vec x_i - \hat{\vec \mu}_k)(\vec x_i - \hat{\vec \mu}_k)^T}{\sum_i \gamma_{ik}} \\
+        \hat{\pi}_k 
+          &=& \frac{1}{m} \sum_{i=1}^m \gamma_{ik}
+      \end{eqnarray*}
+  \end{itemize}
+
+  \paragraph{Where the M-step updates come from (sketch).}
+  Using responsibilities $\gamma_{ik}=p(z_i=k\mid\vec x_i;\hat{\vec\theta})$ from the E-step, the stationarity conditions of the log-likelihood yield the closed-form updates.
+
+  \textbf{Mean $\vec\mu_k$:}
+  {\small
+  \begin{align*}
+    \frac{\partial \ell}{\partial \vec\mu_k}
+      &= \sum_{i=1}^m
+          \frac{\pi_k\,\mathcal N(\vec x_i;\vec\mu_k,\mat\Sigma_k)}{\sum_{l} \pi_l\,\mathcal N(\vec x_i;\vec\mu_l,\mat\Sigma_l)}\,\mat\Sigma_k^{-1}(\vec x_i-\vec\mu_k)
+       = \sum_{i=1}^m \gamma_{ik}\,\mat\Sigma_k^{-1}(\vec x_i-\vec\mu_k)
+       ~\stackrel{!}{=}~ \vec 0\\
+    \Rightarrow\quad \hat{\vec\mu}_k &= \frac{\sum_i \gamma_{ik}\,\vec x_i}{\sum_i \gamma_{ik}}\,.
+  \end{align*}
+  }
+
+  \textbf{Covariance $\mat\Sigma_k$:} same as the single-Gaussian ML estimate, but each sample is weighted by $\gamma_{ik}$:
+  {\small
+  \[
+    \hat{\mat\Sigma}_k = \frac{\sum_i \gamma_{ik}(\vec x_i-\hat{\vec\mu}_k)(\vec x_i-\hat{\vec\mu}_k)^{T}}{\sum_i \gamma_{ik}}\,.
+  \]
+  }
+
+  \textbf{Mixture weights $\pi_k$:} enforce $\sum_k \pi_k=1$ via a Lagrangian $\Lambda = \ell(\vec\theta)+\nu(\sum_k \pi_k-1)$ and set $\partial\Lambda/\partial \pi_k=0$,
+  which yields $\hat \pi_k=\tfrac{1}{m}\sum_i \gamma_{ik}$.
+
+  \subsubsection*{GMM Parameter Estimation}
+    \textbf{Observations:}
+
+  \begin{itemize}
+    \item If we know the values for the parameters ($\vec \mu_k, \mat \Sigma_k, \pi_k$), we can compute the expectations (\textbf {E-step}).     
+    \item Once we have the expectations we can compute improved values for the parameters (\textbf {M-step}).
+  \end{itemize}
+     
+  We have found an   \textbf{iterative solution scheme} for the nonlinear GMM parameter estimation problem:
+
+  \begin{itemize}
+    \item \emph{Right at} the ML solution both E- and M-step relations hold.   
+    \item The ML parameters are a stationary point for the E- and M-step.   
+    \item Starting from any parameter values, an iteration of the E-step combined with an M-step will not decrease $\ell$.
+  \end{itemize}
+\textbf{EM algorithm for GMM parameter estimation:}\\
+refer to slides\\
+
+  \begin{centernss}
+    \begin{struktogramm}(100,50)
+      \assign{Initialization: $\vec \mu_k^{(0)}, \mat \Sigma_k^{(0)}, \pi_k^{(0)}$}
+      \assign{$j \gets 0$}
+      \until{$\left|\ell^{(j+1)}-\ell^{(j)}\right| < \varepsilon$}
+        \assign{\textbf{Expectation step}: compute new values for $\gamma_{ik}, \ell$}
+        \assign{\textbf{Maximization step}: compute $\vec \mu_k^{(j+1)}, \mat \Sigma_k^{(j+1)}, \pi_k^{(j+1)}$}
+        \assign{$j \gets j+1$}
+      \untilend
+      \assign{Output: estimates $\hat{\vec \mu}_k, \hat{\mat \Sigma}_k, \hat{\pi}_k$}
+    \end{struktogramm}
+  \end{centernss}
+
+\subsection{Missing Information Principle}
+
+  A colloquial formulation of the   \textbf{missing information principle (MIP)} is as simple as:  observable information $=$ complete information $-$ hidden information
+
+     
+\textbf{Mathematical formalization of the MIP:}
+
+  \begin{itemize}
+    \item observable random variable: $X$
+    \item hidden random variable: $Z$
+    \item parameter set: $\p$
+  \end{itemize}
+   
+  The joint density of the events $x$ (observation) and $z$ (hidden) is:
+  \begin{displaymath}
+    p(x,z; \p) = p(x; \p)\, p(z \mid x; \p)
+  \end{displaymath}
+%
+  and thus:
+  \begin{displaymath}
+    p(x; \p)= \frac{p(x, z; \p)}{p(z\mid x; \p)}
+  \end{displaymath}
+    The mathematical formulation of the MIP is:
+  \begin{displaymath}
+    -\log p(x; \p) = -\log p(x, z; \p) -(-\log p(z\mid x; \p))
+  \end{displaymath}
+  
+  \textbf{Key Equation}\\
+  We now consider the mathematical formulation of the key equation and derive an iterative parameter estimation scheme:
+
+  \begin{itemize}
+   \item Let $j$ denote the iteration index (note: $i$ is used as the sample index in this course).
+   \item Consider the key equation for the $(j+1)$-st iteration:
+     {\small
+       \begin{displaymath}
+         \log p\left(x    ; \hatp^{(j+1)} \right) =
+         \log p\left(x, z ; \hatp^{(j+1)} \right) -
+         \log p\left(z\mid x  ; \hatp^{(j+1)} \right)~.
+       \end{displaymath}
+     }
+   \item Now we multiply both sides with $p\left( z\mid x ; \hatp^{(j)} \right)$ and integrate over the hidden event $z$:
+     \footnotesize
+     \begin{eqnarray*}
+             \int p\left(z\mid x ; \hatp^{(j)} \right) \log p\left( x ;   \hatp^{(j+1)} \right)\, \mathsf{d}z
+         &=& \int p\left(z\mid x ; \hatp^{(j)} \right) \log p\left(x, z ; \hatp^{(j+1)} \right)\, \mathsf{d}z -{} \\
+         & & \int p\left(z\mid x ; \hatp^{(j)} \right) \log p\left(z\mid x  ; \hatp^{(j+1)} \right)\, \mathsf{d}z
+     \end{eqnarray*}
+  \end{itemize}
+ Now consider the left hand side of this equation:
+  
+  \begin{eqnarray*}
+          & & \int p\left(z\mid x ; \hatp^{(j)}   \right) \, \log p\left( x ; \hatp^{(j+1)} \right)\ \mathsf{d}z ={} \\  
+          &=& \log p\left(x   ; \hatp^{(j+1)} \right) \, \int p\left( z\mid x ; \hatp^{(j)} \right)\ \mathsf{d}z = \\  
+          &=& \log p\left(x   ; \hatp^{(j+1)} \right)
+  \end{eqnarray*}
+  \begin{itemize}
+    \item   \textbf{Observation:} The left side of the key equation is the log likelihood function of observations.      
+    \item   \textbf{Conclusion:} The maximization of the right hand side of the above key equation corresponds to a ML estimation
+  \end{itemize}
+     
+ 
+  \subsubsection{}{Kullback-Leibler Statistics and Entropy}
+  
+  For the terms on the right hand side we introduce the following notation (formally this is incorrect due to the differences in the iteration index):
+  
+  \begin{itemize}
+    \item   \textbf{Kullback--Leibler statistics} (historically: Kullback--Leibler statistics)
+      \begin{displaymath}
+        Q(\hatp^{(j)};\hatp^{(j+1)}) =
+        \int p(z\mid x; \hatp^{(j)}) \, \log p(x, z;\hatp^{(j+1)}) \, \mathsf{d}z
+      \end{displaymath}
+   \item   \textbf{Entropy (cross-entropy term):}
+     \begin{displaymath}
+       H(\hatp^{(j)};\hatp^{(j+1)}) = 
+       - \int p(z\mid x; \hatp^{(j)}) \, \log p(z\mid x; \hatp^{(j+1)})\, \mathsf{d}z
+      \end{displaymath}
+  \end{itemize}
+  {\small (For discrete $z$, the integral becomes a sum.)}
+     
+  \subsubsection{Kullback-Leibler Statistics}
+
+A measure of how similar the predicted pdf is to the reference pdf. a method of measuring similarity of the pdfs. ANother metric to measure the performance of the system. 
+
+  Let us first take a closer look at the Kullback--Leibler statistics:
+  \begin{displaymath}
+    Q(\p,\p') = \int p(z\mid x; \p)\, \log p(x,z;\p')\, \mathsf{d}z
+  \end{displaymath}
+
+  The Kullback--Leibler statistics (also called $Q$-function) w.\,r.\,t.\ $\p'$ given $\p$ is the \textbf{conditional expectation}:
+  \begin{displaymath}
+    E_{z\sim p(z\mid x;\p)}[\log p(x,z;\p')] = 
+    \int p(z\mid x; \p)\, \log p(x,z;\p')\, \mathsf{d}z
+  \end{displaymath}
+     
+\iffalse
+    
+ Using the argument that the position of a maximum of a function does not change by scaling the function value with a positive factor and by translation, we see that for give $X$ and $\p$::
+ \begin{eqnarray*}
+   \hat{\p}' &=& \argmax_{\p'} \int p(Y| X; \p)\ \log{p(X,Y;\p')} \ dy\\
+            &=& \argmax_{\p'} \frac{1}{p(X;\p)}
+                                 \int p(X, Y; \p)\ \log
+                                 {p(X,Y;\p')} \ dy\\
+            &=& \argmax_{\p'} \int p(X, Y; \p)\ \log{p(X,Y;\p')} \ dy\\
+            &=& \argmax_{\p'} -\int p(X, Y; \p)\ \log{p(X,Y;\p')}\ dy
+                                 +\int p(X, Y; \p)\ \log{p(X,Y;\p)}\ dy\\
+            &=& \argmax_{\p'} \int p(X, Y; \p)\
+                \log\frac{p(X,Y;\p')}{p(X,Y;\p)} \ dy
+ \end{eqnarray*}
+     
+\fi
+  \textbf{Key Equation}
+  
+  The   \textbf{key equation} of the Expectation Maximization algorithm (EM algorithm) can be rewritten:
+
+  \begin{center}
+        $\log p\left( x; \hatp^{(j+1)} \right) = 
+        Q\left( \hatp^{(j)}; \hatp^{(j+1)} \right) + 
+        H\left( \hatp^{(j)}; \hatp^{(j+1)} \right)$
+  \end{center}
+  \vspace{0.5\baselineskip}
+  \begin{itemize}
+    \item Below we will motivate that the maximization of the Kullback-Leibler statistics can replace the optimization of the log-likelihood function.      
+    \item A complete proof can be found in the literature (see Further Readings).
+  \end{itemize}
+
+ \textbf{Entropy Changes with Iterations-}\\
+  For the entropy we get the inequality:
+  \begin{displaymath}
+    H(\p;\p') \geq H(\p; \p)  
+  \end{displaymath}
+
+  This is shown rather straightforward:
+
+  \begin{eqnarray*}
+    & & \hspace{-1cm}H({\p};{\p'}) - H(\p;{\p}) \\   
+    &=& - \int p(z\mid x;\p) \, \log p(z\mid x;{\p}')\ \mathsf{d}z
+        + \int p(z\mid x;\p) \, \log p(z\mid x;{\p})\ \mathsf{d}z \\   
+    &=& - \int p(z\mid x;\p) \, \log \frac{p(z\mid x;{\p}')}{p(z\mid x;{\p})}\ \mathsf{d}z \\   
+    &=&   \int p(z\mid x;\p) \, \log \frac{p(z\mid x;{\p})}{p(z\mid x;{\p'})}\ \mathsf{d}z
+  \end{eqnarray*}
+
+The difference of the considered entropies
+
+  \begin{eqnarray*}
+    & & \hspace{-1cm}H({\p};{\p'})-H(\p;{\p}) = \\
+    &=& \int p(z\mid x;{\p}) \, \log \frac{p(z\mid x;{\p})}{p(z\mid x;{\p'})}\ \mathsf{d}z \ge 0
+  \end{eqnarray*}
+
+  is thus the Kullback--Leibler divergence of the densities $p(z\mid x;{\p})$ and $p(z\mid x;{\p'})$, and the Kullback--Leibler divergence is known to be non-negative.
+
+  The best to see this is to make use of the inequality
+  \begin{displaymath}
+  \log(x) \leq x-1
+  \end{displaymath}
+
+  and conclude:
+  \begin{eqnarray*}
+    \int p(x) \, \log \frac{p(x)}{q(x)}\ \mathsf{d}x 
+      & =  & -\int p(x) \, \log \frac{q(x)}{p(x)}\ \mathsf{d}x \\  
+      &\geq& \int p(x) \left( 1 - \frac{q(x)}{p(x)} \right) \, \mathsf{d}x\\   
+      & =  & 1-1 = 0
+  \end{eqnarray*}
+  
+\subsection{Expectation Maximization Algorithm}
+\subsubsection{The basic idea of the EM algorithm:}
+Instead of maximizing the log-likelihood function on the left hand side of the key-equation, we maximize the Kullback-Leibler statistics iteratively while ignoring the entropy term.
+ 
+
+  \begin{centernss}
+    \begin{struktogramm}(100,50)
+      \assign{Initialization: $\hatp^{(0)}$}
+      \assign{$j \gets -1$}
+      \until{$\|\hatp^{(j+1)}-\hatp^{(j)}\| < \varepsilon$}
+        \assign{$j \gets j+1$}
+        \assign{\textbf{Expectation step:}
+          $Q\left( \hatp^{(j)}\, ; \,\p \right) := \int p\left( z\mid x; \hatp^{(j)} \right) \, \log p(x, z;\p )\, \mathsf{d}z$}
+        \assign{\textbf{Maximization step:}
+          $\displaystyle {\hatp}^{(j+1)} \gets \argmax_{{\p}} Q\left( \hatp^{(j)}\,;\, \p \right)$}
+      \untilend
+      \assign{Output: estimate $\hatp \gets \hatp^{(j)}$}
+    \end{struktogramm}
+  \end{centernss}
+\subsubsection{Advantages of the EM Algorithm}
+ A few   \textbf{practical positive aspects} regarding the EM algorithm:
+
+  \begin{itemize}
+    \item The maximum of the KL statistics is usually computed using zero crossings of the gradient.      
+    \item Mostly we find   \textbf{closed form iteration schemes}.      
+    \item Easy to implement closed form iteration formulas (if these exist).      
+    \item Iteration scheme is numerically robust.      
+    \item Closed form iterations have constant memory requirements.      
+    \item If the argument in the logarithm can be factorized properly,we observe a decomposition of the parameter space       (independent lower dimensional sub-spaces)
+  \end{itemize}
+
+\subsubsection{Drawbacks of EM}
+
+  The EM algorithm has a few   \textbf{major drawbacks}:  
+  \begin{itemize}
+    \item slow, slow, slow convergence \\
+      (should not be used in run time critical applications)   
+    \item local optimization method, i.\,e.\ the initialization $\hatp^{(0)}$ has to lie in the area of attraction of the global maximum.
+  \end{itemize}
+  
+
+\subsection{Constrained Optimization}
+
+  Many optimization problems in the context of the EM algorithm are of the following form:   
+ 
+   \textbf{Example}
+    \small
+    Optimize the multivariate function
+    {\footnotesize
+      \begin{displaymath}
+        f_0(\pi_1,\pi_2,\dots,\pi_K) = \sum_{k=1}^{K} a_k \ \log \pi_k
+      \end{displaymath}
+    }
+    subject to
+    {\footnotesize
+      \begin{eqnarray*}
+        \sum_{k=1}^K \pi_k & =    & 1 \\
+        \pi_k              & \geq & 0
+      \end{eqnarray*}
+    }
+  Example
+    \small
+    Application of the   \textbf{Lagrange multiplier} method:
+    {\footnotesize
+      \begin{displaymath}
+        \mathcal L(\pi_1,\pi_2,\dots,\pi_K,\nu) = 
+        \sum_{k=1}^K a_k\ \log \pi_k + \nu \left( \sum_{k=1}^K \pi_k-1 \right)  
+      \end{displaymath}
+    }
+     
+    The optimization can be done using the   \textbf{partial derivative}:
+    {\footnotesize
+      \begin{displaymath}
+        \frac{\partial \mathcal L(\pi_1,\pi_2,\dots,\pi_K,\nu)}{\partial \pi_k} =
+        \frac{a_k}{\pi_k} + \nu \stackrel{!}{=} 0 \quad .
+      \end{displaymath}
+    }
+     \small
+    The   \textbf{Lagrange multiplier} is:
+    {\footnotesize
+    \begin{displaymath}
+      a_k= -\nu \pi_k~.  
+    \end{displaymath}
+    }
+
+    Due to the fact that the $\pi_k$'s are unknown, we have to apply a trick to get $\nu$. \\
+    We just sum both sides of the above equation over all $k$ and get:
+    {\footnotesize
+      \begin{displaymath}
+        \nu = -\sum_{k=1}^K a_k~.  
+      \end{displaymath}
+    }
+
+    The estimator for $\pi_k$ now is:
+    {\footnotesize
+      \begin{displaymath}
+        \hat{\pi}_k = \frac{a_k}{\sum_{l=1}^K a_l}
+      \end{displaymath}
+    }
+    
+  \textbf{EM Algorithm: Example}
+
+  \textbf{Example}
+  \small
+  Estimate the priors $\pi_k$ of classes $k=1,2, \dots, K$ from observations $x_n$, $n=1,\dots,m$, when the class labels are missing.
+
+  Assume known class-conditional densities $p(x\mid k)$ and unknown priors $\pi_k$ (with $\sum_{k=1}^K \pi_k=1$). The density of the observations is
+  {\footnotesize
+  \begin{displaymath}
+    p(x;\vec \pi) = \sum_{k=1}^K \pi_k\,p(x\mid k)
+  \end{displaymath}
+  }
+
+  \textbf{Application of the EM scheme:}
+  \begin{itemize}
+    \item observable random measurements: $x_n$, $n=1,\dots,m$
+    \item hidden variables: $z_n\in\{1,\dots,K\}$
+    \item parameter set: $\vec \pi=(\pi_1,\dots,\pi_K)^T$
+  \end{itemize}
+
+  \textbf{E-step:} compute responsibilities
+  {\footnotesize
+  \begin{displaymath}
+    a_{nk} \,=\, p(z_n=k\mid x_n;\hat{\vec \pi}^{(j)})
+    \,=\, \frac{\hat \pi_k^{(j)}\,p(x_n\mid k)}{\sum_{l=1}^K \hat \pi_l^{(j)}\,p(x_n\mid l)}~.
+  \end{displaymath}
+  }
+
+  \textbf{M-step:} update the priors
+  \begin{displaymath}
+    \hat \pi_k^{(j+1)} = \frac{1}{m}\sum_{n=1}^m a_{nk}~.
+  \end{displaymath}
+
+  \textbf{Initialization of Priors:}
+
+  \begin{itemize}
+   \item Use prior medical knowledge about the frequency of tissue classes      
+   \item If no prior information is available, assume uniform distribution
+  \end{itemize}
+  
+\subsection{Lessons Learned}
+
+  \begin{itemize}
+    \item Standard parameter estimation method: ML estimation      
+    \item If the prior pdf of the parameters is known: MAP estimation      
+    \item In the presence of latent random variables: EM algorithm      
+    \item EM advantages: decomposition of search space, closed form iteration schemes      
+    \item EM disadvantage: slow convergence, local method
+  \end{itemize}
+
+
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is a Gaussian Mixture Model?        
+    \item What is the missing information principle?        
+    \item Write down the key equation for the EM algorithm:        
+    \item Is the EM algorithm a local or a global parameter estimation method?
+  \end{itemize}
+     
+   \newpage  
+\section{Adaptive Segmentation of MRI Data}\autocite{wells1996}
+
+\textbf{Notation in this Chapter}\\
+{\small
+\begin{itemize}
+  \item Voxels are indexed by $i\in\{0,\dots,n-1\}$.
+  \item $\tilde X_i$: (unknown) bias-free intensity of voxel $i$; $X_i$: observed intensity.
+  \item $Y_i:=\log X_i$: log-transformed observed intensity (note: $Y$ is \emph{not} a class label here).
+  \item $\beta_i:=\log B_i$: log-bias field; $\vec\beta=(\beta_0,\dots,\beta_{n-1})^T$ with Gaussian prior $p(\vec\beta)=\mathcal N(\vec\beta;\vec0,\mat\Psi_{\vec\beta})$.
+  \item $z_i\in\{1,\dots,K\}$: hidden tissue class at voxel $i$, with prior $\pi_k=p(z_i=k)$.
+  \item Tissue parameters $\mu_k,\psi_k$ are assumed known; $W_{ik}$ denotes the posterior tissue probability $p(z_i=k\mid Y_i,\beta_i)$.
+\end{itemize}
+}
+
+\subsection{Introduction}
+ \textbf{Magnetic Resonance Imaging (MRI)} is an important acquisition technique.      
+
+  It features:
+  \begin{itemize}
+    \item high spatial resolution
+    \item good soft tissue contrast
+    \item does not incorporate ionizing radiation (as computed tomography)         
+  \end{itemize}
+  Several applications require the   \textbf{segmentation} (classification) of the acquired images into   \textbf{tissue types}.
+     
+  Difficulties arise from:
+
+  \begin{itemize}
+    \item missing intensity normalization (like Hounsfield units in CT)   
+    \item   \textbf{intensity inhomogeneities}, also known as bias field (RF coils, acquisition sequences)
+  \end{itemize}
+     
+  Effect of the bias field on ML segmentation:
+  W.\,M.\,Wells et al. presented an approach to improve MR brain segmentation (1996):
+
+  \begin{itemize}
+    \item statistical approach to intensity-based segmentation of MRI
+    \item statistical modeling of bias field (smoothness constraint)
+    \item usage of EM algorithm for simultaneous computation of tissue classification and intensity inhomogeneity correction
+  \end{itemize}
+
+    \textbf{Typical EM problem:}
+  \begin{itemize}
+    \item The missing data is the tissue class assignment for each pixel.   
+    \item If the tissue was classified, the bias field could easily be computed.  
+    \item If the bias field was known, the tissue classification would be much easier. 
+  \end{itemize}
+
+\subsection{Bias Field Model}
+ \begin{itemize}
+    \item Let $\tilde{X}_i$ be the (unknown) intensity of the $i$-th voxel of the MRI data and \\
+      $B_i$ the corresponding bias field.  
+    \item The bias field is assumed to be multiplicative:
+      \begin{displaymath}
+        X_i = \tilde{X}_i \cdot B_i
+      \end{displaymath}
+       
+    \item Using a log-transform on the intensities yields an additive bias field model:
+      \begin{displaymath}
+        Y_i = \log X_i = \log \tilde{X}_i + \beta_i ~,~\mbox{with}~ \beta_i = \log B_i
+      \end{displaymath}
+       
+    \item The bias field is then:
+      \begin{displaymath}
+        \vec \beta = \left(\beta_0, \beta_1, \ldots, \beta_{n-1}\right)^T
+      \end{displaymath}
+      with $n$ being the number of voxels.
+      \item The bias field is assumed to change smoothly over the entire image domain.
+    \item It is modeled by an $n$-dimensional zero mean Gaussian prior:
+      \begin{displaymath}
+        p(\vec \beta) = {\mathcal N}(\vec{\beta} ; \vec{0}, \mat{\Psi}_{\vec{\beta}})
+      \end{displaymath}
+  \end{itemize}
+   \textbf{Notes:}
+
+  \begin{itemize}
+    \item $\mat{\Psi}_{\vec{\beta}}$ is a $n \times n$-dimensional covariance matrix  
+    \item $\mat{\Psi}_{\vec{\beta}}$ is too large to compute directly in practice  
+    \item Instead of the full covariance matrix, a banded estimate is chosen in practice.
+  \end{itemize}
+ 
+\subsection{Bayesian Approach}
+  \textbf{Variables:}
+
+  \begin{eqnarray*}
+    Y_i      &\phantom{=}& \mbox{log-transformed observed intensity at voxel $i$} \\
+    z_i      &\phantom{=}& \mbox{hidden tissue class of voxel $i$, with $z_i\in\{1,\dots,K\}$} \\
+    \mu_k    &\phantom{=}& \mbox{mean intensity for tissue class $k$} \\
+    \psi_k   &\phantom{=}& \mbox{variance of tissue class $k$} \\
+    \pi_k      &\phantom{=}& p(z_i=k) \ \mbox{(stationary prior)}
+  \end{eqnarray*}
+
+  The intensities are assumed to be scalar values, therefore $\mu_k, \psi_k \in \real$.
+  Assuming \textbf{conditional independence given $\vec\beta$}, the density for the entire image $\vec Y = \left(Y_0, Y_1, \ldots, Y_{n-1} \right)^T$ is:
+  
+  \begin{displaymath}
+    p(\vec Y \mid \vec \beta) = \prod_i p(Y_i \mid \beta_i)
+  \end{displaymath}
+  The density of the observations is modeled as a \textbf{Gaussian mixture} over the tissue classes:
+  \begin{displaymath}
+    p(Y_i \mid \beta_i) = \sum_{k=1}^K p(Y_i, z_i=k \mid \beta_i)
+    = \sum_{k=1}^K \pi_k \, p(Y_i \mid z_i=k, \beta_i)
+  \end{displaymath}
+
+  with
+  \begin{displaymath}
+    p(Y_i \mid z_i=k, \beta_i) = {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k)
+  \end{displaymath}
+  \textbf{Observations so far:}
+
+  \begin{itemize}
+    \item Each tissue class is modeled with a normal distribution.
+    \item The modeling of the observed intensity distribution yields a Gaussian mixture model.
+    \item The estimators for the GMM are non-linear!
+  \end{itemize}
+   Using   \textbf{Bayes rule} to derive an objective function for the bias field:
+  \begin{displaymath}
+    p(\vec \beta | \vec Y) = \frac{p(\vec Y | \vec \beta) \, p(\vec \beta)} {p(\vec Y)}
+  \end{displaymath}
+ 
+  Applying the   \textbf{MAP principle} yields an estimator for the bias field:
+  \begin{eqnarray*}
+    \hat{\vec \beta} &=& \argmax_{\vec \beta} p(\vec \beta | \vec Y) \\   
+                     &=& \argmax_{\vec \beta} \log p(\vec \beta | \vec Y) \\   
+                     &=& \argmax_{\vec \beta} \big( \log p(\vec Y | \vec \beta) + \log p(\vec \beta) \big)
+  \end{eqnarray*}
+     
+At the optimum, the gradient w.\,r.\,t.\ $\vec \beta$ has to be zero:
+
+  \begin{eqnarray*}
+    \frac{\partial}{\partial \beta_i} \log p(\vec \beta | \vec Y) 
+    &=& \frac{\partial}{\partial \beta_i} \left( \log p(\vec Y | \vec \beta) + \log p(\vec \beta) \right) \\   
+    &=& \frac{\partial}{\partial \beta_i} \left( \sum_j \log p(Y_j | \beta_j) + \log p(\vec \beta) \right) \\   
+    &=& \frac{\frac{\partial}{\partial \beta_i} p(Y_i | \beta_i)}{p(Y_i | \beta_i)} + \frac{\frac{\partial}{\partial \beta_i} p(\vec \beta)}{p(\vec \beta)} \\
+    &\stackrel{!}{=}& 0.
+  \end{eqnarray*}
+  {\footnotesize
+  \begin{eqnarray*}
+    \frac{\frac{\partial}{\partial \beta_i} p(Y_i | \beta_i)}{p(Y_i | \beta_i)} 
+    &=& \underbrace{
+          \frac{\sum_{\Gamma} p(\Gamma) \, \frac{\partial}{\partial \beta_i} {\mathcal N}(Y_i ; \mu_\Gamma + \beta_i, \psi_{\Gamma}) }
+               {\sum_{\Gamma} p(\Gamma) \, {\mathcal N}(Y_i ; \mu_\Gamma + \beta_i, \psi_\Gamma)}
+        }_{\mbox{\small substitute GMM}}   \\  
+    \noalign{\hbox{\footnotesize using $\frac{\partial}{\partial\beta_i}\mathcal N(Y_i;\mu_k+\beta_i,\psi_k)=\mathcal N(Y_i;\mu_k+\beta_i,\psi_k)\,\psi_k^{-1}(Y_i-\mu_k-\beta_i)$}}
+    &=& \frac{\sum_{k=1}^K \pi_k \, {\mathcal N}(Y_i ; \mu_k + \beta_i, \psi_k) \, \psi_k^{-1} \, (Y_i - \mu_k - \beta_i)}
+             {\sum_{l=1}^K \pi_l \, {\mathcal N}(Y_i ; \mu_l + \beta_i, \psi_l) }  \\    
+    &=& \sum_{k=1}^K W_{ik} \left( \psi_k^{-1} (Y_i - \mu_k - \beta_i) \right)
+  \end{eqnarray*}
+  }
+ Weight for voxel $i$ and tissue class $k$:
+  {\footnotesize
+  \begin{eqnarray*}
+    W_{ik} := 
+      \frac{\pi_k \cdot \mathcal{N}(Y_i ; \mu_k + \beta_i, \psi_k) }
+           {\sum_{l=1}^K \pi_l \cdot \mathcal{N}(Y_i ; \mu_l + \beta_i, \psi_l)} 
+  \end{eqnarray*}
+  }
+ Rewriting the equation:
+
+  {\footnotesize
+  \begin{eqnarray*}
+    \frac{\frac{\partial}{\partial \beta_i} p(Y_i \mid \beta_i)}
+         {p(Y_i \mid \beta_i)} 
+    &=& \sum_{k=1}^K W_{ik} \left( \psi_k^{-1} (Y_i - \mu_k - \beta_i) \right) \\   
+    &=& \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, (Y_i - \mu_k) - \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, \beta_i \\   
+    &=& \overline{R_i} - \overline{\psi^{-1}}_i ~\beta_i
+  \end{eqnarray*}
+  }
+  Mean residual:
+  {\footnotesize
+  \begin{displaymath}
+    \overline{R_i} := \sum_{k=1}^K W_{ik} \, \psi_k^{-1} \, (Y_i - \mu_k)
+  \end{displaymath}
+  }
+  Mean inverse variance:
+  {\footnotesize
+  \begin{displaymath}
+    \overline{\psi^{-1}}_i := \sum_{k=1}^K W_{ik} \, \psi_k^{-1}
+  \end{displaymath}
+  }
+     
+ Finishing gradient computation:
+
+  {\small
+  \begin{eqnarray*}
+    \nabla_{\vec \beta} \log p(\vec \beta \mid \vec Y) 
+      &=& \overline{\vec R} - \mat D\, \vec \beta + \frac{\nabla_{\vec \beta} p(\vec \beta)}{p(\vec \beta)} \\
+      \noalign{\hbox{\footnotesize with the zero-mean Gaussian prior $p(\vec\beta)=\mathcal N(\vec\beta;\vec 0,\mat\Psi_{\vec\beta})$: $\;\frac{\nabla_{\vec\beta}\,p(\vec\beta)}{p(\vec\beta)}=\nabla_{\vec\beta}\log p(\vec\beta)=-\mat\Psi_{\vec\beta}^{-1}\vec\beta$}}
+      &=& \overline{\vec R} - \mat D\, \vec \beta - \mat{\Psi}_{\vec{\beta}}^{-1} \vec \beta \\
+      &\stackrel{!}{=}& \vec{0}
+  \end{eqnarray*}
+  }
+  where $\overline{\vec R}=(\overline{R}_0,\dots,\overline{R}_{n-1})^T$ and $\mat D=\mathrm{diag}(\overline{\psi^{-1}}_0,\dots,\overline{\psi^{-1}}_{n-1})$.
+
+  Rearranging $\overline{\vec R} - \mat D\,\vec\beta - \mat\Psi_{\vec\beta}^{-1}\vec\beta = \vec 0$ gives
+  {\small
+  \[
+    \overline{\vec R} - \big(\mat D + \mat\Psi_{\vec\beta}^{-1}\big)\,\vec\beta = \vec 0
+    \quad\Rightarrow\quad
+    \vec\beta = \big(\mat D + \mat\Psi_{\vec\beta}^{-1}\big)^{-1}\,\overline{\vec R}~.
+  \]
+  }
+  This is linear in $\vec\beta$ only if the weights $W_{ik}$ (and hence $\overline{\vec R}$ and $\mat D$) are held fixed:
+  compute $W_{ik}$ with the current estimate $\hat{\vec\beta}^{(j)}$ (E-step), then solve for $\hat{\vec\beta}^{(j+1)}$ (M-step).
+
+  It follows that:
+  {\small
+  \begin{displaymath}
+    \hat{\vec \beta} = \mat{H} \, \overline{\vec R} \quad \mbox{with}~ 
+    \mat{H} \equiv \left[\mat D + \mat{\Psi}_{\vec{\beta}}^{-1} \right]^{-1}~.
+  \end{displaymath}
+  }
+
+  $\mat{H}$ is a linear operator that is applied to the mean residual field.
+ 
+\subsection{EM-Algorithm}
+
+\textbf{EM-Algorithm for the adaptive segmentation problem:}
+
+  \begin{eqnarray}
+    W_{ik}^{(j)}
+    &\leftarrow& \frac{\pi_k \cdot \mathcal{N}(Y_i ; \mu_k + \hat\beta_i^{(j)}, \psi_k)}
+                      {\sum_{l=1}^K \pi_l \cdot \mathcal{N} (Y_i ; \mu_l + \hat\beta_i^{(j)}, \psi_l)} \label{eq:E}    \\
+    \hat{\vec \beta}^{(j+1)}
+    &\leftarrow& \mat{H}^{(j)} \, \overline{\vec R}^{(j)} \label{eq:M}
+  \end{eqnarray}
+  with initialization $\hat{\vec\beta}^{(0)}=\vec 0$.
+ \begin{itemize}
+    \item   \textbf{E-step:} equation \eqref{eq:E} yields the posterior tissue class probabilities for a known bias field   
+    \item   \textbf{M-step:} equation \eqref{eq:M} yields the new bias field for the current estimates for the tissue probabilities  
+    \item   \textbf{Result:} iterating 5-10 times between the E- and the M-step is usually sufficient
+  \end{itemize}
+ 
+
+\subsection{Model Extensions}\autocite{jaeger2009,pohl2005,pohl2007}
+ \textbf{Drawbacks} of initial adaptive segmentation algorithm:
+
+  \begin{itemize}
+    \item brains should be extracted from entire data  
+    \item algorithm does not incorporate neighborhood of pixels  
+    \item purely intensity-based model
+  \end{itemize}
+  \textbf{Extensions} of the algorithm:
+
+  \begin{itemize}
+    \item incorporation of atlases for spatial probability maps of tissue classes  
+    \item definition of vector space for probabilistic atlases to get shape models  
+    \item voxel neighborhood relations modeled by Markov random fields  
+    \item incorporation into Bayesian model that is solved by EM approach
+  \end{itemize}
+ 
+  Result using an extended model:
+\subsection{Lessons Learned}
+ \begin{itemize}
+    \item Bayesian approach for MRI data segmentation   
+    \item incorporation of bias field estimation   
+    \item nonlinear problem is solved iteratively using EM algorithm   
+    \item improvement of results by incorporating atlases
+  \end{itemize}
+
+\subsection{Comprehensive Questions}
+
+  \begin{itemize}
+    \item What is the idea of combined MR segmentation and bias field correction?      
+    \item What is the E-step in this context?      
+    \item What is the M-step?      
+    \item How can the update formulas be derived?
+  \end{itemize}
+     
