@@ -450,3 +450,5 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Ch. 11 KKT: conditions stated at the optimal points $(\vect x^*,\vect\lambda^*,\vect\nu^*)$ with $\nabla_{\vect x}\mathcal L$ (stars and gradient variable were undefined); typos "minumum", "vetor", "intialize", "and and", "Langrange".
 - [x] Ch. 13–16: missing-space typesetting ("Anyscalar", "thesign", "haveunit", "apermutation", "thestatistical", "theentire", "thereduction", "thealignment", "thebias-variance", "byminimizing", "themargin", "byViola", …): space before `\textbf` restored (28 places); "colums" → "columns".
 - [x] Ch. 17 No-Free-Lunch: statement rewritten ($f$ cost function, $A$ search algorithm, $c_m$ cost values of the first $m$ visited points).
+- [x] Ch. 4 Naive Bayes: tied diagonal $q_{j,j}=q$ (component index $j$); "$x1 and x2$" → $x_1$ and $x_2$; "mutual independency" → conditional independence given the class.
+- [x] Layout: long footnote URLs break (`xurl`); ridge likelihood split over two lines; quadratic log-ratio block set in `\small` (no visible overflow left).

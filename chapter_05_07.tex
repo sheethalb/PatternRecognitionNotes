@@ -56,7 +56,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
     \end{displaymath}
     For each component $j\in\{1,\dots,100\}$ we have to estimate mean $\mu_{y,j}\in \real$ and variance $\sigma_{y,j}^2\in \real$.
     The total number of parameters to be estimated for each class is  $$100+100= 200.$$\\
-    The slides show examples of quadratic decision boundaries considering the statistical dependency and with independence assumption of the variables $x1 and x2$. 
+    The slides show examples of quadratic decision boundaries considering the statistical dependency and with independence assumption of the variables $x_1$ and $x_2$. 
     \textbf{Exam Notes:} Important to understand the difference clearly in these cases. \\
    Let us consider the \textbf{logit transform} for two classes $y\in\{0,1\}$:
    \begin{eqnarray*}
@@ -72,7 +72,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
      \item Reduction of the parameter space
        \begin{itemize}
          \item Introduction of independency assumptions
-           (from complete dependency to mutual independency)
+           (from complete dependency to conditional independence given the class)
          \item Parameter tying
        \end{itemize}
     \item Reduction of the dimension of the feature vectors       
@@ -101,7 +101,7 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
         \end{array}
       \right)
     \end{eqnarray*}
-    Example: first-order dependency with \textbf{tied diagonal elements}, i.\,e.\ $q_{i,i}=q$:
+    Example: first-order dependency with \textbf{tied diagonal elements}, i.\,e.\ $q_{j,j}=q$:
       \begin{eqnarray*}
      \mat Q &=& \left(
        \begin{array}{ccccccc}
@@ -693,8 +693,11 @@ A regression formula based on L2 norm and the regularizer is also an L2 norm. re
 		\item Suppose
 		      \begin{displaymath}
 			      \forall 1 \le i \le m: \quad y_i
-			      \sim \mathcal{N}(\underbrace{\vect{\alpha}^T \vect{x}_i + \alpha_0}_\text{mean}, \underbrace{\sigma^2}_\text{variance})
-			      ,\ \text{i.e. } p(y_i|\vect x_i,\vect\alpha) = \frac{1}{\sqrt{2 \pi} \cdot \sigma} e^{-\frac{1}{2} \cdot \frac{(y_i - \vect{\alpha}^T \vect{x}_i - \alpha_0)^2}{\sigma^2}}
+			      \sim \mathcal{N}(\underbrace{\vect{\alpha}^T \vect{x}_i + \alpha_0}_\text{mean}, \underbrace{\sigma^2}_\text{variance}),
+		      \end{displaymath}
+		      i.\,e.\
+		      \begin{displaymath}
+			      p(y_i|\vect x_i,\vect\alpha) = \frac{1}{\sqrt{2 \pi} \cdot \sigma} e^{-\frac{1}{2} \cdot \frac{(y_i - \vect{\alpha}^T \vect{x}_i - \alpha_0)^2}{\sigma^2}}
   \end{displaymath}
 		\item Parameters $\alpha_j$ are assumed to be independent of each other.
 		\item Prior distribution of $\alpha_j$:
