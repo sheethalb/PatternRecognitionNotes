@@ -13,7 +13,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 2) Notes contradict their own notation (symbol overloading)
 
-- [ ] $S$: training set vs scatter matrices vs sparsity level.
 - [ ] $d$: signed distance vs dimension.
 - [ ] $I$: Fisher information vs identity vs indicator vs image intensity.
 - [ ] $M$: misclassified set vs max norm vs neurons per layer.
@@ -299,3 +298,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $\alpha_0,\alpha_i$: inconsistent meanings across logistic / naive Bayes parts.
       *Done:* Naive Bayes additive model (p. 31-32) now uses $f_0$, $f_i(x_i)$, with a note on why it differs from $\alpha_0,\alpha_i$ in Chapter 03. $\alpha_0,\vect\alpha$ keep their Chapter 03 meaning everywhere else.
+
+- [x] $S$: training set vs scatter matrices vs sparsity level.
+      *Done:* sparsity level renamed $S\to s$ ("$s$-sparse", Compressed Sensing). Scatter matrices stay $\mat S_k,\mat S_\mathsf W,\mat S_\mathsf B$: they are bold matrices, so they no longer clash with the (non-bold) training set $S$ under the bold-matrix convention.
