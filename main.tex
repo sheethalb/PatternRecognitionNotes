@@ -49,7 +49,8 @@
 % inner products: use transpose, e.g. $\vec x^T\vec y$
 % Reverted: keep the standard LaTeX arrow accent for \vec.
 % Bold lab-notation macros (robust both inside/outside $...$ and in moving arguments):
-\DeclareRobustCommand{\vect}[1]{\ensuremath{\mathbf{#1}}}
+% \bm{\mathrm{.}}: Latin letters upright bold (as with \mathbf), Greek letters bold too (\mathbf leaves lower-case Greek non-bold)
+\DeclareRobustCommand{\vect}[1]{\ensuremath{\bm{\mathrm{#1}}}}
 \DeclareRobustCommand{\mat}[1]{\ensuremath{\mathbf{#1}}}
 \providecommand{\trans}{\mathsf{T}}
 
