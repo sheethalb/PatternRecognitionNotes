@@ -412,10 +412,10 @@ The reason we have transformed into this kind of logistic or sigmoid function, i
           e^{ -\frac{1}{2} (\vect{x} - \vect{\mu}_1)^T \mat{\Sigma}_1^{-1} (\vect{x} - \vect{\mu}_1)}
         }
     \end{eqnarray*}
-  This function has the constant component:
+  This function has the constant component (it becomes part of $\alpha_0$ below):
 % 
     \begin{eqnarray*}
-      c &=& \log \frac{p(y=0)}{p(y=1)}+\frac{1}{2}
+      \log \frac{p(y=0)}{p(y=1)}+\frac{1}{2}
             \log \frac{ { \det{(2\pi\mat{\Sigma}_1)}}}
                       { { \det{(2\pi\mat{\Sigma}_0)}}}
     \end{eqnarray*}
@@ -423,7 +423,7 @@ The reason we have transformed into this kind of logistic or sigmoid function, i
     \begin{itemize}
       \small
       \item Priors imply a constant offset of the decision boundary. 
-      \item If priors and covariance matrices of both classes are identical, this offset is $c=0$.
+      \item If priors and covariance matrices of both classes are identical, this offset is $0$.
     \end{itemize}
 
    \begin{figure}

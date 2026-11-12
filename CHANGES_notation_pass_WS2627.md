@@ -16,7 +16,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 - [x] $L$: Lagrangian vs graph Laplacian (same equation); also subspace dimension, number of layers, log-likelihood. Reviewer request: use $\mathcal L$ for Lagrangian; reserve $L$ (or $\Delta_G$) for Laplacian.
 - [x] $p$: density vs mixture weight $p_k$ vs responsibility $p_{ik}$ → use $\pi_k$ and $\gamma_{ik}$.
 - [x] $\lambda$: eigenvalue vs Lagrange multiplier vs ridge weight vs learning rate, etc.
-- [ ] $c$: constant offset vs polynomial coefficient vs $c(\vect x,\phi)$ in exponential family.
 - [ ] $\alpha_0,\alpha_i$: inconsistent meanings across logistic / naive Bayes parts.
 - [ ] $S$: training set vs scatter matrices vs sparsity level.
 - [x] $D$: DTW distance vs degree matrix vs dimension.
@@ -291,3 +290,10 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] p. 122 §19.3 first bullet: include defining basis expansion $f(\vec x)=\sum_{m=1}^M \beta_m b(\vec x;\vec\gamma_m)$.
 - [x] p. 125 Viola–Jones weak classifier: keep $G_j(\vec x)\in\{-1,+1\}$ (or explicitly flag variants).
 - [x] p. 124 Viola–Jones feature count statement is not present in this manuscript (nothing to fix).
+
+---
+
+## Completed review items
+
+- [x] $c$: constant offset vs polynomial coefficient vs $c(\vect x,\phi)$ in exponential family.
+      *Done:* offset symbol removed (p. 21, the constant is written out and noted as part of $\alpha_0$); polynomial coefficients already $a_{ij},\alpha_i$; $c(\vect x,\phi)$ kept as standard exponential-family notation.
