@@ -16,7 +16,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 3) Typesetting / consistency
 
-- [ ] Matrix/vector typeface consistency: pick one convention and apply consistently (reviewer lists mixed bolding and a stray “$\|\vec X\|_F$”).
 
 ---
 
@@ -321,3 +320,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $y$: neuron outputs vs targets.
       *Done:* kept as is (decision by Sheethal, 12 Nov): neuron outputs carry the layer superscript $y_j^{(l)}$, targets have none ($y_k$), prediction $\hat y_k=y_k^{(L)}$; stated in the MLP Notation list and consistent with the slides.
+
+- [x] Matrix/vector typeface consistency: pick one convention and apply consistently (reviewer lists mixed bolding and a stray “$\|\vec X\|_F$”).
+      *Done:* convention: bold, as stated in main.tex. (1) \vect now uses \bm{\mathrm{.}}: Latin vectors unchanged, Greek vectors ($\vect\mu,\vect\alpha,\vect\theta,\dots$) are now bold too (\mathbf left them plain). (2) Ch. 13-16 file (chapter_15_18.tex): all 478 arrow \vec -> bold \vect; Niemann postulate in Ch. 1 likewise. (3) Text under the Gaussian (p. 21): $\mat\Sigma$, $\vect\mu$; ridge "Matrix $\mat X$"; GMM $\partial L/\partial\mat\Sigma=\mat 0$ (zero matrix). Frobenius norm already $\|\mat X\|_F$. Not changed: vector-valued $\phi(\vect x)$ stays non-bold (function symbol).

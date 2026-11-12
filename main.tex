@@ -44,10 +44,10 @@
 
 % --- Lab notation (global) ---
 % scalars: plain (e.g. $a$)
-% vectors: bold lowercase (e.g. $\vec x$)
+% vectors: bold lowercase (e.g. $\vect x$)
 % matrices: bold uppercase (e.g. $\mat A$)
-% inner products: use transpose, e.g. $\vec x^T\vec y$
-% Reverted: keep the standard LaTeX arrow accent for \vec.
+% inner products: use transpose, e.g. $\vect x^T\vect y$
+% \vec (arrow) is not used in the notes; use \vect (bold).
 % Bold lab-notation macros (robust both inside/outside $...$ and in moving arguments):
 % \bm{\mathrm{.}}: Latin letters upright bold (as with \mathbf), Greek letters bold too (\mathbf leaves lower-case Greek non-bold)
 \DeclareRobustCommand{\vect}[1]{\ensuremath{\bm{\mathrm{#1}}}}
@@ -114,11 +114,11 @@ The classifier should generalize to unseen data. It is not sufficient if the cla
     \item Representitive sample of \textbf{patterns} should be available. This means , they should exist... cannot classify randomly varying noisy data!
     For example in the classification of flowers, there should be clear size in sepal width or length for one flower type vs the other. If its randomly varying and unpredictable without any 'pattern', it will be impossible to build a classifier for it. 
      \begin{displaymath}
-           \omega = \{{}^1\vec{f}(\vec{x}),\ldots,{}^N\vec{f}(\vec{x})\} \subseteq \Omega
+           \omega = \{{}^1\vect{f}(\vect{x}),\ldots,{}^N\vect{f}(\vect{x})\} \subseteq \Omega
         \end{displaymath}
-        {\footnotesize (Niemann's notation: here $\vec x$ is a position (e.\,g.\ in the image), not a feature vector; $N$ is the number of patterns in $\omega$.) \autocite{niemann1983}}
+        {\footnotesize (Niemann's notation: here $\vect x$ is a position (e.\,g.\ in the image), not a feature vector; $N$ is the number of patterns in $\omega$.) \autocite{niemann1983}}
 
-        where $\omega$ denotes the set of patterns, $\Omega$ the (feature) pattern space, and $\vec f(\vec x)$ the feature vector extracted at position $\vec x$.
+        where $\omega$ denotes the set of patterns, $\Omega$ the (feature) pattern space, and $\vect f(\vect x)$ the feature vector extracted at position $\vect x$.
     \item A (simple) pattern should have \textbf{features} that clearly indicates its membership in one class or the other. For example, the sepal width or length in classifications of flowers. 
     \item Compact domain in feature space of the same class. The features of same class should be close together and that cluster should be far away from the cluster of features of another class. 
     Intra and Inter class distances.
