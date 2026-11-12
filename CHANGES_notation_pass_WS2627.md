@@ -13,7 +13,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 2) Notes contradict their own notation (symbol overloading)
 
-- [ ] $d$: signed distance vs dimension.
 - [ ] $I$: Fisher information vs identity vs indicator vs image intensity.
 - [ ] $M$: misclassified set vs max norm vs neurons per layer.
 - [ ] $y$: neuron outputs vs targets.
@@ -301,3 +300,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] $S$: training set vs scatter matrices vs sparsity level.
       *Done:* sparsity level renamed $S\to s$ ("$s$-sparse", Compressed Sensing). Scatter matrices stay $\mat S_k,\mat S_\mathsf W,\mat S_\mathsf B$: they are bold matrices, so they no longer clash with the (non-bold) training set $S$ under the bold-matrix convention.
+
+- [x] $d$: signed distance vs dimension.
+      *Done:* signed distance renamed $d\to\delta(\vect x)$ in the SVM I derivation (p. 69); $d$ is the dimension everywhere else. $d^*$ (dual optimum, Optimization II) kept as standard Boyd notation.

@@ -374,25 +374,25 @@ This is an important chapter for the exam.\autocite{vapnik2000,hastie2009,bishop
       \end{displaymath}
     \item The  \textbf {normal vector $\vect n$} of the hyperplane is $\vect n= \vect \alpha/\|\vect \alpha\|_2$.
 
-    \item \textbf{Derivation of the signed distance:} Let $\vect x_\perp$ be the orthogonal projection of $\vect x$ onto the hyperplane $\{\vect x:f(\vect x)=0\}$.
+    \item \textbf{Derivation of the signed distance $\delta$} of $\vect x$ to the hyperplane: Let $\vect x_\perp$ be the orthogonal projection of $\vect x$ onto the hyperplane $\{\vect x:f(\vect x)=0\}$.
           Decompose $\vect x$ along the unit normal $\vect n=\vect\alpha/\|\vect\alpha\|_2$:
           {\small
           \[
-            \vect x = \vect x_\perp + d\,\vect n, \qquad f(\vect x_\perp)=0~.
+            \vect x = \vect x_\perp + \delta\,\vect n, \qquad f(\vect x_\perp)=0~.
           \]
           }
           Applying $f(\cdot)=\vect\alpha^T(\cdot)+\alpha_0$ gives
           {\small
           \[
-            f(\vect x)=f(\vect x_\perp)+d\,\vect\alpha^T\vect n
-            = 0 + d\,\frac{\vect\alpha^T\vect\alpha}{\|\vect\alpha\|_2}
-            = d\,\|\vect\alpha\|_2,
-            \quad\Rightarrow\quad d=\frac{f(\vect x)}{\|\vect\alpha\|_2}~.
+            f(\vect x)=f(\vect x_\perp)+\delta\,\vect\alpha^T\vect n
+            = 0 + \delta\,\frac{\vect\alpha^T\vect\alpha}{\|\vect\alpha\|_2}
+            = \delta\,\|\vect\alpha\|_2,
+            \quad\Rightarrow\quad \delta=\frac{f(\vect x)}{\|\vect\alpha\|_2}~.
           \]
           }
 
       \begin{displaymath}
-        d = 
+        \delta(\vect x) = 
         \frac{\|\vect \alpha\|_2}{\vect \alpha^T\vect \alpha} \cdot f(\vect x) = 
         \frac{1}{\|\vect \alpha\|_2}\cdot f(\vect x)  =
         \frac{1}{\|\nabla f(\vect x)\|_2}\cdot f(\vect x)  
