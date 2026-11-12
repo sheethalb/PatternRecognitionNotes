@@ -430,12 +430,12 @@ Now we compute the \textbf{partial derivatives}:
 		\frac{\partial}{\partial{\mat{\Phi}}}
 		\left\{
 		\mbox{tr} (\mat \Phi \ \mat \Sigma_{\mbox{inter}}  \ \mat \Phi^T) + \sum_{i=1}^{L} \nu_i (\| \mat {\Phi}_i \|^2_2 - 1)  \right\} =
-		2 \mat \Phi\mat  \Sigma_{\mbox{inter}} +2 \mat{\Nu} \mat \Phi = \mat 0,
+		2 \mat \Phi\mat  \Sigma_{\mbox{inter}} +2 \mat N \mat \Phi = \mat 0,
 	\end{displaymath}
-	where $\mat\Nu = \mbox{diag}(\nu_1,\dots,\nu_L)$ contains the Lagrange multipliers.
+	where $\mat N = \mbox{diag}(\nu_1,\dots,\nu_L)$ contains the Lagrange multipliers.
 	This results in the eigenvalue and eigenvector problem:
 	\begin{displaymath}
-		\mat{\Sigma}_{\mbox{inter}} \mat \Phi^T = \mat \Phi^T \mat{\Lambda}', \qquad \mat\Lambda' = -\mat\Nu = \mbox{diag}(\lambda'_1,\dots,\lambda'_L),
+		\mat{\Sigma}_{\mbox{inter}} \mat \Phi^T = \mat \Phi^T \mat{\Lambda}', \qquad \mat\Lambda' = -\mat N = \mbox{diag}(\lambda'_1,\dots,\lambda'_L),
 	\end{displaymath} 
 	i.\,e.\ the rows of $\mat\Phi$ are eigenvectors of $\mat\Sigma_{\mbox{inter}}$ with eigenvalues $\lambda'_i$.
 	\textbf{Note:} \\
@@ -625,8 +625,8 @@ In the two class situation, we set $y\in \{-1,+1\}$ and use the decision rule:
 	\end{displaymath}
 	and define
 	\begin{displaymath}
-		\vect \theta = { \vect \alpha\choose \alpha_0} \in \real^{d+1}, \qquad
-		\tilde{\vect x}_i = { \vect x_i \choose 1} \in \real^{d+1}.
+		\vect \theta = \begin{pmatrix}\vect \alpha\\ \alpha_0\end{pmatrix} \in \real^{d+1}, \qquad
+		\tilde{\vect x}_i = \begin{pmatrix}\vect x_i\\ 1\end{pmatrix} \in \real^{d+1}.
 	\end{displaymath}
 	i.\,e.\ the $i$-th row of $\mat X$ is the augmented feature vector $\tilde{\vect x}_i^T$ and $\vect\theta^T\tilde{\vect x}_i = \vect\alpha^T\vect x_i + \alpha_0$.
 
@@ -634,7 +634,7 @@ In the two class situation, we set $y\in \{-1,+1\}$ and use the decision rule:
 	\begin{displaymath}
 		\hat{\vect \theta} = \argmin_{\vect \theta}\| \mat X \vect \theta - \vect y\|_{2}^2
 	\end{displaymath}
-The \textbf{}{least-square estimator} for the $L_2$-norm:
+The \textbf{least-squares estimator} for the $L_2$-norm:
 	\begin{eqnarray*}
 		\widehat{\vect \theta} &=& \argmin_{\vect\theta} \ \sum_{i=1}^m (\vect \theta^T\tilde{\vect x}_i-y_i)^2\\
 		&=& \argmin_{\vect\theta} \ (\mat{X}\vect \theta-\vect y)^T(\mat{X}\vect \theta-\vect y)

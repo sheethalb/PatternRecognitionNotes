@@ -375,7 +375,7 @@ The \emph{penalty function approximation problem} is defined as follows:
   The update rule in the $(k+1)$-st iteration step is:
 
   \begin{displaymath}
-    { \alpha_0^{(k+1)} \choose \vect \alpha^{(k+1)}} =            { \alpha_0^{(k)} \choose \vect \alpha^{(k)}} + \eta {y_i \choose y_i\cdot \vect x_i}
+    \begin{pmatrix}\alpha_0^{(k+1)}\\ \vect \alpha^{(k+1)}\end{pmatrix} =            \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix} + \eta \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
   \end{displaymath} 
   Here $\eta>0$ is the learning rate (step size; denoted $\eta$ in the MLP chapter) and can be set to $1$ without loss of generality.
  
@@ -386,7 +386,7 @@ The \emph{penalty function approximation problem} is defined as follows:
       \STATE select pair $(\vect x_i, y_i)$ from training set.
       \If{$y_i\cdot (\vect x_i^T \vect\alpha^{(k)} + \alpha_0^{(k)})\leq 0$}
         \STATE
-        \STATE $\displaystyle{ \alpha_0^{(k+1)} \choose \vect \alpha^{(k+1)}} =  { \alpha_0^{(k)} \choose \vect \alpha^{(k)}} +  {y_i \choose y_i\cdot \vect x_i}$
+        \STATE $\displaystyle\begin{pmatrix}\alpha_0^{(k+1)}\\ \vect \alpha^{(k+1)}\end{pmatrix} =  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix} +  \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}$
         \STATE
         \STATE $k\leftarrow k+1$
       \EndIf
@@ -432,50 +432,50 @@ The perceptron learning algorithm converges to a linear decision boundary after 
   Let us look at the estimated parameters after $k$ iterations and how the parameters change with iterations:
 
   \begin{eqnarray*}
-    {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{\alpha_0^* \choose \vect \alpha^*} 
-      &=&           \left( { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} +  {y_i \choose y_i\cdot \vect x_i}\right)^T {\alpha_0^* \choose \vect \alpha^*}\\          
-      &=& { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{\alpha_0^* \choose \vect \alpha^*} +  {y_i \choose y_i\cdot \vect x_i}^T {\alpha_0^* \choose \vect \alpha^*} \\          
-      &\geq& { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{\alpha_0^* \choose \vect \alpha^*} + \rho \\         &\geq& k\rho
+    \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}^T\begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} 
+      &=&           \left( \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} +  \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}\right)^T \begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix}\\          
+      &=& \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} ^T\begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} +  \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}^T \begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} \\          
+      &\geq& \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} ^T\begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} + \rho \\         &\geq& k\rho
   \end{eqnarray*}
 \textbf{Conclusion:} The more iterations (i.\,e.\ misclassifications) we have, the more the vectors are aligned. Now we apply the Cauchy-Schwarz inequality for inner products:
 
   \begin{eqnarray*}
-    {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{\alpha_0^* \choose \vect \alpha^*} 
-      &\leq& \left\|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \left\| {\alpha_0^* \choose \vect \alpha^*}\right\|_2 \\[.5cm]          
-      &=&\left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}
+    \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}^T\begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} 
+      &\leq& \left\|  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2\cdot  \left\| \begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix}\right\|_2 \\[.5cm]          
+      &=&\left \|  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}
   \end{eqnarray*}
   The norm of the vector estimated in the $k$-th iteration step is:
   \begin{eqnarray*}
-    & &  \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2^2 =
-   \left\| { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} +  {y_i \choose y_i\cdot \vect x_i}\right\|_2^2 \\         
-   & & \vspace*{-2cm} = { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{ \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} 
-           + 2 { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}}^T{y_i \choose y_i\cdot \vect x_i}
-          + {y_i \choose y_i\cdot \vect x_i}^T{y_i \choose y_i\cdot \vect x_i}
+    & &  \left \|  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2^2 =
+   \left\| \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} +  \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}\right\|_2^2 \\         
+   & & \vspace*{-2cm} = \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} ^T\begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} 
+           + 2 \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
+          + \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
   \end{eqnarray*}
   We only go into iteration step $(k+1)$ if we did a mistake in iteration $k$. A misclassification implies:
   
   \begin{displaymath}
-    { \alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{y_i \choose y_i\cdot \vect x_i}
+    \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
     = y_i\cdot (\vect x_i^T \vect\alpha^{(k)} + \alpha_0^{(k)})\quad \leq \quad 0
   \end{displaymath}
   (The non-strict inequality is needed, e.g.\ with the zero initialization the first update typically happens at equality.)
   And thus we get
   \begin{displaymath}
-    \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2^2 
-    \leq { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{ \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} 
-           + {y_i \choose y_i\cdot \vect x_i}^T{y_i \choose y_i\cdot \vect x_i}
+    \left \|  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2^2 
+    \leq \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} ^T\begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} 
+           + \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
     \leq k(1+R^2)
   \end{displaymath}
   Wrap-up:
   \begin{displaymath}
     k\rho 
-    \leq {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}^T{\alpha_0^* \choose \vect \alpha^*} 
-    \leq \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}
+    \leq \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}^T\begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} 
+    \leq \left \|  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}
   \end{displaymath}
   Using the Cauchy-Schwarz inequality:
   \begin{displaymath}
     k\rho\quad
-    \leq \quad \left \| {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}\quad \leq \quad  \sqrt{k(1+R^2)(\alpha_0^{*2}+1)}
+    \leq \quad \left \| \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}\quad \leq \quad  \sqrt{k(1+R^2)(\alpha_0^{*2}+1)}
   \end{displaymath}
   shows:
   \begin{displaymath}
