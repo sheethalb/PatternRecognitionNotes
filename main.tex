@@ -110,9 +110,9 @@ A classifier that works on the extracted features to seperate out the samples in
 The classifier should generalize to unseen data. It is not sufficient if the classifier works well with the data given to us, it should be able to classify all samples that are unseen as well.
 
 \subsection{6 postulates of PR}
-\begin{itemize}
+\begin{enumerate}
 %consider rewording
-    \item Representitive sample of \textbf{patterns} should be available. This means , they should exist... cannot classify randomly varying noisy data!
+    \item Representative sample of \textbf{patterns} should be available. This means they should exist: we cannot classify randomly varying noisy data!
     For example in the classification of flowers, there should be clear size in sepal width or length for one flower type vs the other. If its randomly varying and unpredictable without any 'pattern', it will be impossible to build a classifier for it. 
      \begin{displaymath}
            \omega = \{{}^1\vect{f}(\vect{x}),\ldots,{}^N\vect{f}(\vect{x})\} \subseteq \Omega
@@ -123,10 +123,10 @@ The classifier should generalize to unseen data. It is not sufficient if the cla
     \item A (simple) pattern should have \textbf{features} that clearly indicates its membership in one class or the other. For example, the sepal width or length in classifications of flowers. 
     \item Compact domain in feature space of the same class. The features of same class should be close together and that cluster should be far away from the cluster of features of another class. 
     Intra and Inter class distances.
-    \item A (complex) pattern consists of \textbf{simpler constituents}, which have certain relations to each other. A pattern may be decomposed into these constituents. Many patterns may be represented with relatively few constituents.
-    \item A complex pattern has a certain \textbf{structure}: not any arrangement of simple constituents is a valid pattern. For example, any random arrangement of words does not make a sentence. If a sentence is a complex pattern, then it is made up of words (the simpler constituents) in a valid arrangement, and then the sentences can be classified. 
+    \item A (complex) pattern consists of \textbf{simpler constituents}, which have certain relations to each other. A pattern may be decomposed into these constituents.
+    \item A complex pattern has a certain \textbf{structure}: not any arrangement of simple constituents is a valid pattern, and many patterns may be represented with relatively few constituents. For example, any random arrangement of words does not make a sentence. If a sentence is a complex pattern, then it is made up of words (the simpler constituents) in a valid arrangement, and then the sentences can be classified. 
     \item Two patterns are similar if their features or their simpler constituents are similar. 
-\end{itemize}
+\end{enumerate}
 
 \subsection{Performance Evaluation}
 
