@@ -424,11 +424,11 @@ derivation is not important for exam. it is important to understand that there i
       y_i(\vect x_i^T\vect \alpha^* +\alpha^*_0)\geq \rho
     \end{displaymath}
     where $\rho>0$ and $\|\vect \alpha^*\|=1$.
-    Let $M= \max_i \|\vect x_i\|_2$. \\
+    Let $R= \max_i \|\vect x_i\|_2$. \\
     
 The perceptron learning algorithm converges to a linear decision boundary after $k$ iterations, where $k$ is bounded by
     \begin{displaymath}
-      k \leq \frac{(\alpha_0^{*2}+1)(1+M^2)}{\rho^2}.
+      k \leq \frac{(\alpha_0^{*2}+1)(1+R^2)}{\rho^2}.
     \end{displaymath}
   Let us look at the estimated parameters after $k$ iterations and how the parameters change with iterations:
 
@@ -465,7 +465,7 @@ The perceptron learning algorithm converges to a linear decision boundary after 
     \left \|  {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2^2 
     \leq { \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} ^T{ \alpha_0^{(k-1)} \choose \vect \alpha^{(k-1)}} 
            + {y_i \choose y_i\cdot \vect x_i}^T{y_i \choose y_i\cdot \vect x_i}
-    \leq k(1+M^2)
+    \leq k(1+R^2)
   \end{displaymath}
   Wrap-up:
   \begin{displaymath}
@@ -476,11 +476,11 @@ The perceptron learning algorithm converges to a linear decision boundary after 
   Using the Cauchy-Schwarz inequality:
   \begin{displaymath}
     k\rho\quad
-    \leq \quad \left \| {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}\quad \leq \quad  \sqrt{k(1+M^2)(\alpha_0^{*2}+1)}
+    \leq \quad \left \| {\alpha_0^{(k)} \choose \vect \alpha^{(k)}}\right\|_2\cdot  \sqrt{\alpha_0^{*2}+1}\quad \leq \quad  \sqrt{k(1+R^2)(\alpha_0^{*2}+1)}
   \end{displaymath}
   shows:
   \begin{displaymath}
-    k \quad \leq\quad \frac{(\alpha_0^{*2}+1)(1+M^2)}{\rho^2}
+    k \quad \leq\quad \frac{(\alpha_0^{*2}+1)(1+R^2)}{\rho^2}
   \end{displaymath}
   
 \subsection{Lessons Learned}
