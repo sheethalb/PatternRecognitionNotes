@@ -293,7 +293,36 @@ Despite its name, logistic regression is a \textbf{classification} method: it mo
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\linewidth]{images/ch03_densities_logodds_posterior.png}
+    % mu0=-1, mu1=1.5, sigma=1, equal priors => F(x)=-2.5x+0.625, boundary x=0.25
+    \begin{tikzpicture}
+    \begin{groupplot}[group style={group size=1 by 3,vertical sep=1.5cm,x descriptions at=edge bottom},
+      width=0.8\linewidth,height=3.6cm,xmin=-5.5,xmax=5.5,domain=-5.5:5.5,samples=150,
+      axis lines=left,xlabel={feature $x$},tick label style={font=\scriptsize},
+      label style={font=\small},title style={font=\small,align=left},
+      legend style={draw=none,fill=none,font=\scriptsize},every axis plot/.append style={very thick}]
+    \nextgroupplot[ymin=0,ymax=0.32,ylabel={weighted density},title={1.~Class-conditional densities, weighted by the priors},legend pos=north west]
+     \addplot[cA] {0.5*exp(-(x+1)^2/2)/sqrt(2*pi)}; \addlegendentry{$p(y{=}0)\,p(x\mid y{=}0)$}
+     \addplot[cB] {0.5*exp(-(x-1.5)^2/2)/sqrt(2*pi)}; \addlegendentry{$p(y{=}1)\,p(x\mid y{=}1)$}
+     \draw[black,dotted,thick] (axis cs:0.25,0)--(axis cs:0.25,0.32) node[pos=0.92,right,font=\scriptsize]{boundary $F(x)=0$};
+    \nextgroupplot[ymin=-15,ymax=15,ylabel={$F(x)$},title={2.~Log-odds $F(x)=\log\frac{p(y=0\mid x)}{p(y=1\mid x)}$ (linear here: equal variances)}]
+     \fill[cA!12] (axis cs:-5.5,-15) rectangle (axis cs:0.25,15);
+     \fill[cB!12] (axis cs:0.25,-15) rectangle (axis cs:5.5,15);
+     \addplot[black] {-2.5*x+0.625};
+     \draw[gray] (axis cs:-5.5,0)--(axis cs:5.5,0);
+     \draw[black,dotted,thick] (axis cs:0.25,-15)--(axis cs:0.25,15);
+     \node[font=\scriptsize,cA!80!black,anchor=south west] at (axis cs:-5.4,-14) {$F>0$: class 0 more probable};
+     \node[font=\scriptsize,cB!70!black,anchor=north east] at (axis cs:5.4,14) {$F<0$: class 1 more probable};
+    \nextgroupplot[ymin=-0.05,ymax=1.08,ylabel={posterior},title={3.~Posterior = sigmoid of the log-odds},legend style={at={(0.98,0.58)},anchor=east,fill=white,fill opacity=0.8,text opacity=1}]
+     \fill[cA!12] (axis cs:-5.5,-0.05) rectangle (axis cs:0.25,1.08);
+     \fill[cB!12] (axis cs:0.25,-0.05) rectangle (axis cs:5.5,1.08);
+     \addplot[cA] {1/(1+exp(2.5*x-0.625))}; \addlegendentry{$p(y{=}0\mid x)=g(F(x))$}
+     \addplot[cB,dashed] {1/(1+exp(-2.5*x+0.625))}; \addlegendentry{$p(y{=}1\mid x)=g(-F(x))$}
+     \draw[gray] (axis cs:-5.5,0.5)--(axis cs:5.5,0.5);
+     \draw[black,dotted,thick] (axis cs:0.25,-0.05)--(axis cs:0.25,1.08);
+     \node[font=\small,cA!80!black] at (axis cs:-4,0.3) {$y^*=0$};
+     \node[font=\small,cB!70!black] at (axis cs:4,0.2) {$y^*=1$};
+    \end{groupplot}
+    \end{tikzpicture}
     \caption{From class-conditional densities to the posterior for 1-D Gaussians with $\mu_0=-1$, $\mu_1=1.5$, $\sigma=1$, equal priors.}
     \label{fig:logodds_posterior}
 \end{figure}
@@ -548,8 +577,43 @@ The {\em exponential family} is a class of pdfs that can be written in the follo
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\linewidth]{images/ch03_equal_vs_unequal_variance.png}
-    \caption{Equal vs. unequal variances in 1-D (equal priors): with equal variances $F(x)$ is linear; with unequal variances $F(x)$ is quadratic (and can yield two decision boundaries).}
+    % left: N(0,1) vs N(1.5,1), boundary 0.75; right: N(0,0.7^2) vs N(0.8,2^2), boundaries -1.241 and 1.017; equal priors
+    \begin{tikzpicture}
+    \begin{groupplot}[group style={group size=2 by 2,horizontal sep=1.0cm,vertical sep=0.6cm,x descriptions at=edge bottom},
+      width=0.5\linewidth,height=4cm,xmin=-6,xmax=6,domain=-6:6,samples=200,
+      axis lines=left,xlabel={feature $x$},tick label style={font=\scriptsize},
+      label style={font=\small},title style={font=\small},every axis plot/.append style={very thick}]
+    \nextgroupplot[ymin=0,ymax=0.3,ylabel={weighted density},title={Equal variances: one boundary},
+      legend to name=eqvarleg,legend columns=2,legend style={draw=none,font=\scriptsize,/tikz/every even column/.append style={column sep=0.5cm}}]
+     \addplot[cA] {0.5*exp(-x^2/2)/sqrt(2*pi)}; \addlegendentry{$p(y{=}0)\,p(x\mid y{=}0)$}
+     \addplot[cB] {0.5*exp(-(x-1.5)^2/2)/sqrt(2*pi)}; \addlegendentry{$p(y{=}1)\,p(x\mid y{=}1)$}
+     \draw[black,dotted,thick] (axis cs:0.75,0)--(axis cs:0.75,0.3);
+    \nextgroupplot[ymin=0,ymax=0.3,title={Unequal variances: two boundaries}]
+     \addplot[cA] {0.5*exp(-x^2/(2*0.49))/(0.7*sqrt(2*pi))};
+     \addplot[cB] {0.5*exp(-(x-0.8)^2/8)/(2*sqrt(2*pi))};
+     \draw[black,dotted,thick] (axis cs:-1.241,0)--(axis cs:-1.241,0.3);
+     \draw[black,dotted,thick] (axis cs:1.017,0)--(axis cs:1.017,0.3);
+    \nextgroupplot[ymin=0,ymax=1.05,ylabel={$p(y{=}0\mid x)$}]
+     \fill[cA!12] (axis cs:-6,0) rectangle (axis cs:0.75,1.05);
+     \fill[cB!12] (axis cs:0.75,0) rectangle (axis cs:6,1.05);
+     \addplot[black] {1/(1+exp(-(-1.5*x+1.125)))};
+     \draw[black,dotted,thick] (axis cs:0.75,0)--(axis cs:0.75,1.05);
+     \node[font=\small,cA!80!black] at (axis cs:-3.6,0.5) {$y^*=0$};
+     \node[font=\small,cB!70!black] at (axis cs:3.6,0.5) {$y^*=1$};
+    \nextgroupplot[ymin=0,ymax=1.05]
+     \fill[cB!12] (axis cs:-6,0) rectangle (axis cs:-1.241,1.05);
+     \fill[cA!12] (axis cs:-1.241,0) rectangle (axis cs:1.017,1.05);
+     \fill[cB!12] (axis cs:1.017,0) rectangle (axis cs:6,1.05);
+     \addplot[black] {1/(1+ (exp(-(x-0.8)^2/8)/2)/(exp(-x^2/(2*0.49))/0.7))};
+     \draw[black,dotted,thick] (axis cs:-1.241,0)--(axis cs:-1.241,1.05);
+     \draw[black,dotted,thick] (axis cs:1.017,0)--(axis cs:1.017,1.05);
+     \node[font=\small,cB!70!black] at (axis cs:-3.8,0.5) {$y^*=1$};
+     \node[font=\small,cA!80!black] at (axis cs:-0.11,0.13) {$y^*=0$};
+     \node[font=\small,cB!70!black] at (axis cs:3.8,0.5) {$y^*=1$};
+    \end{groupplot}
+    \end{tikzpicture}\\[2pt]
+    \pgfplotslegendfromname{eqvarleg}
+    \caption{Equal vs. unequal variances in 1-D (equal priors). Left: $\mathcal N(0,1)$ vs.\ $\mathcal N(1.5,1)$; with equal variances $F(x)$ is linear and there is one boundary. Right: $\mathcal N(0,0.7^2)$ vs.\ $\mathcal N(0.8,2^2)$; with unequal variances $F(x)$ is quadratic and there are two boundaries.}
     \label{fig:unequal_covariances}
 \end{figure}
   \end{itemize}

@@ -456,7 +456,7 @@ All changes made on 12 Nov were checked against every item of the original revie
 - [x] p. 111 kurtosis "linearity": the review asks for "homogeneity"; the notes had kept "linearity properties". Now "Additivity (independent variables) and homogeneity".
 
 **Open conflict (decision needed)**
-- [x] $\hat y^*$ for the Bayes decision: the review notes that the hat marks an estimate (pp. 34, 37). **Decided 12 Nov:** $y^*$ without hat (16 places) and the convention table updated; the notation list in Ch. 2 explains $y^*$ (true posterior) vs. $\hat y$ (trained classifier). Open: two Ch. 3 PNG figures (`ch03_densities_logodds_posterior.png`, `ch03_equal_vs_unequal_variance.png`) still print $\hat y^*$.
+- [x] $\hat y^*$ for the Bayes decision: the review notes that the hat marks an estimate (pp. 34, 37). **Decided 12 Nov:** $y^*$ without hat (16 places) and the convention table updated; the notation list in Ch. 2 explains $y^*$ (true posterior) vs. $\hat y$ (trained classifier). The two Ch. 3 PNG figures that printed $\hat y^*$ were redrawn in TikZ (same parameters) with $y^*$; the PNG files in `images/` are no longer used.
 
 **Items of the original review that were still open, now fixed**
 - [x] p. 22 double "+" across the line break.
