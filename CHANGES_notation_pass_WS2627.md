@@ -470,3 +470,16 @@ All changes made on 12 Nov were checked against every item of the original revie
 **Still open from the original review (not contradicted, not yet done)**
 - [ ] Inner products: lab style asks for the transpose; Kernels / SVM chapters still use $\langle\cdot,\cdot\rangle$ (standard in the kernel literature).
 - [ ] Viola–Jones feature count: wording kept ("very large, refers to the $24\times24$ window"); exact number to be checked against the slides.
+
+---
+
+## Self-check of all 12 Nov edits (diff against the original import)
+
+Every changed line was re-read and every new or changed formula re-derived. Claims written from memory were checked against the sources (FAU lecture notes on the PR postulates; Belkin et al. 2006, JMLR; Wells et al. 1996, IEEE TMI). Corrections to my own edits:
+- [x] Soft-margin cases (SVM II): for $\lambda_i=\mu$ the sample can also lie *on* the margin ($\xi_i=0$); case $\lambda_i=0$ added.
+- [x] Perceptron remark: the bound also depends on the offset $\alpha_0^*$, not only on $\rho$ and $R$.
+- [x] Fisher (Ch. 5): $\Sigma_{\text{inter}}$ written out for the untransformed class means (the remark had pointed to the transformed means).
+- [x] Model Assessment: leftover "$F=f^*(\vect x)$" → "$f^*=f^*(\vect x)$"; AdaBoost notation box $I(x,y)\to I(u,v)$.
+- [x] MR bias field: voxel sum index $j\to i'$ ($j$ is the EM iteration index).
+- [x] Belkin footnote completed (multipliers $\beta_i,\zeta_i$; loss weight $\frac1l$ and box $0\le\beta_i\le\frac1l$). Wells footnote corrected (the paper indexes classes by $j$: $W_{ij}$). The unverified sentence on Schölkopf–Smola's sigmoid-kernel notation was removed.
+- [x] Niemann postulates: split confirmed against the FAU lecture notes (postulate 5 = structure + "few constituents").

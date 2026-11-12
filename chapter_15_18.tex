@@ -160,7 +160,7 @@
 		\item Polynomial: $k(\vect x, \vect x') = (\langle\vect x, \vect x'\rangle+1)^q$, \quad $q\in\mathbb{N}$
 		\item Laplacian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_1}{\sigma}}$     
 		\item Gaussian radial basis function: $k(\vect x, \vect x') = e^{-\frac{\|\vect x- \vect x'\|_2^2}{\sigma^2}}$ (written $e^{-\gamma\|\vect x-\vect x'\|_2^2}$ with $\gamma=1/\sigma^2$ in Chapter \emph{Support Vector Machines II})     
-		\item Sigmoid kernel: $k(\vect x, \vect x') =\mbox{tanh}({ \kappa\langle\vect x, \vect x'\rangle+c})$, $\kappa>0$. \textbf{Note:} this kernel is \emph{not} positive semidefinite for all choices of $\kappa$ and $c$, so by the lemma above it is not a valid kernel in general (its kernel matrix can have negative eigenvalues); it is still used in practice for suitable parameters.\footnote{The lecture slides write $\tanh(\alpha\langle\vect x,\vect x'\rangle+\beta)$; we use $\kappa,c$ to avoid a clash with the SVM weight vector $\vect\alpha$. Sch\"olkopf and Smola (2002) write $\tanh(\kappa\langle\vect x,\vect x'\rangle+\vartheta)$.}
+		\item Sigmoid kernel: $k(\vect x, \vect x') =\mbox{tanh}({ \kappa\langle\vect x, \vect x'\rangle+c})$, $\kappa>0$. \textbf{Note:} this kernel is \emph{not} positive semidefinite for all choices of $\kappa$ and $c$, so by the lemma above it is not a valid kernel in general (its kernel matrix can have negative eigenvalues); it is still used in practice for suitable parameters.\footnote{The lecture slides write $\tanh(\alpha\langle\vect x,\vect x'\rangle+\beta)$; we use $\kappa,c$ to avoid a clash with the SVM weight vector $\vect\alpha$.}
 	\end{itemize}
 	\textbf {Question:} \\
 	Can we compute for any kernel function $k(\vect x, \vect x')$ a feature mapping $\phi$ such that the kernel function can be written as an inner product?
@@ -436,7 +436,7 @@ Modification of SVMs for different kind of data distribution.
     \item unlabeled data: $S_u = \{\vect{x}_i\}_{i=l+1}^{m}$, with $m=l+u$
   \end{itemize}
 
-    \textbf{Graph Laplacian $\mat{L}$ associated with $S$:} (bold $\mat L$ is the graph Laplacian; the Lagrangian below is $\mathcal L$)\footnote{Notation in Belkin et al.\ (2006): labeled and unlabeled points are only distinguished by their index ranges ($1,\dots,l$ and $l+1,\dots,l+u$), the expansion coefficients are $\alpha_i$ (here $\beta_i$), the Lagrange multipliers of the margin constraints are $\beta_i$ (here $\lambda_i$), the selection matrix is $\mat J$ (here $\mat J_l$), and the intrinsic term is normalized as $\frac{\gamma_I}{(l+u)^2}\vect f^T\mat L\vect f$ (here the factor is absorbed into $\gamma_\text{I}$). The lecture slides use $\mathcal L,\mathcal U$ for the labeled and unlabeled sets (here $S_l,S_u$) and $L$ for both the Laplacian and the Lagrangian.}
+    \textbf{Graph Laplacian $\mat{L}$ associated with $S$:} (bold $\mat L$ is the graph Laplacian; the Lagrangian below is $\mathcal L$)\footnote{Notation in Belkin et al.\ (2006): labeled and unlabeled points are only distinguished by their index ranges ($1,\dots,l$ and $l+1,\dots,l+u$), the expansion coefficients are $\alpha_i$ (here $\beta_i$), the Lagrange multipliers are $\beta_i$ and $\zeta_i$ (here $\lambda_i$ and $\eta_i$), the selection matrix is $\mat J$ (here $\mat J_l$), the intrinsic term is normalized as $\frac{\gamma_I}{(l+u)^2}\vect f^T\mat L\vect f$ (here the factor is absorbed into $\gamma_\text{I}$), and the hinge loss is weighted by $\frac1l$, so their box constraint is $0\le\beta_i\le\frac1l$ (here $0\le\lambda_i\le1$). The lecture slides use $\mathcal L,\mathcal U$ for the labeled and unlabeled sets (here $S_l,S_u$) and $L$ for both the Laplacian and the Lagrangian.}
    \begin{itemize}
     \item $\mat{L} = \mat{D} - \mat{W}$
     \item adjacency matrix $\mat{W}$ with edge weights $w_{ij}\ge 0$ (e.\,g.\ heat kernel $w_{ij}=\exp(-\|\vect x_i-\vect x_j\|_2^2/(4t))$)
@@ -1167,7 +1167,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
 \begin{itemize}
   \item Voxels are indexed by $i\in\{0,\dots,n-1\}$.
   \item $\tilde X_i$: (unknown) bias-free intensity of voxel $i$; $X_i$: observed intensity.
-  \item $v_i:=\log X_i$: log-transformed observed intensity of voxel $i$ (voxel value)\footnote{Notation in the original paper by Wells et al.\ (1996) and in the lecture slides: the log-intensity is $Y_i$ (vector $\vect Y$) and the tissue class is $\Gamma_i$. We write $v_i$ and $z_i$ because $y$ denotes class labels and $z$ hidden variables throughout these notes; all other symbols ($\vect\beta$, $W_{ik}$, $\overline{\vect R}$, $\mat H$, $\mu_k$, $\psi_k$) follow the paper.}; $\vect v=(v_0,\dots,v_{n-1})^T$.
+  \item $v_i:=\log X_i$: log-transformed observed intensity of voxel $i$ (voxel value)\footnote{Notation in the original paper by Wells et al.\ (1996) and in the lecture slides: the log-intensity is $Y_i$ (vector $\vect Y$) and the tissue class is $\Gamma_i$. We write $v_i$ and $z_i$ because $y$ denotes class labels and $z$ hidden variables throughout these notes; the other symbols follow the paper ($\vect\beta$, $\mat H$, the mean residual $\overline{R}_i$, the class parameters), except that the paper indexes tissue classes by $j$ ($W_{ij}$, $\mu_j$, $\psi_j$), here by $k$.}; $\vect v=(v_0,\dots,v_{n-1})^T$.
   \item $\beta_i:=\log B_i$: log-bias field; $\vect\beta=(\beta_0,\dots,\beta_{n-1})^T$ with Gaussian prior $p(\vect\beta)=\mathcal N(\vect\beta;\vect0,\mat\Psi_{\vect\beta})$.
   \item $z_i\in\{1,\dots,K\}$: hidden tissue class at voxel $i$, with prior $\pi_k=p(z_i=k)$.
   \item Tissue parameters $\mu_k,\psi_k$ are assumed known; $W_{ik}$ denotes the posterior tissue probability $p(z_i=k\mid v_i,\beta_i)$.
@@ -1292,7 +1292,7 @@ At the optimum, the gradient w.\,r.\,t.\ $\vect \beta$ has to be zero:
   \begin{eqnarray*}
     \frac{\partial}{\partial \beta_i} \log p(\vect \beta | \vect v) 
     &=& \frac{\partial}{\partial \beta_i} \left( \log p(\vect v | \vect \beta) + \log p(\vect \beta) \right) \\   
-    &=& \frac{\partial}{\partial \beta_i} \left( \sum_j \log p(v_j | \beta_j) + \log p(\vect \beta) \right) \\   
+    &=& \frac{\partial}{\partial \beta_i} \left( \sum_{i'} \log p(v_{i'} | \beta_{i'}) + \log p(\vect \beta) \right) \\   
     &=& \frac{\frac{\partial}{\partial \beta_i} p(v_i | \beta_i)}{p(v_i | \beta_i)} + \frac{\frac{\partial}{\partial \beta_i} p(\vect \beta)}{p(\vect \beta)} \\
     &\stackrel{!}{=}& 0.
   \end{eqnarray*}

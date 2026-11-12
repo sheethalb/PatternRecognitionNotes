@@ -773,7 +773,7 @@ An important concept for machine learning and pattern recognition.
   \end{itemize}
 
   \textbf{Derivation (add-and-subtract trick):} For fixed $\vect x$, abbreviate
-  $g=g(\vect x;\mathcal D)$, $\bar g = E_{\mathcal D}\{g\}$ and $F=f^*(\vect x)$. Then
+  $g=g(\vect x;\mathcal D)$, $\bar g = E_{\mathcal D}\{g\}$ and $f^*=f^*(\vect x)$. Then
   {\small
   \begin{align*}
     E_{\mathcal D}\{(g-f^*)^2\}
@@ -1024,7 +1024,7 @@ Interestingly:\\
   \item $f_M(\vect x)=\sum_{m=1}^M \beta_m G_m(\vect x)$: additive model, $f_0\equiv0$; the algorithm box uses $\alpha_m=2\beta_m$, which gives the same sign.
   \item Final prediction: $\hat y = G(\vect x)=\sign(f_M(\vect x))$.
   \item $w_i^{(m)}$: weight of sample $i$ in boosting iteration $m$.
-  \item $\mathbb I(\cdot)$: indicator function ($I(x,y)$ is reserved for the image intensity).
+  \item $\mathbb I(\cdot)$: indicator function ($I(u,v)$ is reserved for the image intensity).
 \end{itemize}
 }
 

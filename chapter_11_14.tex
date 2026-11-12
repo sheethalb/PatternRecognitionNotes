@@ -860,7 +860,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
   \begin{displaymath}
     \forall i: \quad \lambda_i \, \big(y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) - 1+\xi_i\big) = 0, \qquad \eta_i\,\xi_i=0~.
   \end{displaymath}
-  With $\eta_i=\mu-\lambda_i$: if $0<\lambda_i<\mu$, then $\xi_i=0$ and $\vect x_i$ lies on a margin hyperplane; if $\lambda_i=\mu$, then $\xi_i\ge0$ and $\vect x_i$ lies inside the margin or is misclassified. All $\vect x_i$ with $\lambda_i>0$ are support vectors.
+  With $\eta_i=\mu-\lambda_i$: if $0<\lambda_i<\mu$, then $\xi_i=0$ and $\vect x_i$ lies on a margin hyperplane; if $\lambda_i=\mu$, then $\xi_i\ge0$: $\vect x_i$ lies on the margin hyperplane ($\xi_i=0$), inside the margin ($0<\xi_i\le1$) or is misclassified ($\xi_i>1$); if $\lambda_i=0$, then $\xi_i=0$ and $\vect x_i$ is on the correct side of the margin. All $\vect x_i$ with $\lambda_i>0$ are support vectors.
 
   \textbf{Conclusion:} \\
  

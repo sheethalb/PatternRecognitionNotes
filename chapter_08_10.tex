@@ -416,7 +416,7 @@ The \emph{penalty function approximation problem} is defined as follows:
 
 \subsection{Convergence of Learning Algorithm}
 
-The derivation is not important for the exam. It is important to understand that, for linearly separable data, there is an \emph{upper bound} on the number of updates the perceptron makes before it classifies all training samples correctly. The bound depends on the margin $\rho$ and the data radius $R$, not on the feature dimension. 
+The derivation is not important for the exam. It is important to understand that, for linearly separable data, there is an \emph{upper bound} on the number of updates the perceptron makes before it classifies all training samples correctly. The bound depends on the margin $\rho$, the data radius $R$ and the offset $\alpha_0^*$ of the separating hyperplane, not explicitly on the feature dimension. 
 
  \textbf{Convergence Theorem of Rosenblatt and Novikoff}\\
     Assume that for all $i=1,2, \dots, m$

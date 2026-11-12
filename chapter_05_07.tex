@@ -533,7 +533,7 @@ Now we compute the \textbf{partial derivatives} (using the matrix-calculus rule 
 		      \begin{eqnarray*}
 			      \vect r^* &=& \argmax_{\vect r}\ \frac{\vect r^T \mat \Sigma_{\mbox{inter}} \vect r}{\vect r^T \mat \Sigma_{\mbox{intra}} \vect r}
 		      \end{eqnarray*}
-		      where $\mat\Sigma_{\mbox{inter}}$ is the covariance of the class means (between-class, as in rank-reduced LDA) and $\mat\Sigma_{\mbox{intra}}=\frac1m\sum_k\mat S_k$ the pooled within-class covariance. For two classes $\mat\Sigma_{\mbox{inter}}=\frac14\mat S_\mathsf B$ and $\mat\Sigma_{\mbox{intra}}=\frac1m\mat S_\mathsf W$; constant factors do not change the maximizer, so this is the Fisher criterion above.
+		      where $\mat\Sigma_{\mbox{inter}}=\frac1K\sum_k(\vect\mu_k-\bar{\vect\mu})(\vect\mu_k-\bar{\vect\mu})^T$ is the covariance of the class means $\vect\mu_k$ (equal weights, as in rank-reduced LDA but without the transform) and $\mat\Sigma_{\mbox{intra}}=\frac1m\sum_k\mat S_k$ the pooled within-class covariance. For two classes $\mat\Sigma_{\mbox{inter}}=\frac14\mat S_\mathsf B$ and $\mat\Sigma_{\mbox{intra}}=\frac1m\mat S_\mathsf W$; constant factors do not change the maximizer, so this is the Fisher criterion above.
 		\item The solution is a generalized eigenvalue problem: $\vect r^*$ is the eigenvector of
 		      $$\mat \Sigma_{\mbox{intra}} ^{-1} \mat \Sigma_{\mbox{inter}}$$
 		      that belongs to the largest eigenvalue.
