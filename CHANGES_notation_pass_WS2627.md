@@ -67,22 +67,10 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 
 ## 08 Norms
-- [ ] **New frame** *Notation in this Chapter*: $\mat A\leftrightarrow\mat X$, $\vec x\leftrightarrow\vec\theta$, $\vec b\leftrightarrow\vec y$; $\hat{\vec x}$ estimate, $\vec x_0$ true value; $\vec r$ residual; $\phi$ penalty.
-- [ ] $L_2$ norm = square root of the sum of squares; "$L_{\mat 1}$" → "$L_{\mat I}$"; $\vec x^*$ (true value) → $\vec x_0$; "linearly independent" columns.
-- [ ] $\preceq$ = componentwise; $\mat 1$ = all-ones vector.
-- [ ] Ridge/Lasso objectives: $\|\mat A\vec x-\vec b\|_2^2+\lambda\|\vec x\|_2^2$ (and $\lambda\|\vec x\|_1$) — `\mat` placement fixed, squared residual.
-- [ ] Compressed sensing: "can be rewritten as a **linear** program"; penalty slides state $a>0$.
 
 ## 09 Perceptron
-- [ ] $y\in\{-1,+1\}$; $y_i$ true label; $\hat y=\mathrm{sgn}(\vec\alpha^T\vec x+\alpha_0)$ prediction.
-- [ ] $\lambda$ = learning rate ("written $\eta$ in the MLP chapter"); remark on stacking $(\alpha_0;\vec\alpha)$ vs. $(\vec\alpha;\alpha_0)$ in Ch. 07.
-- [ ] "Schwartz" → "Schwarz" (2×).
 
 ## 10 Multi-Layer Perceptron
-- [ ] **New frame** *Notation*: layers $l=0..L$ ($L$: number of non-input layers), $M^{(l)}$, $y^{(0)}=\vec x$, $w_{ij}^{(l)}$, $w_{0j}$, $\vec w$, net, $f$, output $\hat y_k=y_k^{(L)}$, target $y_k$.
-- [ ] Target $t_k\to y_k$, output $y_k^{(L)}\to\hat y_k$ in error and δ derivations; figures `mlp`, `backpropagation{,2,3}.pstex_t` outputs $\hat y_k$; `activation.pstex_t` $F(\sigma)\to f(\text{net})$.
-- [ ] Error: "squared error of one training pattern" (averaging over the set gives the MSE); $\varepsilon_{MSE}\to\varepsilon$; $\eta$ defined; bias sign explained (constant input $-1$); title $w_{ij}$; "Sensitivity".
-- [ ] Linear network: extra `)` removed, no hats on $f$, $f_l(\vec z)=\mat W_l\vec z$, $(\mat W_l)_{ji}=w_{ij}^{(l)}$, loss $\mathcal L(\vec\theta)$ with $\vec\theta$ defined; captions of the 3 gradient PNGs map $\hat f$, $L(\theta)$, $y$ to the text symbols.
 
 ## 11 Optimization I
 - [ ] **New frame** *Notation in this Chapter*: $\vec x$ optimization variable (not features), $\vec y$ second point (not a label), $f,\nabla f,\nabla^2 f$, $\vec x^*$, $(k)$, $t^{(k)}$, $\Delta\vec x^{(k)}$, $\vec u$, $\alpha,\beta$ line-search parameters.
@@ -359,6 +347,30 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* prior now on $\vect\alpha$ only (no prior on the intercept), consistent with $p(\alpha_j)$, $j=1..d$; ridge objective notes that $\alpha_0$ would be penalized as written and $\lambda>0$ is stated; lasso likewise.
 - [x] **Error fix** MAP derivation: $\argmax_{\vec\alpha}p(\vec\alpha|S)=\argmax\{p(\vec\alpha)\prod_i p(y_i|\vec x_i,\vec\alpha)\}=\dots$ (prior once, $\vec x_i$ in the residual); summary slide likewise with $(\mat X\vec\theta-\vec y)$, $\vec\theta=(\vec\alpha^T,\alpha_0)^T$, "intercept not penalized".
       *Notes:* checked: notes have prior once and $\vect x_i$ in the residual; summary step relabelled "the same in matrix notation".
+- [x] **New frame** *Notation in this Chapter*: $\mat A\leftrightarrow\mat X$, $\vec x\leftrightarrow\vec\theta$, $\vec b\leftrightarrow\vec y$; $\hat{\vec x}$ estimate, $\vec x_0$ true value; $\vec r$ residual; $\phi$ penalty.
+      *Notes:* already in notes.
+- [x] $L_2$ norm = square root of the sum of squares; "$L_{\mat 1}$" → "$L_{\mat I}$"; $\vec x^*$ (true value) → $\vec x_0$; "linearly independent" columns.
+      *Notes:* already in notes.
+- [x] $\preceq$ = componentwise; $\mat 1$ = all-ones vector.
+      *Notes:* already in notes.
+- [x] Ridge/Lasso objectives: $\|\mat A\vec x-\vec b\|_2^2+\lambda\|\vec x\|_2^2$ (and $\lambda\|\vec x\|_1$) — `\mat` placement fixed, squared residual.
+      *Notes:* already in notes.
+- [x] Compressed sensing: "can be rewritten as a **linear** program"; penalty slides state $a>0$.
+      *Notes:* already in notes; added the missing "with parameter $a>0$" for the large-error penalty.
+- [x] $y\in\{-1,+1\}$; $y_i$ true label; $\hat y=\mathrm{sgn}(\vec\alpha^T\vec x+\alpha_0)$ prediction.
+      *Notes:* already in notes.
+- [x] $\lambda$ = learning rate ("written $\eta$ in the MLP chapter"); remark on stacking $(\alpha_0;\vec\alpha)$ vs. $(\vec\alpha;\alpha_0)$ in Ch. 07.
+      *Notes:* notes use $\eta$ for the learning rate in both perceptron and MLP (removes the $\lambda$ overload); stacking remark $(\alpha_0;\vect\alpha)$ vs. $(\vect\alpha;\alpha_0)$ added.
+- [x] "Schwartz" → "Schwarz" (2×).
+      *Notes:* already correct in notes.
+- [x] **New frame** *Notation*: layers $l=0..L$ ($L$: number of non-input layers), $M^{(l)}$, $y^{(0)}=\vec x$, $w_{ij}^{(l)}$, $w_{0j}$, $\vec w$, net, $f$, output $\hat y_k=y_k^{(L)}$, target $y_k$.
+      *Notes:* already in notes. Backpropagation derivation re-checked (output and hidden sensitivities, update rule): correct.
+- [x] Target $t_k\to y_k$, output $y_k^{(L)}\to\hat y_k$ in error and δ derivations; figures `mlp`, `backpropagation{,2,3}.pstex_t` outputs $\hat y_k$; `activation.pstex_t` $F(\sigma)\to f(\text{net})$.
+      *Notes:* already in notes; figures N/A.
+- [x] Error: "squared error of one training pattern" (averaging over the set gives the MSE); $\varepsilon_{MSE}\to\varepsilon$; $\eta$ defined; bias sign explained (constant input $-1$); title $w_{ij}$; "Sensitivity".
+      *Notes:* already in notes.
+- [x] Linear network: extra `)` removed, no hats on $f$, $f_l(\vec z)=\mat W_l\vec z$, $(\mat W_l)_{ji}=w_{ij}^{(l)}$, loss $\mathcal L(\vec\theta)$ with $\vec\theta$ defined; captions of the 3 gradient PNGs map $\hat f$, $L(\theta)$, $y$ to the text symbols.
+      *Notes:* already in notes; PNG captions N/A (no gradient figures in notes).
 
 ## Additional fixes found during the notes pass (not in the list above)
 
@@ -369,3 +381,5 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Ch. 3 lifting figures: caption coefficients $w_i\to\alpha_i$; 2-D caption "the plane $z=r^2$" with $z=x_1^2+x_2^2$ and $r$ defined.
 - [x] Build: undefined `\Nu` (rank-reduced LDA) → $\mat N$; math in section titles wrapped in `\texorpdfstring`; `\choose`-stacked vectors → `pmatrix`; empty `\textbf{}`. Build has 0 errors and 0 warnings (with biber).
 - [x] Ch. 5 title "Discriminative Analysis" → "Discriminant Analysis"; odd Gaussian example ("availability of apples") replaced; rank-reduced LDA intro "N dim" → $d$-dimensional; "computationally prohibited" → "prohibitive"; prototypes sentence fixed.
+- [x] Ch. 6 Norms: "sparcity" typo; unit-ball note rewritten (shape of the ball explains why $L_1$ favours sparse solutions); "residual zero" holds for the optimal solution.
+- [x] Ch. 7 Perceptron convergence proof: misclassification condition now uses $(\alpha_0^{(k-1)},\vect\alpha^{(k-1)})$ (the parameters before the $k$-th update), zero initialization stated (needed for both inductions), $\|(y_i,y_i\vect x_i^T)\|^2\le1+R^2$ made explicit, theorem states "at most $k$ updates" for separable data with margin $\rho$, $\|\vect\alpha^*\|_2$. Decision function $F\to f$ (log-odds clash). Student note: the theorem gives an upper bound, not the exact number.

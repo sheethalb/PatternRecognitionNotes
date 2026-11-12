@@ -1,11 +1,11 @@
 % !TeX root = main.tex
 \section{Norms and Norm Dependent Linear Regression}
 
-This topic relates to optimization techniques and how to find the maxima or the minima of a curve, how to influence the selection of the parameters. for eg, when reducing the error , there could be many parameters $\vect \theta$ that satisfy an objective function. How do we decide which is the best one, or how do we influence the selection of parameters that satisfy additional criteria such as sparcity ? the norms are the kinds of objective functions that force the optimizing methods to select the parameters that satisfy both the objective function and the norm criteria. It will be clearer with the next 4 chapters on optimization techniques. reading additional material is encouraged, since this forms the basis of machine learning.\footnote{\url{https://medium.com/codex/how-norms-drive-the-direction-of-your-optimization-bdbcd619256b}}
+This topic relates to optimization techniques and how to find the maxima or the minima of a curve, how to influence the selection of the parameters. for eg, when reducing the error , there could be many parameters $\vect \theta$ that satisfy an objective function. How do we decide which is the best one, or how do we influence the selection of parameters that satisfy additional criteria such as sparsity? the norms are the kinds of objective functions that force the optimizing methods to select the parameters that satisfy both the objective function and the norm criteria. It will be clearer with the next 4 chapters on optimization techniques. reading additional material is encouraged, since this forms the basis of machine learning.\footnote{\url{https://medium.com/codex/how-norms-drive-the-direction-of-your-optimization-bdbcd619256b}}
 \footnote{\url{https://web.stanford.edu/~sidford/courses/20fa_opt_theory/sidford_2020fa_mse213_cs269o_lec8.pdf}}
 \footnote{\url{https://utexas.instructure.com/files/43781366/download?download_frd=1}}
 
-Sparcity constraint - means we want to force as many dimensions of the parameter vector as possible to zero. 
+Sparsity constraint: we want to force as many dimensions of the parameter vector as possible to zero. 
 
 \subsection{Motivation}
 
@@ -136,7 +136,7 @@ Example: The \textbf{\emph{Euclidean norm} ($L_2$-norm)} can be written in terms
 
 \subsection{Unit Balls}
 
-The space to which the parameters are optimized to , by using that particular norm. so L1 norm results in one unit ball and L2 results in other. This shows the range in which the parameters can lie in finally. 
+The unit ball of a norm is the set of all vectors of norm at most one. Its shape (a diamond for $L_1$, a circle for $L_2$, a square for $L_\infty$ in 2-D) shows which parameter vectors a regularizer with this norm prefers; e.\,g.\ the corners of the $L_1$ ball lie on the axes, which is why the $L_1$-norm favours sparse solutions. 
 
   \textbf{Definition}
     The set
@@ -162,7 +162,7 @@ The space to which the parameters are optimized to , by using that particular no
     \item Different norms will lead to different results. 
     \item The estimation error $\epsilon\in \real$ is defined by $\epsilon= \|\vect x_0-\hat{\vect x}\|$, where $\vect x_0$ denotes the correct (true) value. 
     \item The \textbf{residual} $\vect r= (r_1, r_2, \dots, r_m)^T$ is defined by $\vect r= \mat A \vect x -\vect b$. \\
-    \item If $\vect b$ is in the range of $\mat A$, the residual will be the zero vector.
+    \item If $\vect b$ is in the range of $\mat A$, the residual of the optimal solution is the zero vector (for any norm).
   \end{itemize}
   
 \subsubsection{Least-Squares Linear Regression}
@@ -289,7 +289,7 @@ The \emph{penalty function approximation problem} is defined as follows:
         \end{array}
       \right.
   \end{displaymath}
-  \textbf{Large error penalty function}
+  \textbf{Large error penalty function} with parameter $a>0$
   \begin{displaymath}
     \phi_\mathsf{e}(r) = 
       \left\{
@@ -377,7 +377,7 @@ The \emph{penalty function approximation problem} is defined as follows:
   \begin{displaymath}
     \begin{pmatrix}\alpha_0^{(k+1)}\\ \vect \alpha^{(k+1)}\end{pmatrix} =            \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix} + \eta \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
   \end{displaymath} 
-  Here $\eta>0$ is the learning rate (step size; denoted $\eta$ in the MLP chapter) and can be set to $1$ without loss of generality.
+  Here $\eta>0$ is the learning rate (step size; the same symbol is used in the MLP chapter). With the zero initialization below it can be set to $1$ without loss of generality, since it only scales $(\alpha_0,\vect\alpha)$. The parameters are stacked as $(\alpha_0;\vect\alpha)$ here, while the regression part of Chapter \emph{Discriminant Analysis} stacks $\vect\theta=(\vect\alpha;\alpha_0)$; the order does not matter.
  
   \begin{algorithmic}
     \STATE\textbf{Input:} training data: $S = \{(\vect x_i,y_i)\}_{i=1}^m$ with $y_i\in\{-1,+1\}$.
@@ -403,10 +403,10 @@ The \emph{penalty function approximation problem} is defined as follows:
     \item The parameter $\vect \alpha$ of the decision boundary is a linear combination of feature vectors. 
     \item The decision boundary thus is:
     \begin{displaymath}
-       F(\vect x) = \left (\sum_{i\in \cal E} y_i\cdot \vect x_i \right)^T \vect x + \sum_{i\in \cal E} y_i \quad 
+       f(\vect x) = \left (\sum_{i\in \cal E} y_i\cdot \vect x_i \right)^T \vect x + \sum_{i\in \cal E} y_i \quad 
                  = \quad \sum_{i\in \cal E} y_i\cdot \langle \vect x_i, \vect x\rangle + \sum_{i\in \cal E} y_i 
     \end{displaymath}
-    where $\cal E$ is the list of indices that required an update (indices may appear more than once). 
+    with $\hat y=\mathrm{sgn}(f(\vect x))$, where $\cal E$ is the list of indices that required an update (indices may appear more than once); this assumes zero initialization and $\eta=1$. 
     \item The final linear decision boundary depends on the initialization, \\
       i.\,e.\ $\alpha_0^{(0)}$ and $\vect \alpha^{(0)}$. 
     \item The number of iterations can be rather large. 
@@ -415,21 +415,21 @@ The \emph{penalty function approximation problem} is defined as follows:
 
 \subsection{Convergence of Learning Algorithm}
 
-derivation is not important for exam. it is important to understand that there is an upper bound for the number of iterations required to converge. simply means it, based on the all the variables introduced below, we can calculate exactly the max number of iterations required for convergence. this is useful to design the right system. 
+The derivation is not important for the exam. It is important to understand that, for linearly separable data, there is an \emph{upper bound} on the number of updates the perceptron makes before it classifies all training samples correctly. The bound depends on the margin $\rho$ and the data radius $R$, not on the feature dimension. 
 
- Convergence Theorem of Rosenblatt and Novikoff\\
+ \textbf{Convergence Theorem of Rosenblatt and Novikoff}\\
     Assume that for all $i=1,2, \dots, m$
     \begin{displaymath}
       y_i(\vect x_i^T\vect \alpha^* +\alpha^*_0)\geq \rho
     \end{displaymath}
-    where $\rho>0$ and $\|\vect \alpha^*\|=1$.
+    for some $(\alpha_0^*,\vect\alpha^*)$ with $\rho>0$ and $\|\vect \alpha^*\|_2=1$ (i.\,e.\ the data are linearly separable with margin $\rho$).
     Let $R= \max_i \|\vect x_i\|_2$. \\
     
-The perceptron learning algorithm converges to a linear decision boundary after $k$ iterations, where $k$ is bounded by
+Then the perceptron learning algorithm with zero initialization makes at most $k$ updates (and then separates the training data), where
     \begin{displaymath}
       k \leq \frac{(\alpha_0^{*2}+1)(1+R^2)}{\rho^2}.
     \end{displaymath}
-  Let us look at the estimated parameters after $k$ iterations and how the parameters change with iterations:
+  Let us look at the estimated parameters after $k$ updates and how the parameters change with each update. The $k$-th update is made with a sample $(\vect x_i,y_i)$ that is misclassified by $(\alpha_0^{(k-1)},\vect\alpha^{(k-1)})$. Using the assumption and induction from $(\alpha_0^{(0)},\vect\alpha^{(0)})=\vect 0$:
 
   \begin{eqnarray*}
     \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}^T\begin{pmatrix}\alpha_0^*\\ \vect \alpha^*\end{pmatrix} 
@@ -452,14 +452,14 @@ The perceptron learning algorithm converges to a linear decision boundary after 
            + 2 \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
           + \begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
   \end{eqnarray*}
-  We only go into iteration step $(k+1)$ if we did a mistake in iteration $k$. A misclassification implies:
+  The $k$-th update is only made if $\vect x_i$ is misclassified by the previous parameters:
   
   \begin{displaymath}
-    \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
-    = y_i\cdot (\vect x_i^T \vect\alpha^{(k)} + \alpha_0^{(k)})\quad \leq \quad 0
+    \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix}^T\begin{pmatrix}y_i\\ y_i\cdot \vect x_i\end{pmatrix}
+    = y_i\cdot (\vect x_i^T \vect\alpha^{(k-1)} + \alpha_0^{(k-1)})\quad \leq \quad 0
   \end{displaymath}
-  (The non-strict inequality is needed, e.g.\ with the zero initialization the first update typically happens at equality.)
-  And thus we get
+  (The non-strict inequality is needed: with the zero initialization the first update happens at equality.)
+  Since $\|(y_i,\,y_i\vect x_i^T)^T\|_2^2=1+\|\vect x_i\|_2^2\le 1+R^2$, induction gives
   \begin{displaymath}
     \left \|  \begin{pmatrix}\alpha_0^{(k)}\\ \vect \alpha^{(k)}\end{pmatrix}\right\|_2^2 
     \leq \begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} ^T\begin{pmatrix}\alpha_0^{(k-1)}\\ \vect \alpha^{(k-1)}\end{pmatrix} 
@@ -488,7 +488,7 @@ The perceptron learning algorithm converges to a linear decision boundary after 
     \item Objective function changes in each iteration step. 
     \item Optimization problem is discrete.
     \item Very simple learning rule.
-    \item \vorsicht \structure{Very important:} Number of iterations does \structure{not} depend on the dimension of the feature vectors.
+    \item \vorsicht \structure{Very important:} The bound on the number of updates does \structure{not} depend on the dimension of the feature vectors.
   \end{itemize}
  
 \subsection{Comprehensive Questions}
