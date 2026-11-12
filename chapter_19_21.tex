@@ -479,7 +479,7 @@ these measures of gaussianity will be seen in other lectures, so it is good to u
     \begin{displaymath}
       \kurt(y) = E \{ y^4 \} - 3
     \end{displaymath}    
-    Linearity properties (additivity for independent random variables $y_1, y_2$, and scaling):
+    Additivity (for independent random variables $y_1, y_2$) and homogeneity:
     \begin{eqnarray*}
       \kurt(y_1 + y_2) &=& \kurt(y_1) + \kurt(y_2) \\
       \kurt(\alpha y) &=& \alpha^4 \kurt(y) ~, \quad \alpha \in \real
@@ -837,7 +837,7 @@ An important concept for machine learning and pattern recognition.
       \begin{eqnarray*}
         \lefteqn{p\big(\hat y(\vect x;\mathcal D) \ne \hat y^*(\vect x)\big) =} \\
         & & \Phi \Bigg[ 
-              \underbrace{\mathsf{sgn}\left(f^*(\vect x) - \frac{1}{2}\right) \cdot \left(E_{\mathcal{D}} \{ g(\vect x ; {\mathcal{D}}) \} - \frac{1}{2}\right) }_{\mbox{\small \textbf{boundary bias}}}
+              \underbrace{\sign\left(f^*(\vect x) - \frac{1}{2}\right) \cdot \left(E_{\mathcal{D}} \{ g(\vect x ; {\mathcal{D}}) \} - \frac{1}{2}\right) }_{\mbox{\small \textbf{boundary bias}}}
               \cdot \underbrace{\mathsf{Var}_{\mathcal D}\!\Big[g(\vect x ; {\mathcal{D}})\Big]^{-1/2}}_{\mbox{\small \textbf{variance}}}
             \Bigg]
       \end{eqnarray*}
@@ -1091,7 +1091,7 @@ Interestingly:\\
 %
   \begin{centernss}
     \small
-      \begin{struktogramm}(100,50)\\
+      \begin{struktogramm}(100,62)\\
         \assign{Initialize weights: $w_i \gets 1/N ~,~ i=1, \ldots, N$}
         \assign{$m \gets 1$}
         \until{$m > M$}\\

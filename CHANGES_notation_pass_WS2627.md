@@ -445,3 +445,30 @@ Verdicts: **valid** = checked and applied; **partly valid** = applied in correct
 
 ### E. Reviewer's own "do not change" list
 - [x] p. 22 $\alpha_0$ factor, p. 22 equal-covariance constant, p. 23 binomial pmf: **confirmed correct**, unchanged.
+
+---
+
+## Cross-check against the original review (Andreas, `PR_notes_V1_corrections`), 12 Nov
+
+All changes made on 12 Nov were checked against every item of the original review.
+
+**Conflicts found and corrected**
+- [x] p. 111 kurtosis "linearity": the review asks for "homogeneity"; the notes had kept "linearity properties". Now "Additivity (independent variables) and homogeneity".
+
+**Open conflict (decision needed)**
+- [ ] $\hat y^*$ for the Bayes decision: the review notes that the hat marks an estimate (pp. 34, 37). The course convention table (Ch. 0 of this list) and review 2 (C01) keep $\hat y^*$. Not changed.
+
+**Items of the original review that were still open, now fixed**
+- [x] p. 22 double "+" across the line break.
+- [x] p. 28 $x_1=x_0+\hat h$ (clash with feature components) → $x_0+\hat h$.
+- [x] p. 8 number of samples $N,N_\kappa$ → $m,m_\kappa$ (as everywhere else).
+- [x] `sgn` vs. `sign`: all `\mbox{sgn}`/`\mathrm{sgn}`/`\mathsf{sgn}` → `\sign` (6 places); `\arg\max` → `\argmax` in the Fig. 5 caption.
+- [x] Fig. 6 $\theta_1,\theta_2$ defined in the caption.
+- [x] p. 89 second line of the Laplacian-SVM Lagrangian still contained $\beta_0$: removed (vanishes since $\sum_i\lambda_iy_i=0$).
+- [x] Slack-multiplier symbol: Laplacian SVM $\nu_i\to\eta_i$ (as in SVM II); slack weight 1 vs. $\mu$ explained.
+- [x] pp. 97–98 link $a_k=\sum_n a_{nk}$ stated.
+- [x] p. 122 AdaBoost algorithm box overprinted the Notes: box height increased.
+
+**Still open from the original review (not contradicted, not yet done)**
+- [ ] Inner products: lab style asks for the transpose; Kernels / SVM chapters still use $\langle\cdot,\cdot\rangle$ (standard in the kernel literature).
+- [ ] Viola–Jones feature count: wording kept ("very large, refers to the $24\times24$ window"); exact number to be checked against the slides.

@@ -222,7 +222,7 @@ for a chosen norm $\|\cdot\|$ (e.\,g.\ $L_1$, $L_2$, $L_\infty$, or the quadrati
       The steepest descent direction is given by:
       \begin{eqnarray*}
         \Delta \vect x &=& \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\|_1 = 1\} \\
-                      &=& -\mbox{sgn}\left(\frac{\partial}{\partial x_i} f(\vect x)\right)\vect e_i
+                      &=& -\sign\left(\frac{\partial}{\partial x_i} f(\vect x)\right)\vect e_i
       \end{eqnarray*}
         
     \item  \textbf{Note:} Steepest descent using the $L_1$-norm results in the {\em coordinate descent algorithm}.
@@ -233,7 +233,7 @@ for a chosen norm $\|\cdot\|$ (e.\,g.\ $L_1$, $L_2$, $L_\infty$, or the quadrati
   The unit ball for the $L_\infty$-norm is a (hyper)cube (see slides). The steepest descent direction moves every component by the same amount against the sign of its partial derivative:
   \begin{displaymath}
     \Delta \vect x = \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\|_\infty = 1\}
-    = -\,\mathrm{sgn}\big(\nabla f(\vect x)\big) \quad\text{(componentwise)}.
+    = -\,\sign\big(\nabla f(\vect x)\big) \quad\text{(componentwise)}.
   \end{displaymath}
   
 \subsubsection{Quadratic norm \texorpdfstring{$\|\cdot\|_{\mat P}$}{quadratic norm}}

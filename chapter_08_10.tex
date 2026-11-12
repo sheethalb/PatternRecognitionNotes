@@ -347,7 +347,7 @@ The \emph{penalty function approximation problem} is defined as follows:
     \item True class labels are $y_i\in\{-1,+1\}$.
     \item The decision boundary is a linear function with prediction
       \begin{displaymath}
-        \hat y = \mbox{sgn}(\vect \alpha^T\vect x + \alpha_0).
+        \hat y = \sign(\vect \alpha^T\vect x + \alpha_0).
       \end{displaymath}
     \item Parameters $\alpha_0$ and $\vect \alpha$ are chosen according to the optimization problem 
       \begin{center}
@@ -407,7 +407,7 @@ The \emph{penalty function approximation problem} is defined as follows:
        f(\vect x) = \left (\sum_{i\in \cal E} y_i\cdot \vect x_i \right)^T \vect x + \sum_{i\in \cal E} y_i \quad 
                  = \quad \sum_{i\in \cal E} y_i\cdot \langle \vect x_i, \vect x\rangle + \sum_{i\in \cal E} y_i 
     \end{displaymath}
-    with $\hat y=\mathrm{sgn}(f(\vect x))$, where $\cal E$ is the list of indices that required an update (indices may appear more than once); this assumes zero initialization and $\eta=1$. 
+    with $\hat y=\sign(f(\vect x))$, where $\cal E$ is the list of indices that required an update (indices may appear more than once); this assumes zero initialization and $\eta=1$. 
     \item The final linear decision boundary depends on the initialization, \\
       i.\,e.\ $\alpha_0^{(0)}$ and $\vect \alpha^{(0)}$. 
     \item The number of iterations can be rather large. 

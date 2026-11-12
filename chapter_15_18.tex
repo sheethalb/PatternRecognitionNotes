@@ -519,14 +519,15 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
     \mbox{minimize}   & & \sum_{i=1}^l \xi_i + \gamma_\text{A}\,\vect\beta^T\mat K\vect\beta + \gamma_\text{I}\,\vect\beta^T\mat K\mat L\mat K\vect\beta\\
     \mbox{subject to} & & y_i\Big(\sum_{j=1}^m \beta_j\, k(\vect x_i,\vect x_j)+\beta_0\Big)\ge 1-\xi_i,\quad \xi_i\ge 0,\quad i=1,\dots,l.
   \end{eqnarray*}
-\textbf{Lagrange function $\mathcal L$} with multipliers $\lambda_i\ge0$ (margin constraints) and $\nu_i\ge0$ (constraints $\xi_i\ge0$):
+  (Compared with the soft-margin SVM, the slack weight is fixed to $1$ here; the trade-off is set by $\gamma_\text{A}$ and $\gamma_\text{I}$. Hence the box constraint below is $0\le\lambda_i\le1$ instead of $0\le\lambda_i\le\mu$.)
+\textbf{Lagrange function $\mathcal L$} with multipliers $\lambda_i\ge0$ (margin constraints) and $\eta_i\ge0$ (constraints $\xi_i\ge0$):
   
   \begin{eqnarray*}
-    \mathcal L(\vect\beta,\beta_0,\vect\xi,\vect\lambda,\vect\nu) 
+    \mathcal L(\vect\beta,\beta_0,\vect\xi,\vect\lambda,\vect\eta) 
     &=& \sum_{i=1}^l \xi_i +
         \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -{} \\
     & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_j \, k(\vect{x}_i,\vect{x}_j) + \beta_0\Bigg) - 1 + \xi_i\right) -{} \\
-    & & {}- \sum_{i=1}^l \nu_i \xi_i
+    & & {}- \sum_{i=1}^l \eta_i \xi_i
   \end{eqnarray*}
      
     \textbf{KKT condition:} the gradient w.\,r.\,t. the primal variables $\vect{\beta}, \beta_0, \vect{\xi}$ has to vanish
@@ -542,7 +543,7 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
     \item Partial derivative w.\,r.\,t. $\xi_i$:
       \begin{displaymath}
         \frac{\partial \mathcal L}{\partial \xi_i} \stackrel{!}{=} 0  \quad \Rightarrow \quad
-        1 - \lambda_i - \nu_i = 0 \quad \Rightarrow \quad
+        1 - \lambda_i - \eta_i = 0 \quad \Rightarrow \quad
         0 \leq \lambda_i \leq 1
       \end{displaymath}
   \end{itemize}
@@ -553,7 +554,7 @@ With the representer theorem, $\vect f=\mat K\vect\beta$, $\|f\|_\text{A}^2=\vec
     \begin{eqnarray*}
       \mathcal L(\vect{\beta}, \vect{\lambda}) 
       &=& \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -{} \\
-      & & {}- \sum_{i=1}^l \lambda_i \left(y_i \Bigg(\sum_{j=1}^m \beta_j k(\vect{x}_i,\vect{x}_j) + \beta_0\Bigg) - 1 \right) \\
+      & & {}- \sum_{i=1}^l \lambda_i \left(y_i \sum_{j=1}^m \beta_j k(\vect{x}_i,\vect{x}_j) - 1 \right) \qquad\text{(the $\beta_0$ term vanishes since $\textstyle\sum_i\lambda_iy_i=0$)} \\
       &=& \frac{1}{2} \vect{\beta}^T (2 \gamma_\text{A} \mat{K} + 2 \gamma_\text{I} \mat{K}\mat{L}\mat{K}) \vect{\beta} -
           \vect{\beta}^T \mat{K} \mat{J}_l^T \mat{Y} \vect{\lambda} +
           \sum_{i=1}^l \lambda_i
@@ -1047,7 +1048,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
     Optimize the multivariate function
     {\footnotesize
       \begin{displaymath}
-        f_0(\pi_1,\pi_2,\dots,\pi_K) = \sum_{k=1}^{K} a_k \ \log \pi_k
+        f_0(\pi_1,\pi_2,\dots,\pi_K) = \sum_{k=1}^{K} a_k \ \log \pi_k \qquad (a_k\ge0)
       \end{displaymath}
     }
     subject to
@@ -1129,6 +1130,7 @@ Instead of maximizing the log-likelihood function on the left hand side of the k
   \begin{displaymath}
     \hat \pi_k^{(j+1)} = \frac{1}{m}\sum_{n=1}^m a_{nk}~.
   \end{displaymath}
+  This is the constrained-optimization result above with $a_k=\sum_{n=1}^m a_{nk}$: the M-step maximizes $\sum_k a_k\log\pi_k$ (the part of $Q$ that depends on $\vect\pi$), and $\sum_k a_k=m$.
 
   \textbf{Initialization of Priors:}
 

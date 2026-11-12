@@ -158,13 +158,13 @@ Evaluation of classifiers can be done using following metrics
     \item Accuracy / Recognition rate
      \small
               \begin{displaymath}
-                 \mathsf{RR} := \frac{1}{N} \sum_{\kappa=1}^{K}n_{\kappa\kappa} \cdot 100\,\%
+                 \mathsf{RR} := \frac{1}{m} \sum_{\kappa=1}^{K}n_{\kappa\kappa} \cdot 100\,\%
               \end{displaymath}
     \item Recall / Precision
     \small
               \begin{eqnarray*}
                  \mathsf{recall}_\kappa    & = & \frac{n_{\kappa\kappa}}{\sum_{i=1}^K n_{\kappa i}}
-                 = \frac{n_{\kappa\kappa}}{N_\kappa} \\
+                 = \frac{n_{\kappa\kappa}}{m_\kappa} \\
                  \\
                  \\
                  \mathsf{precision}_\kappa & = & \frac{n_{\kappa\kappa}}{\sum_{i=1}^K n_{i \kappa}}
@@ -172,9 +172,9 @@ Evaluation of classifiers can be done using following metrics
     \item Unweighted Average Recall
     \small
               \begin{displaymath}
-                 \mathsf{UAR} := \frac{1}{K} \sum_{\kappa=1}^K \frac{n_{\kappa\kappa}}{N_\kappa} \cdot 100\,\%
+                 \mathsf{UAR} := \frac{1}{K} \sum_{\kappa=1}^K \frac{n_{\kappa\kappa}}{m_\kappa} \cdot 100\,\%
               \end{displaymath}
-              where $N$ is the total number of samples, $K$ is the number of classes, $\kappa\in\{1,\dots,K\}$ is a class index, and $N_\kappa$ is the number of samples in class $\kappa$.
+              where $m$ is the total number of samples, $K$ is the number of classes, $\kappa\in\{1,\dots,K\}$ is a class index, and $m_\kappa$ is the number of samples in class $\kappa$.
     \item For the 2 class case following apply -
     \begin{itemize}
         \item True positive rate (hit rate, \textbf{recall}, \textbf{sensitivity}): $\frac{\#\mathsf{TP}}{\#\mathsf{TP} + \#\mathsf{FN}}$

@@ -216,7 +216,7 @@ A loss function quantifies the cost associated with making a decision, particula
  \draw[-{Latex},thin] (e.west)--(axis cs:3.3,0.025);
 \end{axis}
 \end{tikzpicture}
-\caption{The Bayes classifier $\hat y^*=\arg\max_y p(y\mid\vect x)$ places the boundary where the curves cross. $x^*$ is the crossing point, i.\,e.\ the decision boundary. Moving it in either direction only adds shaded area, so no other rule has a lower expected (0,1)-loss.}
+\caption{The Bayes classifier $\hat y^*=\argmax_y p(y\mid\vect x)$ places the boundary where the curves cross. $x^*$ is the crossing point, i.\,e.\ the decision boundary. Moving it in either direction only adds shaded area, so no other rule has a lower expected (0,1)-loss.}
 \end{figure}
 	
 $l(y',y)$ is the \textbf{loss} of assigning true class $y$ to class $y'$. The $(0,1)$-loss function is defined by
@@ -269,7 +269,7 @@ Using the $(0,1)$-loss, the optimal prediction is
    {0.15*(x^2+y^2) - 1.3*exp(-((x-1.3)^2+(y-1.2)^2)) - 0.8*exp(-((x+1.4)^2+(y+0.9)^2)/0.8) - 0.6*exp(-((x+1)^2+(y-1.6)^2)/0.6)};
 \end{axis}
 \end{tikzpicture}
-\caption{(a) The (0,1)-loss is a step: non-convex with zero gradient almost everywhere, so it cannot be minimized by gradient methods. (b) A non-convex landscape has several local minima; the result depends on initialization.}
+\caption{(a) The (0,1)-loss is a step: non-convex with zero gradient almost everywhere, so it cannot be minimized by gradient methods. (b) A non-convex landscape over two parameters $\theta_1,\theta_2$ has several local minima; the result depends on initialization.}
 \end{figure}
 
 	\subsection{Lessons Learned}
@@ -447,7 +447,7 @@ The reason we have transformed into this kind of logistic or sigmoid function, i
       \frac{1}{2} 
       \left(
         \vect{x}^T (\mat{\Sigma}_1^{-1} - \mat{\Sigma}_0^{-1}) \vect{x} 
-        -2 (\vect{\mu}_1^T \mat{\Sigma}_1^{-1} - \vect{\mu}_0^T \mat{\Sigma}_0^{-1} ) \vect{x} + \right.\\
+        -2 (\vect{\mu}_1^T \mat{\Sigma}_1^{-1} - \vect{\mu}_0^T \mat{\Sigma}_0^{-1} ) \vect{x} \right.\\
         & & \left.  
         + \vect{\mu}_1^T \mat{\Sigma}_1^{-1} \vect{\mu}_1 - \vect{\mu}_0^T \mat{\Sigma}_0^{-1} \vect{\mu}_0
       \right)
@@ -725,7 +725,7 @@ Before we work on the formulas of the ML-estimator, we rewrite the posteriors us
   \begin{eqnarray*}
     f'(x_0 + h)         & \approx & f'(x_0) + f''(x_0) h ~\stackrel{!}{=}~ 0 \\[.3cm]
                 \hat{h} & = & - \frac{f'(x_0)}{f''(x_0)} \\[.3cm]
-    x_1 = x_0 + \hat{h} & = & x_0 - \frac{f'(x_0)}{f''(x_0)} 
+    x_0 + \hat{h} & = & x_0 - \frac{f'(x_0)}{f''(x_0)} 
   \end{eqnarray*}
   \textbf{Gradient of the Log-Likelihood Function}
   \noindent Let $\theta_j$ denote the $j$-th component of $\vect\theta$.
