@@ -13,7 +13,6 @@ Source: reviewer note "Pattern Recognition lecture notes, V1 — mathematics and
 
 ### 2) Notes contradict their own notation (symbol overloading)
 
-- [ ] $\alpha_0,\alpha_i$: inconsistent meanings across logistic / naive Bayes parts.
 - [ ] $S$: training set vs scatter matrices vs sparsity level.
 - [ ] $d$: signed distance vs dimension.
 - [ ] $I$: Fisher information vs identity vs indicator vs image intensity.
@@ -297,3 +296,6 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Undefined symbols list: ensure each is defined where first used (e.g. $\Omega$, $\omega$ vs $w$, $x^*$ in Fig. 5, etc.).
 - [x] $c$: constant offset vs polynomial coefficient vs $c(\vect x,\phi)$ in exponential family.
       *Done:* offset symbol removed (p. 21, the constant is written out and noted as part of $\alpha_0$); polynomial coefficients already $a_{ij},\alpha_i$; $c(\vect x,\phi)$ kept as standard exponential-family notation.
+
+- [x] $\alpha_0,\alpha_i$: inconsistent meanings across logistic / naive Bayes parts.
+      *Done:* Naive Bayes additive model (p. 31-32) now uses $f_0$, $f_i(x_i)$, with a note on why it differs from $\alpha_0,\alpha_i$ in Chapter 03. $\alpha_0,\vect\alpha$ keep their Chapter 03 meaning everywhere else.

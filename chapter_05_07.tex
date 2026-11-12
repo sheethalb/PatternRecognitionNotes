@@ -64,9 +64,9 @@ In statistics, naive Bayes classifiers are a family of simple "probabilistic cla
       &=& \log\frac{p(y=0) p(\vect x \mid y=0)}{p(y=1) p(\vect x \mid y=1)}\\
       &=& \log\frac{p(y=0)}{p(y=1)} + \log\frac{p(\vect x \mid y=0)}{p(\vect x \mid y=1)}\\
       &=& \log\frac{p(y=0)}{p(y=1)} + \log\frac{\prod_{i=1}^d p(x_i \mid y=0)}{\prod_{i=1}^d p(x_i \mid y=1)} \\
-      &=& \underbrace{\alpha_0 + \sum_{i=1}^d \alpha_i(x_i)}_{\mbox {\textbf{generalized additive model}}}
+      &=& \underbrace{f_0 + \sum_{i=1}^d f_i(x_i)}_{\mbox {\textbf{generalized additive model}}}
    \end{eqnarray*}
-   with $\alpha_0=\log\frac{p(y=0)}{p(y=1)}$ and $\alpha_i(x_i)=\log\frac{p(x_i\mid y=0)}{p(x_i\mid y=1)}$. This is the $F(\vect x)$ of Chapter~03.
+   with the constant $f_0=\log\frac{p(y=0)}{p(y=1)}$ and one function per feature, $f_i(x_i)=\log\frac{p(x_i\mid y=0)}{p(x_i\mid y=1)}$. This is the log-odds $F(\vect x)$ of Chapter~03. (Different symbols on purpose: in Chapter~03, $\alpha_0$ also contains the mean and covariance terms and $\alpha_i$ are constant coefficients.)
    Understand the difference between Naive Bayes and Bayes. There are multiple techniques to beat the curse of dimensionality, for example:
    \begin{itemize}
      \item Reduction of the parameter space
