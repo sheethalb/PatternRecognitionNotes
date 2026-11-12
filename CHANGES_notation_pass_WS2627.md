@@ -39,13 +39,8 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 ---
 
 ## 00 Cover / pr.tex (done by Sheethal)
-- [ ] "Winter term 2025/26" → "2026/27" on both cover frames (`00_cover.tex`) and in `\date` (`pr.tex`).
-- [ ] Author acknowledgement: "…Rodriguez, Das, Bhat, and Maier" on **both** cover frames (presentation and handout). Footer `\author[...]` unchanged.
 
 ## Build fixes (only needed if starting from the lab repo)
-- [ ] `pr.tex` starts with `\documentclass[aspectratio=43,t,10pt]{beamer}` + `\def\shadow{true}` instead of `\input{header}` (symlink). Handouts: `\input{header.A5}` / `\input{header.A6}`.
-- [ ] Copy `latex-templates/theme` into `theme/` (submodule/symlink not available on Overleaf).
-- [ ] `header.A5`, `header.A6`: replace `\usepackage{lastpage}` with
   `\AtEndDocument{\immediate\write\csname @mainaux\endcsname{\string\newlabel{LastPage}{{}{\number\numexpr\value{page}-1\relax}{}{}{}}}}`
 
 ---
@@ -54,31 +49,13 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 
 ## 02 Bayes Classifier
-- [ ] *Classification of Simple Patterns*: pipeline arrow labels $\vec c$ → $\vec x$ (features) and $y$ → $\hat y$ (output); add key below: $\vec f$ pattern, $\vec g$ preprocessed pattern, $\vec x$ feature vector, $\hat y$ class predicted by the classifier.
-- [ ] *(cont.)* supervised learning: "each consisting of a feature vector and its **true** class label"; $y_i\in Z$ → $y_i\in\mathcal Y$, "true class label (ground truth)".
-- [ ] *Bayesian Classifier* notation slide rewritten: $\vec x\in\mathbb R^d$ (observed); $y\in\mathcal Y$ true label, $\mathcal Y=\{1,\dots,K\}$ (two classes $\{0,1\}$ or $\{-1,+1\}$, always stated); $\hat y$ predicted; $\hat y^*$ optimal (Bayes) prediction; $p(y)$ prior; $p(\vec x)$ evidence (density); $p(\vec x,y)$ **joint distribution** (not "joint pdf"); $p(\vec x|y)$ class-conditional density; $p(y|\vec x)$ posterior.
-- [ ] **New frame** *Bayesian Classifier (cont.)* "Probabilities vs. densities": pmf vs pdf, mixed joint, convention "same letter $p$; $p(y)$ short for $P(Y=y)$", and "true vs. predicted class: correct on $\vec x_i$ if $\hat y=y_i$".
-- [ ] Bayes-rule underbraces as upright text: `\text{joint}`, `\text{prior}`, `\text{class-conditional pdf}`, `\text{evidence}`, `\text{posterior}`.
-- [ ] Decision rule: "The optimal prediction $\hat y^*$ is the class with the highest posterior: $\hat y^*=\argmax_y p(y|\vec x)$…".
-- [ ] *Optimality*: loss $l(y',y)$ = loss of assigning true class $y$ to class $y'$; 0/1 loss with `\text{if}`/`\text{otherwise}`; expected loss $\mathsf{AL}(\vec x,y')=\sum_y l(y',y)\,p(y|\vec x)$ + sentence "the true class is unknown, so we average over its posterior"; $\hat y^*=\argmin_{y'}\mathsf{AL}=\argmin_{y'}(1-p(y'|\vec x))=\argmax_{y'}p(y'|\vec x)$ (step $1-p$ now shown).
-- [ ] "The $(0,1)$-loss function is \textbf{not} convex."
 
 ## 03 Logistic Regression I
-- [ ] *Posteriors and the Logistic Function (cont.)*: define $F(\vec x):=\log\frac{p(y=0|\vec x)}{p(y=1|\vec x)}$ next to $p(y=0|\vec x)=1/(1+e^{-F})$; "$F$ is the log-odds of class 0 vs. class 1".
-- [ ] Logistic function uses scalar $z$: $g(z)=1/(1+e^{-z})$, $z\in\mathbb R$ "(a scalar, not a feature vector)"; derivative slide $x\to z$; caption $g(az)$; figure labels `sigmoid1–4.pstex_t`: $x\to z$, $g(ax)\to g(az)$.
-- [ ] *Decision Boundary*: remove undefined $\delta(\vec x)$; "separates the regions where the classifier decides for class 0 and class 1".
-- [ ] **New frame** *Decision Rule*: $\hat y^*=0$ if $F(\vec x)>0$ ($p(y=0|\vec x)>\frac12$), $1$ if $F<0$; $F=0$ is the boundary; note that $\hat y^*$ is the predicted class and the true class can differ.
-- [ ] Gaussian example: $p(\vec x|y)=\mathcal N(\vec x;\vec\mu_y,\mat\Sigma_y)=\dots$; typo `\mat{\mu}_0` → `\vec{\mu}_0`.
-- [ ] **Error fix** — *Example cont.* (quadratic case): $\vec\alpha^T=\vec\mu_0^T\mat\Sigma_0^{-1}-\vec\mu_1^T\mat\Sigma_1^{-1}$ (sign was flipped).
 - [x] Quadratic polynomial slide: $a_{11}x_1^2+(a_{12}+a_{21})x_1x_2+a_{22}x_2^2+\alpha_1x_1+\alpha_2x_2+\alpha_0$ (instead of $a\dots f$).
-- [ ] *Equal Dispersion*: "the argument $F(\vec x)$ is **affine** in $\vec x$"; **error fix** $\alpha_0=\log\frac{p(y=0)}{p(y=1)}+\frac12(\vec\mu_1+\vec\mu_0)^T\mat\Sigma^{-1}(\vec\mu_1-\vec\mu_0)$ (was $\vec\mu_1-\vec\mu_0$ in the first factor).
-- [ ] Exponential family: $\vec\theta\to\vec\eta$ "natural (canonical) parameter vector"; add line on `;` vs `|`.
-- [ ] Gaussian pdf: `\det(2\pi\mat\Sigma_y)` → `\det(2\pi\mat\Sigma)` (2×).
 - [x] Distributions unified: $p(x;\lambda)$ (exponential), $p(k;n,\pi)$ binomial (caption "…success probability $\pi$"), $p(k;\lambda)$ Poisson, $p(k;N,M,n)$ hypergeometric; figure labels in `exponential1–4`, `binomial1–3` (legend $p=\to\pi=$), `poisson1–3`, `hypergeometric1–3`.
 
 ## 04 Logistic Regression II
 
-- [ ] Figure `perceptron.pstex_t`: $\alpha_i\to\theta_i$, $\sum\theta_i x_i=\vec\theta^T\vec x$, $1/(1+e^{-\vec\theta^T\vec x})$.
 
 
 
@@ -323,3 +300,63 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 
 - [x] Matrix/vector typeface consistency: pick one convention and apply consistently (reviewer lists mixed bolding and a stray “$\|\vec X\|_F$”).
       *Done:* convention: bold, as stated in main.tex. (1) \vect now uses \bm{\mathrm{.}}: Latin vectors unchanged, Greek vectors ($\vect\mu,\vect\alpha,\vect\theta,\dots$) are now bold too (\mathbf left them plain). (2) Ch. 13-16 file (chapter_15_18.tex): all 478 arrow \vec -> bold \vect; Niemann postulate in Ch. 1 likewise. (3) Text under the Gaussian (p. 21): $\mat\Sigma$, $\vect\mu$; ridge "Matrix $\mat X$"; GMM $\partial L/\partial\mat\Sigma=\mat 0$ (zero matrix). Frobenius norm already $\|\mat X\|_F$. Not changed: vector-valued $\phi(\vect x)$ stays non-bold (function symbol).
+
+---
+
+## Completed chapter items (notes project)
+
+- [x] "Winter term 2025/26" → "2026/27" on both cover frames (`00_cover.tex`) and in `\date` (`pr.tex`).
+      *Notes:* N/A for notes (slide cover). Notes title page: authors Sheethal Bhat, Andreas Maier.
+- [x] Author acknowledgement: "…Rodriguez, Das, Bhat, and Maier" on **both** cover frames (presentation and handout). Footer `\author[...]` unchanged.
+      *Notes:* N/A for notes (slide cover frames).
+- [x] `pr.tex` starts with `\documentclass[aspectratio=43,t,10pt]{beamer}` + `\def\shadow{true}` instead of `\input{header}` (symlink). Handouts: `\input{header.A5}` / `\input{header.A6}`.
+      *Notes:* N/A for notes (beamer build only).
+- [x] Copy `latex-templates/theme` into `theme/` (submodule/symlink not available on Overleaf).
+      *Notes:* N/A for notes (beamer theme).
+- [x] `header.A5`, `header.A6`: replace `\usepackage{lastpage}` with
+      *Notes:* N/A for notes (beamer handouts).
+- [x] *Classification of Simple Patterns*: pipeline arrow labels $\vec c$ → $\vec x$ (features) and $y$ → $\hat y$ (output); add key below: $\vec f$ pattern, $\vec g$ preprocessed pattern, $\vec x$ feature vector, $\hat y$ class predicted by the classifier.
+      *Notes:* N/A for notes: the notes have no pipeline figure.
+- [x] *(cont.)* supervised learning: "each consisting of a feature vector and its **true** class label"; $y_i\in Z$ → $y_i\in\mathcal Y$, "true class label (ground truth)".
+      *Notes:* already in notes (Ch. 2 intro: true class label, $y_i\in\mathcal Y$).
+- [x] *Bayesian Classifier* notation slide rewritten: $\vec x\in\mathbb R^d$ (observed); $y\in\mathcal Y$ true label, $\mathcal Y=\{1,\dots,K\}$ (two classes $\{0,1\}$ or $\{-1,+1\}$, always stated); $\hat y$ predicted; $\hat y^*$ optimal (Bayes) prediction; $p(y)$ prior; $p(\vec x)$ evidence (density); $p(\vec x,y)$ **joint distribution** (not "joint pdf"); $p(\vec x|y)$ class-conditional density; $p(y|\vec x)$ posterior.
+      *Notes:* already in notes (Sec. Notation).
+- [x] **New frame** *Bayesian Classifier (cont.)* "Probabilities vs. densities": pmf vs pdf, mixed joint, convention "same letter $p$; $p(y)$ short for $P(Y=y)$", and "true vs. predicted class: correct on $\vec x_i$ if $\hat y=y_i$".
+      *Notes:* already in notes (paragraph after the notation list).
+- [x] Bayes-rule underbraces as upright text: `\text{joint}`, `\text{prior}`, `\text{class-conditional pdf}`, `\text{evidence}`, `\text{posterior}`.
+      *Notes:* already in notes.
+- [x] Decision rule: "The optimal prediction $\hat y^*$ is the class with the highest posterior: $\hat y^*=\argmax_y p(y|\vec x)$…".
+      *Notes:* already in notes.
+- [x] *Optimality*: loss $l(y',y)$ = loss of assigning true class $y$ to class $y'$; 0/1 loss with `\text{if}`/`\text{otherwise}`; expected loss $\mathsf{AL}(\vec x,y')=\sum_y l(y',y)\,p(y|\vec x)$ + sentence "the true class is unknown, so we average over its posterior"; $\hat y^*=\argmin_{y'}\mathsf{AL}=\argmin_{y'}(1-p(y'|\vec x))=\argmax_{y'}p(y'|\vec x)$ (step $1-p$ now shown).
+      *Notes:* already in notes. Also: figure caption now defines $x^*$ (crossing point = decision boundary).
+- [x] "The $(0,1)$-loss function is \textbf{not} convex."
+      *Notes:* notes said "The loss function is NOT convex" -> "The $(0,1)$-loss function is NOT convex".
+- [x] *Posteriors and the Logistic Function (cont.)*: define $F(\vec x):=\log\frac{p(y=0|\vec x)}{p(y=1|\vec x)}$ next to $p(y=0|\vec x)=1/(1+e^{-F})$; "$F$ is the log-odds of class 0 vs. class 1".
+      *Notes:* already in notes.
+- [x] Logistic function uses scalar $z$: $g(z)=1/(1+e^{-z})$, $z\in\mathbb R$ "(a scalar, not a feature vector)"; derivative slide $x\to z$; caption $g(az)$; figure labels `sigmoid1–4.pstex_t`: $x\to z$, $g(ax)\to g(az)$.
+      *Notes:* already in notes (text and figure caption); pstex figures N/A.
+- [x] *Decision Boundary*: remove undefined $\delta(\vec x)$; "separates the regions where the classifier decides for class 0 and class 1".
+      *Notes:* already in notes.
+- [x] **New frame** *Decision Rule*: $\hat y^*=0$ if $F(\vec x)>0$ ($p(y=0|\vec x)>\frac12$), $1$ if $F<0$; $F=0$ is the boundary; note that $\hat y^*$ is the predicted class and the true class can differ.
+      *Notes:* already in notes (Sec. Decision Rule, Ch. 3).
+- [x] Gaussian example: $p(\vec x|y)=\mathcal N(\vec x;\vec\mu_y,\mat\Sigma_y)=\dots$; typo `\mat{\mu}_0` → `\vec{\mu}_0`.
+      *Notes:* already in notes; text below now says $\mat\Sigma_y$, $\vect\mu_y$ of class $y$.
+- [x] **Error fix** — *Example cont.* (quadratic case): $\vec\alpha^T=\vec\mu_0^T\mat\Sigma_0^{-1}-\vec\mu_1^T\mat\Sigma_1^{-1}$ (sign was flipped).
+      *Notes:* checked: notes have $\vect\alpha^T=\vect\mu_0^T\mat\Sigma_0^{-1}-\vect\mu_1^T\mat\Sigma_1^{-1}$; full derivation of $\mat A,\vect\alpha,\alpha_0$ re-derived and correct.
+- [x] *Equal Dispersion*: "the argument $F(\vec x)$ is **affine** in $\vec x$"; **error fix** $\alpha_0=\log\frac{p(y=0)}{p(y=1)}+\frac12(\vec\mu_1+\vec\mu_0)^T\mat\Sigma^{-1}(\vec\mu_1-\vec\mu_0)$ (was $\vec\mu_1-\vec\mu_0$ in the first factor).
+      *Notes:* checked: notes say affine and have the corrected $\alpha_0$ (verified: $\vect\mu_1^T\mat\Sigma^{-1}\vect\mu_1-\vect\mu_0^T\mat\Sigma^{-1}\vect\mu_0=(\vect\mu_1+\vect\mu_0)^T\mat\Sigma^{-1}(\vect\mu_1-\vect\mu_0)$).
+- [x] Exponential family: $\vec\theta\to\vec\eta$ "natural (canonical) parameter vector"; add line on `;` vs `|`.
+      *Notes:* already in notes.
+- [x] Gaussian pdf: `\det(2\pi\mat\Sigma_y)` → `\det(2\pi\mat\Sigma)` (2×).
+      *Notes:* already in notes.
+- [x] Figure `perceptron.pstex_t`: $\alpha_i\to\theta_i$, $\sum\theta_i x_i=\vec\theta^T\vec x$, $1/(1+e^{-\vec\theta^T\vec x})$.
+      *Notes:* N/A for notes: no perceptron figure in Ch. 4.
+
+## Additional fixes found during the notes pass (not in the list above)
+
+- [x] Ch. 1 postulates: heading says 6 postulates but only 5 were listed (constituents and structure were merged); split into two bullets as in Niemann.
+- [x] Ch. 3 intro: logistic regression was described as a regression method; now: a classification method that models $p(y\mid\vect x)$ by a sigmoid, fitted by maximum likelihood.
+- [x] Ch. 3 Newton–Raphson note: "finding the max values that satisfy a function" → applied to the gradient it finds a stationary point, which is the maximum because the log-likelihood is concave. Taylor step $f'(x_0+h)=\dots$ → $\approx$.
+- [x] Ch. 3 gradient: duplicated sentence "where $x_{i,j}$ is …" removed.
+- [x] Ch. 3 lifting figures: caption coefficients $w_i\to\alpha_i$; 2-D caption "the plane $z=r^2$" with $z=x_1^2+x_2^2$ and $r$ defined.
+- [x] Build: undefined `\Nu` (rank-reduced LDA) → $\mat N$; math in section titles wrapped in `\texorpdfstring`; `\choose`-stacked vectors → `pmatrix`; empty `\textbf{}`. Build has 0 errors and 0 warnings (with biber).
