@@ -54,7 +54,7 @@ A function $f: \real^d \rightarrow \real$ is   \textbf{\emph{concave}} if $-f$ i
     \vect x^* = \argmin_{\vect x} f(\vect x)
   \end{displaymath}
   where $\vect x^*$ denotes the optimal point.  For this particular family of functions, a necessary and sufficient condition \\
-  for the  minumum are the zero-crossings of the function's gradient:
+  for the minimum is that the gradient vanishes:
   \begin{displaymath}
     \nabla f(\vect x^*) = \vect 0.
   \end{displaymath}
@@ -123,7 +123,7 @@ A function $f: \real^d \rightarrow \real$ is   \textbf{\emph{concave}} if $-f$ i
       and is rarely used.
     \item An overview of methods can be found in numerical recipes.
   \end{itemize}
-  Setting $t^{(k+1)}= \frac{1}{2} t^{(k)}$ and starting with $t^{(0)} = 0.5$:\\
+  A simple choice is to halve the step until the function decreases sufficiently; this is the special case $\beta=\frac12$ of the algorithm below.\\
   The Armijo-Goldstein line search algorithm: 
 
   \begin{algorithmic}
@@ -146,7 +146,7 @@ A function $f: \real^d \rightarrow \real$ is   \textbf{\emph{concave}} if $-f$ i
 
   \begin{algorithmic}
     \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$\\
-    \STATE intialize: $k:=0$\\
+    \STATE initialize: $k:=0$\\
     \Repeat
       \STATE Set descent direction: $\Delta\vect x^{(k)}=- \nabla f(\vect x^{(k)}) $\\
       \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
@@ -180,7 +180,7 @@ for a chosen norm $\|\cdot\|$ (e.\,g.\ $L_1$, $L_2$, $L_\infty$, or the quadrati
   \end{displaymath}
   \begin{itemize}
     \item Here $ \nabla f(\vect x)^T \vect u$ is the directional derivative at $\vect x$ in direction $\vect u$.
-    \item The vector $\vect u$ denotes a descent direction if the inner product with the gradient vetor is negative, i.\,e.
+    \item The vector $\vect u$ denotes a descent direction if the inner product with the gradient vector is negative, i.\,e.
       \begin{displaymath}
         \nabla f(\vect x)^T \vect u < 0~.
       \end{displaymath}
@@ -188,7 +188,7 @@ for a chosen norm $\|\cdot\|$ (e.\,g.\ $L_1$, $L_2$, $L_\infty$, or the quadrati
  
   \begin{algorithmic}
     \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$, norm $\|.\|$\\
-    \STATE intialize: $k:=0$\\
+    \STATE initialize: $k:=0$\\
     \Repeat
       \STATE Compute highest descent direction: $\Delta \vect x ^{(k)}= \argmin_{\vect u} \{\nabla f(\vect x^{(k)})^T \vect u ; \ \| \vect u\| = 1\}$\\
       \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
@@ -230,7 +230,11 @@ for a chosen norm $\|\cdot\|$ (e.\,g.\ $L_1$, $L_2$, $L_\infty$, or the quadrati
    
 \subsubsection{\texorpdfstring{$L_\infty$}{L-infinity}-norm}
 
-  The unit ball for the $L_\infty$-norm: see in slides 
+  The unit ball for the $L_\infty$-norm is a (hyper)cube (see slides). The steepest descent direction moves every component by the same amount against the sign of its partial derivative:
+  \begin{displaymath}
+    \Delta \vect x = \argmin_{\vect u} \{\nabla f(\vect x)^T \vect u ; \ \| \vect u\|_\infty = 1\}
+    = -\,\mathrm{sgn}\big(\nabla f(\vect x)\big) \quad\text{(componentwise)}.
+  \end{displaymath}
   
 \subsubsection{Quadratic norm \texorpdfstring{$\|\cdot\|_{\mat P}$}{quadratic norm}}
 
@@ -310,9 +314,9 @@ Now we get for $\Delta \vect x$:
   
   \begin{algorithmic}
     \STATE \textbf{Input:} function $f$, initial estimate $\vect x^{(0)}$\\
-    \STATE intialize: $k:=0$\\
+    \STATE initialize: $k:=0$\\
     \Repeat
-      \STATE Compute Newton step: $\Delta \vect x^{(k)}= -\nabla^2 f(\vect x^{(k)})^{-1} \nabla f(\vect x^{(k)})$\\
+      \STATE Compute Newton step: $\Delta \vect x^{(k)}= -\big(\nabla^2 f(\vect x^{(k)})\big)^{-1} \nabla f(\vect x^{(k)})$\\
       \STATE Line search (1-D optimization): $t^{(k)}= \argmin_{t \geq 0}f(\vect x^{(k)}+t\cdot \Delta\vect x^{(k)})$\\
       \STATE Update:
         \begin{displaymath}
@@ -563,10 +567,9 @@ This chapter follows the notation of Boyd \& Vandenberghe (\emph{Convex Optimiza
     \end{displaymath} 
   \end{lemma}
    
-   \begin{itemize}
-        \item Neither $f_0(x)$ nor $f_1(x)$ is convex,
-        \item but the dual function $g(\lambda)$ is concave!
-      \end{itemize}
+   The lemma holds for every primal problem, even if $f_0$ and the $f_i$ are not convex; the dual function $g$ is always concave.
+
+   \textbf{Proof:}
   Let $\tilde{\vect{x}}$ be a \textbf{feasible point} of the optimization problem. \\[.3cm]
   If $\vect{\lambda}\succeq 0$, we have due to the \textbf{$m$ inequality} and \textbf{$p$ equality} constraints:
   \begin{displaymath}
@@ -652,29 +655,29 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
  
 \subsection{KKT Optimality Conditions}
 
-  Let $\vect x^*$ be a primal and $(\vect \lambda^*, \vect \nu^*)$ dual optimal points with zero duality gap. For the primal optimal point $\vect x^*$, the gradient with respect to $\vect x$ of $\mathcal L(\vect x, \vect \lambda^*, \vect \nu^*)$ is $\vect{0}$:
+  Let $\vect x^*$ be a primal and $(\vect \lambda^*, \vect \nu^*)$ dual optimal points with zero duality gap (and differentiable $f_0,f_i,h_i$). Then $\vect x^*$ minimizes $\mathcal L(\vect x, \vect \lambda^*, \vect \nu^*)$ over $\vect x$, so its gradient with respect to $\vect x$ vanishes:
  
   \begin{displaymath}
-    \nabla \mathcal L(\vect x^*, \vect \lambda^*, \vect \nu^*) = 
+    \nabla_{\vect x} \mathcal L(\vect x^*, \vect \lambda^*, \vect \nu^*) = 
     \nabla f_0(\vect{x}^*) + 
     \sum_{i=1}^m \lambda_i^* \nabla f_i(\vect{x}^*) + 
     \sum_{i=1}^p \nu_i^* \nabla h_i(\vect{x}^*) =  \vect{0}
   \end{displaymath}
-  The following four conditions are called KKT conditions: 
+  The following four conditions on $(\vect x^*,\vect\lambda^*,\vect\nu^*)$ are called KKT conditions: 
   \begin{enumerate}
     \item \textbf{Primal constraints:} 
       \begin{itemize}
-        \item $f_i(\vect{x}) \leq 0, \quad i = 1, 2, \dots, m$
-        \item $h_i(\vect{x}) =    0, \quad i = 1, 2, \dots, p$  
+        \item $f_i(\vect{x}^*) \leq 0, \quad i = 1, 2, \dots, m$
+        \item $h_i(\vect{x}^*) =    0, \quad i = 1, 2, \dots, p$  
       \end{itemize}
-    \item \textbf{Dual constraints:} $\vect \lambda \succeq 0$  
-    \item \textbf{Complementary slackness:} $ \lambda_i \, f_i(\vect{x})= 0$   
-    \item \textbf{Gradient of the Lagrangian $\mathcal L$ is zero:}
+    \item \textbf{Dual constraints:} $\vect \lambda^* \succeq 0$  
+    \item \textbf{Complementary slackness:} $ \lambda_i^* \, f_i(\vect{x}^*)= 0, \quad i=1,\dots,m$   
+    \item \textbf{Gradient of the Lagrangian $\mathcal L$ w.\,r.\,t.\ $\vect x$ is zero:}
       \begin{displaymath}
-        \nabla \mathcal L(\vect x, \vect \lambda, \vect \nu) = 
-        \nabla f_0(\vect{x}) + 
-        \sum_{i=1}^m\lambda_i \nabla f_i(\vect{x}) +        
-        \sum_{i=1}^p\nu_i \nabla h_i(\vect{x}) = 
+        \nabla_{\vect x} \mathcal L(\vect x^*, \vect \lambda^*, \vect \nu^*) = 
+        \nabla f_0(\vect{x}^*) + 
+        \sum_{i=1}^m\lambda_i^* \nabla f_i(\vect{x}^*) +        
+        \sum_{i=1}^p\nu_i^* \nabla h_i(\vect{x}^*) = 
         \vect{0}
       \end{displaymath}
   \end{enumerate}
@@ -687,7 +690,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
 
   \begin{itemize}
     \item For \textbf{\emph{any} optimization problem} with differentiable objective and constraint functions for which strong duality obtains, any pair of primal and dual optimal points must satisfy the KKT conditions.  
-    \item For \textbf{any \emph{convex} optimization problem} with differentiable objective and and constraint functions, any points that satisfy the KKT conditions are primal and dual optimal, and have zero duality gap.  
+    \item For \textbf{any \emph{convex} optimization problem} with differentiable objective and constraint functions, any points that satisfy the KKT conditions are primal and dual optimal, and have zero duality gap.  
     \item If a \textbf{\emph{convex} optimization problem} with differentiable objective and constraint functions satisfies Slater's condition, then the KKT conditions provide necessary and sufficient conditions for optimality.
   \end{itemize}
 
@@ -825,10 +828,16 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
       \begin{displaymath}
         y_i(\vect{\alpha}^T \vect{x}_i + \alpha_0) = 1~.
       \end{displaymath}
-      All $\vect x_i$ with $\lambda_i>0$ are elements at the boundary of the slab (hard margin; for the soft margin see the box-constraint discussion above); \\
+      All $\vect x_i$ with $\lambda_i>0$ lie on one of the margin hyperplanes $f(\vect x)=\pm1$; \\
       these samples are called \textbf{\emph{support vectors}}. \\  
-    \item We have seen that $  \vect \alpha = \sum_i \lambda_i y_i \vect x_i $, thus the norm vector of the decision boundary is a linear combination of support vectors.
+    \item We have seen that $  \vect \alpha = \sum_i \lambda_i y_i \vect x_i $, thus the normal vector of the decision boundary is a linear combination of support vectors.
   \end{enumerate}
+  \textbf{Complementary slackness for soft margin SVMs:} for both constraint types,
+  \begin{displaymath}
+    \forall i: \quad \lambda_i \, \big(y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) - 1+\xi_i\big) = 0, \qquad \eta_i\,\xi_i=0~.
+  \end{displaymath}
+  With $\eta_i=\mu-\lambda_i$: if $0<\lambda_i<\mu$, then $\xi_i=0$ and $\vect x_i$ lies on a margin hyperplane; if $\lambda_i=\mu$, then $\xi_i\ge0$ and $\vect x_i$ lies inside the margin or is misclassified. All $\vect x_i$ with $\lambda_i>0$ are support vectors.
+
   \textbf{Conclusion:} \\
  
   Feature vectors only appear in inner products, both in the learning and the classification phase.
@@ -874,6 +883,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
           f(\vect x) = \sum_i \lambda_i y_i \cdot  \langle\phi(\vect x_i), \phi(\vect x) \rangle + \alpha_0  
         \end{displaymath}
       }
+      with predicted label $\hat y=\sign(f(\vect x))$ and decision boundary $\{\vect x: f(\vect x)=0\}$.
     \item The Lagrange dual problem is given by the \textbf{optimization problem}:
       {\small
         \begin{eqnarray*}
@@ -881,6 +891,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
           \mbox{subject to}  & \vect{\lambda}\succeq 0, \quad \sum_{i} \lambda_i \, y_i = 0
         \end{eqnarray*}
       }
+      (hard margin; for the soft margin add $\lambda_i\le\mu$).
   \end{itemize}
  
 \subsection{Kernel Functions}
@@ -897,7 +908,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
       \end{displaymath}
     \item \textbf{Polynomial:} 
       \begin{displaymath}
-        k(\vect x, \vect x') = (\langle\vect x, \vect x'\rangle + 1)^k
+        k(\vect x, \vect x') = (\langle\vect x, \vect x'\rangle + 1)^q, \quad q\in\mathbb N
       \end{displaymath}
     \item \textbf{Radial basis function:} 
       \begin{displaymath}
@@ -913,7 +924,7 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
 
   \begin{itemize}
     \item Lagrangian formulation of the hard and soft margin problems    
-    \item Langrange dual representation    
+    \item Lagrange dual representation    
     \item Idea of feature transforms
   \end{itemize}
 

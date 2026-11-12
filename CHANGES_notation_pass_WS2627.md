@@ -73,31 +73,12 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 ## 10 Multi-Layer Perceptron
 
 ## 11 Optimization I
-- [ ] **New frame** *Notation in this Chapter*: $\vec x$ optimization variable (not features), $\vec y$ second point (not a label), $f,\nabla f,\nabla^2 f$, $\vec x^*$, $(k)$, $t^{(k)}$, $\Delta\vec x^{(k)}$, $\vec u$, $\alpha,\beta$ line-search parameters.
-- [ ] Armijo: $\alpha\in(0,0.5)$, $\beta\in(0,1)$ (open).
-- [ ] Steepest descent: generic $\|\vec u\|$ "for a chosen norm ($L_1,L_2,L_\infty$ or $\|\cdot\|_{\mat P}$)".
-- [ ] $L_2$: argmin $=-\nabla f/\|\nabla f\|_2$ (direction); unnormalized $-\nabla f$ used in practice.
-- [ ] Quadratic norm renamed $\|\cdot\|_{\mat P}$ ($\mat P$ symmetric positive definite); change of variables $\vec x'=\mat P^{1/2}\vec x$, $f'(\vec x')=f(\mat P^{-1/2}\vec x')$; argmin over $\vec u'$; "$\propto$" where normalization dropped; result $-\mat P^{-1}\nabla f$; Newton: Hessian positive definite.
 
 ## 12 SVM I
-- [ ] $f$ = affine **decision function**; decision boundary $\{\vec x:f(\vec x)=0\}$; "margin $2/\|\vec\alpha\|_2$".
-- [ ] $S=\{(\vec x_i,y_i)\}_{i=1}^m$, $y_i\in\{-1,+1\}$ (instead of $\{0,1\}$); $\hat y=\mathrm{sign}(f(\vec x))$.
-- [ ] Soft margin: $\xi_i$ and $\mu>0$ defined where introduced.
 
 ## 13 Optimization II
-- [ ] **New frame** *Notation in this Chapter*: $\vec x\in\mathbb R^n$, $f_0$, $f_i$ ($m$ = number of constraints, not samples), $h_i$ ($p$ equality constraints), $\lambda,\nu$, $p^*,d^*$, $\succeq$.
-- [ ] Dual function: "pointwise infimum of a family of affine functions (hence concave)".
-- [ ] `g(\vec{\lambda,\nu})` → $g(\vec\lambda,\vec\nu)$ (6×).
-- [ ] **Error fix**: weak duality $d^*\le p^*$ always holds; $p^*>d^*$ = positive duality gap.
 
 ## 14 SVM II
-- [ ] Soft margin: define $\xi_i$, $\mu>0$, $m$ samples, $y_i\in\{-1,+1\}$.
-- [ ] Multipliers for $\xi_i\ge0$ renamed $\eta_i$ (vector $\vec\eta$); "$\mu$ is also called $C$ in the literature"; **one frame deleted** (duplicate that renamed $\mu\to c$); derivative III: $\mu-\eta_i-\lambda_i=0$; duplicate `\subsection{Lagrangian}` removed.
-- [ ] Dual: first line $L(\vec\alpha,\alpha_0,\vec\lambda)$, result $L_D(\vec\lambda)$, "$\vec\alpha,\alpha_0$ eliminated"; $\vec\lambda\succeq0$ explained.
-- [ ] Complementary slackness in SVM terms: $\lambda_i(y_i(\vec\alpha^T\vec x_i+\alpha_0)-1+\xi_i)=0$, $\eta_i\xi_i=0$.
-- [ ] "slab" → margin hyperplanes $f(\vec x)=\pm1$; "norm vector" → "normal vector".
-- [ ] Dual representation / feature transforms: $\hat y=\mathrm{sign}(f(\vec x))$, boundary $\{f=0\}$.
-- [ ] Polynomial kernel exponent $k\to q\in\mathbb N$.
 
 ## 15 Kernels
 - [ ] Dual representation: $\hat y=\mathrm{sign}(f(\vec x))$, $y_i\in\{-1,+1\}$, $\lambda_i\ge0$; perceptron: meaning of $\mathcal E$, $\hat y=\mathrm{sign}(F(\vec x))$.
@@ -371,6 +352,44 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
       *Notes:* already in notes.
 - [x] Linear network: extra `)` removed, no hats on $f$, $f_l(\vec z)=\mat W_l\vec z$, $(\mat W_l)_{ji}=w_{ij}^{(l)}$, loss $\mathcal L(\vec\theta)$ with $\vec\theta$ defined; captions of the 3 gradient PNGs map $\hat f$, $L(\theta)$, $y$ to the text symbols.
       *Notes:* already in notes; PNG captions N/A (no gradient figures in notes).
+- [x] **New frame** *Notation in this Chapter*: $\vec x$ optimization variable (not features), $\vec y$ second point (not a label), $f,\nabla f,\nabla^2 f$, $\vec x^*$, $(k)$, $t^{(k)}$, $\Delta\vec x^{(k)}$, $\vec u$, $\alpha,\beta$ line-search parameters.
+      *Notes:* already in notes.
+- [x] Armijo: $\alpha\in(0,0.5)$, $\beta\in(0,1)$ (open).
+      *Notes:* already in notes; the "halve the step" remark is now explained as $\beta=\frac12$.
+- [x] Steepest descent: generic $\|\vec u\|$ "for a chosen norm ($L_1,L_2,L_\infty$ or $\|\cdot\|_{\mat P}$)".
+      *Notes:* already in notes; added the $L_\infty$ steepest descent direction $-\mathrm{sgn}(\nabla f)$.
+- [x] $L_2$: argmin $=-\nabla f/\|\nabla f\|_2$ (direction); unnormalized $-\nabla f$ used in practice.
+      *Notes:* already in notes.
+- [x] Quadratic norm renamed $\|\cdot\|_{\mat P}$ ($\mat P$ symmetric positive definite); change of variables $\vec x'=\mat P^{1/2}\vec x$, $f'(\vec x')=f(\mat P^{-1/2}\vec x')$; argmin over $\vec u'$; "$\propto$" where normalization dropped; result $-\mat P^{-1}\nabla f$; Newton: Hessian positive definite.
+      *Notes:* already in notes; derivation re-checked ($\nabla f'(\vect x')=\mat P^{-1/2}\nabla f(\vect x)$, result $-\mat P^{-1}\nabla f$): correct. Newton step bracketed $(\nabla^2 f)^{-1}$.
+- [x] $f$ = affine **decision function**; decision boundary $\{\vec x:f(\vec x)=0\}$; "margin $2/\|\vec\alpha\|_2$".
+      *Notes:* already in notes.
+- [x] $S=\{(\vec x_i,y_i)\}_{i=1}^m$, $y_i\in\{-1,+1\}$ (instead of $\{0,1\}$); $\hat y=\mathrm{sign}(f(\vec x))$.
+      *Notes:* already in notes.
+- [x] Soft margin: $\xi_i$ and $\mu>0$ defined where introduced.
+      *Notes:* already in notes.
+- [x] **New frame** *Notation in this Chapter*: $\vec x\in\mathbb R^n$, $f_0$, $f_i$ ($m$ = number of constraints, not samples), $h_i$ ($p$ equality constraints), $\lambda,\nu$, $p^*,d^*$, $\succeq$.
+      *Notes:* already in notes.
+- [x] Dual function: "pointwise infimum of a family of affine functions (hence concave)".
+      *Notes:* already in notes; stray slide line "Neither $f_0$ nor $f_1$ is convex" rewritten as a remark, proof labelled.
+- [x] `g(\vec{\lambda,\nu})` → $g(\vec\lambda,\vec\nu)$ (6×).
+      *Notes:* already in notes.
+- [x] **Error fix**: weak duality $d^*\le p^*$ always holds; $p^*>d^*$ = positive duality gap.
+      *Notes:* already in notes.
+- [x] Soft margin: define $\xi_i$, $\mu>0$, $m$ samples, $y_i\in\{-1,+1\}$.
+      *Notes:* already in notes.
+- [x] Multipliers for $\xi_i\ge0$ renamed $\eta_i$ (vector $\vec\eta$); "$\mu$ is also called $C$ in the literature"; **one frame deleted** (duplicate that renamed $\mu\to c$); derivative III: $\mu-\eta_i-\lambda_i=0$; duplicate `\subsection{Lagrangian}` removed.
+      *Notes:* already in notes.
+- [x] Dual: first line $L(\vec\alpha,\alpha_0,\vec\lambda)$, result $L_D(\vec\lambda)$, "$\vec\alpha,\alpha_0$ eliminated"; $\vec\lambda\succeq0$ explained.
+      *Notes:* already in notes; dual derivation and box constraint $0\le\lambda_i\le\mu$ re-checked: correct.
+- [x] Complementary slackness in SVM terms: $\lambda_i(y_i(\vec\alpha^T\vec x_i+\alpha_0)-1+\xi_i)=0$, $\eta_i\xi_i=0$.
+      *Notes:* added soft-margin complementary slackness ($\lambda_i(\dots-1+\xi_i)=0$, $\eta_i\xi_i=0$) with the three cases for $\lambda_i$.
+- [x] "slab" → margin hyperplanes $f(\vec x)=\pm1$; "norm vector" → "normal vector".
+      *Notes:* done in notes.
+- [x] Dual representation / feature transforms: $\hat y=\mathrm{sign}(f(\vec x))$, boundary $\{f=0\}$.
+      *Notes:* added under the kernelized decision function; dual problem notes the soft-margin bound $\lambda_i\le\mu$.
+- [x] Polynomial kernel exponent $k\to q\in\mathbb N$.
+      *Notes:* done in notes ($q\in\mathbb N$).
 
 ## Additional fixes found during the notes pass (not in the list above)
 
@@ -383,3 +402,4 @@ Chapters that follow a textbook's notation got a frame **"Notation in this Chapt
 - [x] Ch. 5 title "Discriminative Analysis" → "Discriminant Analysis"; odd Gaussian example ("availability of apples") replaced; rank-reduced LDA intro "N dim" → $d$-dimensional; "computationally prohibited" → "prohibitive"; prototypes sentence fixed.
 - [x] Ch. 6 Norms: "sparcity" typo; unit-ball note rewritten (shape of the ball explains why $L_1$ favours sparse solutions); "residual zero" holds for the optimal solution.
 - [x] Ch. 7 Perceptron convergence proof: misclassification condition now uses $(\alpha_0^{(k-1)},\vect\alpha^{(k-1)})$ (the parameters before the $k$-th update), zero initialization stated (needed for both inductions), $\|(y_i,y_i\vect x_i^T)\|^2\le1+R^2$ made explicit, theorem states "at most $k$ updates" for separable data with margin $\rho$, $\|\vect\alpha^*\|_2$. Decision function $F\to f$ (log-odds clash). Student note: the theorem gives an upper bound, not the exact number.
+- [x] Ch. 11 KKT: conditions stated at the optimal points $(\vect x^*,\vect\lambda^*,\vect\nu^*)$ with $\nabla_{\vect x}\mathcal L$ (stars and gradient variable were undefined); typos "minumum", "vetor", "intialize", "and and", "Langrange".
