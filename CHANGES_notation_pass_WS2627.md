@@ -513,3 +513,11 @@ Not imported, because they are errors or artefacts in the md files:
   - `fig:ica_deflation`: w₁, w₂ on the unit circle with w₂ ⊥ w₁.
 - The data come from the notes' example (uniform sources on [−√3, √3], A = [[2,3],[2,1]], 400 samples, numpy seed 7). The values are written inline in the TikZ, so there are no external files.
 - Labels `sec:ica_algorithm` (17.6) and `sec:ica_kurtosis` (17.7.1) were added for cross-references.
+
+## Laplacian SVM figures (13 Nov)
+- [x] Ch. 14: four new TikZ/pgfplots figures; "refer to the slides" replaced by figure references.
+  - `fig:lapsvm_clock` (14.1): clock data with l = 2 labels. Panels: data, SVM (γ_I = 0, boundary is the bisector, 48 % correct), LapSVM (100 % correct). Boundaries computed with the dual in 14.3: RBF σ = 0.7, 6-NN heat-kernel graph with t = 0.05, γ_A = 1/32, γ_I = 1.
+  - `fig:lapsvm_graph` (14.2): 6-node toy graph with **W**, **D** and **L** written out; fᵀLf = 0.8 for a smooth labeling vs. 16.8 for an alternating one.
+  - `fig:swissroll` (14.2.1): Euclidean distance vs. distance along the manifold.
+  - `fig:lapsvm_gammaI` (14.3): boundary for γ_I = 0, 0.005, 0.05, 1, plus one sentence on how the boundaries were computed (λ → β → β₀).
+- Label `sec:lapsvm` added to 14.3.
