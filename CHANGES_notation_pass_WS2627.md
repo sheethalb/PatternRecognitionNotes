@@ -504,3 +504,12 @@ Not imported, because they are errors or artefacts in the md files:
 - EM: MAP denominator as a sum over θ. The notes keep the integral.
 - Ch. 18: generation leftovers ("…absent from the merged markdown").
 - Notation from his md not adopted (notes are canonical): L(·) for the Lagrangian, y for EM latent variables, 𝓛/𝓤 and ν_i in LapSVM, Y_i/Γ in MR, tanh(α⟨⟩+β), y\* for non-Bayes decisions.
+
+## ICA figures (13 Nov)
+- [x] 17.3 *Illustration of ICA*: four new TikZ/pgfplots figures, plus a short lead-in paragraph.
+  - `fig:ica_whitening`: sources → mixtures (columns of **A** as arrows) → whitened rotated square.
+  - `fig:ica_pipeline`: processing chain s → **A** → x → centering → whitening → **W** → ŝ.
+  - `fig:ica_kurtosis`: |kurt(wᵀx̃)| vs. angle, with histograms at the maximum (45°) and minimum (90°).
+  - `fig:ica_deflation`: w₁, w₂ on the unit circle with w₂ ⊥ w₁.
+- The data come from the notes' example (uniform sources on [−√3, √3], A = [[2,3],[2,1]], 400 samples, numpy seed 7). The values are written inline in the TikZ, so there are no external files.
+- Labels `sec:ica_algorithm` (17.6) and `sec:ica_kurtosis` (17.7.1) were added for cross-references.
