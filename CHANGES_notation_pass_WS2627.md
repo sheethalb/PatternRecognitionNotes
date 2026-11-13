@@ -530,3 +530,15 @@ Not imported, because they are errors or artefacts in the md files:
 - [x] §15.3 EM for GMM (`fig:em_gmm`): K = 3, m = 300; snapshots j = 0, 1, 5, 60 and the log-likelihood curve (monotone). Label `sec:em_monotonicity` added.
 - [x] §17.7.1 Kurtosis (`fig:kurtosis_densities`): uniform / Gaussian / Laplace (−1.2 / 0 / 3), linear and log scale.
 - [x] §19 Viola–Jones: Haar feature types (`fig:vj_haar`); integral image with four look-ups (`fig:vj_integral`); cascade with a worked example of the rates (`fig:vj_cascade`).
+
+## Second group of figures (13 Nov)
+All computed from data or formulas (numpy/scipy) and drawn in TikZ/pgfplots.
+- [x] §5 LDA: `fig:lda_sphering` (original vs. sphered features, nearest-mean boundary). "It is clear from the slides" now points to the figure. `fig:fisher_vs_pca` (projections and histograms; R(r*) ≈ 40 × R(PCA)).
+- [x] §7 Perceptron: `fig:perceptron_updates` (updates k = 1, 3, 6, 11; zero initialization, η = 1). `fig:perceptron_margin` (ρ, R and the Novikoff bound ≈ 110 for the same data).
+- [x] §8 MLP: `fig:mlp_topology` (layers, M^(l), w_ij^(l), single neuron with net_j^(l)). `fig:mlp_activations` (step, sigmoid, tanh, ReLU and their derivatives).
+- [x] §9 Optimization: `fig:armijo` (sufficient-decrease condition, t = 1 → 0.5 → 0.25). `fig:gd_vs_newton` (Boyd & Vandenberghe example, backtracking α = 0.1, β = 0.7).
+- [x] §10 SVM I: `fig:svm_margin` (hard margin with support vectors, 2/‖α‖, n, δ(x); soft margin with slacks ξ_i).
+- [x] §11 Duality: `fig:duality` (min x²+1 s.t. (x−2)(x−4) ≤ 0; L below f_0 on the feasible set; g(λ) ≤ p*; d* = p* = 5).
+- [x] §12 SVM II: `fig:svm_losses` (0-1, hinge, logistic loss; samples with λ = 0, 0 < λ < μ, λ = μ from the dual QP, consistent with the primal solution).
+- [x] §16 MRI: `fig:mr_biasfield` (1-D synthetic profile; true vs. observed intensities, bias field, smeared log-histogram).
+- [x] §18 Model assessment: `fig:bias_variance` (polynomial fits of degree 1/4/12; bias² and variance vs. degree, 400 training sets). `fig:crossvalidation` (5-fold diagram, uses m = number of folds as in the text).

@@ -123,6 +123,30 @@ A function $f: \real^d \rightarrow \real$ is   \textbf{\emph{concave}} if $-f$ i
     \EndWhile
     \STATE \textbf{Output:} $t$
   \end{algorithmic}
+  Figure~\ref{fig:armijo} illustrates the sufficient decrease condition.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[width=9cm, height=6cm, xmin=0, xmax=1.05, ymin=-3.2, ymax=3.2, xlabel={step length $t$},
+          ylabel={$f(\vect x+t\Delta\vect x)-f(\vect x)$}, tick label style={font=\scriptsize}, label style={font=\small},
+          xtick={0,0.25,0.5,1}, legend style={font=\scriptsize, at={(0.5,-0.3)}, anchor=north, draw=none}, legend columns=1, legend cell align=left, clip=true]
+        \addplot[name path=phi, black, very thick] coordinates {(0.0000,0.0000) (0.0088,-0.0621) (0.0176,-0.1218) (0.0265,-0.1791) (0.0353,-0.2341) (0.0441,-0.2868) (0.0529,-0.3374) (0.0618,-0.3859) (0.0706,-0.4323) (0.0794,-0.4768) (0.0882,-0.5194) (0.0971,-0.5601) (0.1059,-0.5990) (0.1147,-0.6361) (0.1235,-0.6716) (0.1324,-0.7054) (0.1412,-0.7376) (0.1500,-0.7682) (0.1588,-0.7973) (0.1676,-0.8248) (0.1765,-0.8510) (0.1853,-0.8756) (0.1941,-0.8989) (0.2029,-0.9208) (0.2118,-0.9414) (0.2206,-0.9606) (0.2294,-0.9785) (0.2382,-0.9951) (0.2471,-1.0105) (0.2559,-1.0246) (0.2647,-1.0375) (0.2735,-1.0492) (0.2824,-1.0596) (0.2912,-1.0688) (0.3000,-1.0768) (0.3088,-1.0837) (0.3176,-1.0893) (0.3265,-1.0937) (0.3353,-1.0970) (0.3441,-1.0990) (0.3529,-1.0999) (0.3618,-1.0995) (0.3706,-1.0979) (0.3794,-1.0951) (0.3882,-1.0910) (0.3971,-1.0857) (0.4059,-1.0791) (0.4147,-1.0713) (0.4235,-1.0621) (0.4324,-1.0515) (0.4412,-1.0397) (0.4500,-1.0264) (0.4588,-1.0117) (0.4676,-0.9956) (0.4765,-0.9780) (0.4853,-0.9588) (0.4941,-0.9382) (0.5029,-0.9159) (0.5118,-0.8920) (0.5206,-0.8664) (0.5294,-0.8390) (0.5382,-0.8099) (0.5471,-0.7789) (0.5559,-0.7460) (0.5647,-0.7112) (0.5735,-0.6744) (0.5824,-0.6354) (0.5912,-0.5943) (0.6000,-0.5509) (0.6088,-0.5052) (0.6176,-0.4572) (0.6265,-0.4066) (0.6353,-0.3535) (0.6441,-0.2977) (0.6529,-0.2391) (0.6618,-0.1776) (0.6706,-0.1132) (0.6794,-0.0457) (0.6882,0.0251) (0.6971,0.0992) (0.7059,0.1767) (0.7147,0.2579) (0.7235,0.3428) (0.7324,0.4316) (0.7412,0.5244) (0.7500,0.6214) (0.7588,0.7228) (0.7676,0.8288) (0.7765,0.9395) (0.7853,1.0551) (0.7941,1.1758) (0.8029,1.3018) (0.8118,1.4334) (0.8206,1.5708) (0.8294,1.7141) (0.8382,1.8637) (0.8471,2.0198) (0.8559,2.1827) (0.8647,2.3526) (0.8735,2.5298) (0.8824,2.7147) (0.8912,2.9075) (0.9000,3.1086)};
+        \addlegendentry{$f(\vect x+t\Delta\vect x)-f(\vect x)$}
+        \addplot[blue, dashed, domain=0:1.05] {-7.1860*x};
+        \addlegendentry{$t\,\nabla f(\vect x)^T\Delta\vect x$ (tangent)}
+        \addplot[red, thick, domain=0:1.05] {-2.1558*x};
+        \addlegendentry{$\alpha t\,\nabla f(\vect x)^T\Delta\vect x$, $\alpha=0.3$}
+        \addplot[only marks, mark=x, mark size=4pt, very thick, red] coordinates {(1,3.0) (0.5,-0.923)};
+        \addplot[only marks, mark=*, mark size=2.5pt, green!50!black] coordinates {(0.25,-1.015)};
+        \node[font=\scriptsize, anchor=north east, align=right] at (axis cs:0.98,2.9) {$t=1$: reject\\(value $+6.1$, off scale)};
+        \node[font=\scriptsize, anchor=north west] at (axis cs:0.52,-0.923) {$t=\beta=0.5$: reject};
+        \node[font=\scriptsize, anchor=north east] at (axis cs:0.25,-1.015) {$t=\beta^2$: accept};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Backtracking (Armijo) line search along a descent direction $\Delta\vect x$. The step $t$ is accepted as soon as the function value lies below the red line $f(\vect x)+\alpha t\nabla f(\vect x)^T\Delta\vect x$, i.\,e.\ as soon as a fraction $\alpha$ of the decrease predicted by the linear approximation (blue, dashed) is actually achieved. Starting with $t=1$, the step is multiplied by $\beta$ until this \emph{sufficient decrease condition} holds. Here $t=1$ even increases $f$ (by about $6.1$, off scale) and $t=0.5$ decreases it too little, so the line search returns $t=\beta^2=0.25$.}
+    \label{fig:armijo}
+  \end{figure}
  
 \subsection{Gradient Descent Methods}
  The most commonly used in machine learning. important to understand how this works. A natural choice of the search direction is the   \textbf{negative gradient}:
@@ -330,6 +354,34 @@ Now we get for $\Delta \vect x$:
   \end{displaymath} 
 \textbf{Conclusion:} \\
   Newton's method is an $\vect x$-dependent steepest descent method regarding the quadratic norm $\|\cdot\|_{\mat P}$, where $\mat P = \nabla^2 f(\vect x)$ is the Hessian (assumed positive definite).
+  Figure~\ref{fig:gd_vs_newton} compares gradient descent and Newton's method on a 2-D example.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[width=8.6cm, height=6.6cm, xmin=-1.8, xmax=0.6, ymin=-1.0, ymax=1.15, axis equal image,
+          xlabel={$x_1$}, ylabel={$x_2$}, tick label style={font=\scriptsize}, label style={font=\small},
+          legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}, legend cell align=left]
+\addplot[gray!60, thin] coordinates {(-0.410,-0.091) (-0.411,-0.091) (-0.420,-0.089) (-0.430,-0.088) (-0.440,-0.086) (-0.450,-0.083) (-0.450,-0.083) (-0.460,-0.080) (-0.470,-0.077) (-0.473,-0.076) (-0.480,-0.073) (-0.490,-0.069) (-0.490,-0.069) (-0.500,-0.063) (-0.503,-0.061) (-0.510,-0.057) (-0.513,-0.054) (-0.520,-0.048) (-0.522,-0.047) (-0.529,-0.039) (-0.530,-0.038) (-0.534,-0.032) (-0.538,-0.025) (-0.540,-0.020) (-0.541,-0.017) (-0.543,-0.010) (-0.544,-0.003) (-0.544,0.005) (-0.543,0.012) (-0.540,0.019) (-0.540,0.020) (-0.537,0.027) (-0.533,0.034) (-0.530,0.038) (-0.527,0.041) (-0.520,0.049) (-0.520,0.049) (-0.511,0.056) (-0.510,0.057) (-0.500,0.063) (-0.500,0.063) (-0.490,0.069) (-0.486,0.071) (-0.480,0.073) (-0.470,0.077) (-0.468,0.078) (-0.460,0.080) (-0.450,0.083) (-0.442,0.085) (-0.440,0.086) (-0.430,0.088) (-0.420,0.089) (-0.410,0.091) (-0.400,0.092) (-0.390,0.093) (-0.389,0.093) (-0.380,0.093) (-0.370,0.093) (-0.360,0.093) (-0.350,0.093) (-0.343,0.093) (-0.340,0.093) (-0.330,0.092) (-0.320,0.091) (-0.310,0.090) (-0.300,0.088) (-0.290,0.087) (-0.284,0.085) (-0.280,0.085) (-0.270,0.082) (-0.260,0.080) (-0.253,0.078) (-0.250,0.077) (-0.240,0.074) (-0.230,0.071) (-0.230,0.071) (-0.220,0.067) (-0.211,0.063) (-0.210,0.063) (-0.200,0.058) (-0.196,0.056) (-0.190,0.052) (-0.184,0.049) (-0.180,0.046) (-0.174,0.041) (-0.170,0.038) (-0.166,0.034) (-0.160,0.028) (-0.159,0.027) (-0.154,0.019) (-0.151,0.012) (-0.150,0.007) (-0.150,0.005) (-0.149,-0.003) (-0.150,-0.007) (-0.151,-0.010) (-0.153,-0.017) (-0.158,-0.025) (-0.160,-0.027) (-0.164,-0.032) (-0.170,-0.038) (-0.171,-0.039) (-0.180,-0.046) (-0.181,-0.047) (-0.190,-0.052) (-0.193,-0.054) (-0.200,-0.058) (-0.207,-0.061) (-0.210,-0.063) (-0.220,-0.067) (-0.224,-0.069) (-0.230,-0.071) (-0.240,-0.074) (-0.246,-0.076) (-0.250,-0.077) (-0.260,-0.080) (-0.270,-0.082) (-0.274,-0.083) (-0.280,-0.085) (-0.290,-0.086) (-0.300,-0.088) (-0.310,-0.090) (-0.319,-0.091) (-0.320,-0.091) (-0.330,-0.092) (-0.340,-0.092) (-0.350,-0.093) (-0.360,-0.093) (-0.370,-0.093) (-0.380,-0.093) (-0.390,-0.093) (-0.400,-0.092) (-0.410,-0.091)};
+\addplot[gray!60, thin] coordinates {(-0.460,-0.186) (-0.480,-0.185) (-0.510,-0.182) (-0.530,-0.179) (-0.560,-0.172) (-0.580,-0.167) (-0.600,-0.160) (-0.620,-0.153) (-0.640,-0.143) (-0.654,-0.135) (-0.670,-0.124) (-0.684,-0.113) (-0.699,-0.098) (-0.710,-0.085) (-0.720,-0.070) (-0.728,-0.054) (-0.733,-0.039) (-0.738,-0.017) (-0.739,0.005) (-0.737,0.027) (-0.730,0.049) (-0.724,0.063) (-0.715,0.078) (-0.704,0.093) (-0.690,0.107) (-0.680,0.116) (-0.663,0.129) (-0.650,0.137) (-0.630,0.148) (-0.610,0.157) (-0.590,0.164) (-0.570,0.170) (-0.550,0.175) (-0.520,0.180) (-0.500,0.183) (-0.470,0.186) (-0.440,0.187) (-0.410,0.187) (-0.380,0.186) (-0.350,0.184) (-0.320,0.181) (-0.300,0.179) (-0.270,0.174) (-0.250,0.170) (-0.229,0.166) (-0.200,0.159) (-0.180,0.154) (-0.160,0.148) (-0.140,0.142) (-0.120,0.135) (-0.100,0.128) (-0.080,0.119) (-0.060,0.110) (-0.040,0.100) (-0.027,0.093) (-0.010,0.081) (0.004,0.071) (0.020,0.056) (0.030,0.044) (0.040,0.027) (0.045,0.012) (0.045,-0.010) (0.040,-0.027) (0.030,-0.044) (0.020,-0.056) (0.006,-0.069) (-0.010,-0.081) (-0.024,-0.091) (-0.040,-0.100) (-0.060,-0.110) (-0.080,-0.119) (-0.099,-0.127) (-0.118,-0.135) (-0.140,-0.142) (-0.160,-0.148) (-0.180,-0.154) (-0.200,-0.159) (-0.220,-0.164) (-0.250,-0.170) (-0.270,-0.174) (-0.300,-0.179) (-0.320,-0.181) (-0.350,-0.184) (-0.373,-0.186) (-0.400,-0.187) (-0.430,-0.187) (-0.460,-0.186)};
+\addplot[gray!60, thin] coordinates {(-0.590,-0.297) (-0.630,-0.293) (-0.670,-0.287) (-0.710,-0.279) (-0.750,-0.267) (-0.780,-0.255) (-0.810,-0.241) (-0.840,-0.223) (-0.861,-0.208) (-0.885,-0.186) (-0.905,-0.164) (-0.921,-0.142) (-0.937,-0.113) (-0.949,-0.083) (-0.956,-0.054) (-0.961,-0.025) (-0.962,0.012) (-0.959,0.041) (-0.950,0.078) (-0.940,0.106) (-0.928,0.129) (-0.910,0.158) (-0.891,0.181) (-0.870,0.200) (-0.849,0.217) (-0.820,0.236) (-0.790,0.251) (-0.760,0.263) (-0.720,0.276) (-0.689,0.283) (-0.647,0.291) (-0.600,0.296) (-0.560,0.298) (-0.510,0.299) (-0.470,0.297) (-0.420,0.294) (-0.380,0.290) (-0.330,0.284) (-0.290,0.277) (-0.250,0.270) (-0.210,0.262) (-0.176,0.254) (-0.140,0.245) (-0.100,0.234) (-0.067,0.225) (-0.030,0.213) (0.000,0.203) (0.039,0.188) (0.070,0.175) (0.100,0.162) (0.130,0.147) (0.160,0.130) (0.185,0.115) (0.210,0.096) (0.230,0.078) (0.250,0.054) (0.264,0.027) (0.268,-0.010) (0.259,-0.039) (0.240,-0.067) (0.220,-0.087) (0.198,-0.105) (0.170,-0.124) (0.140,-0.142) (0.111,-0.157) (0.080,-0.171) (0.050,-0.184) (0.020,-0.195) (-0.015,-0.208) (-0.050,-0.219) (-0.085,-0.230) (-0.120,-0.240) (-0.160,-0.250) (-0.199,-0.259) (-0.233,-0.267) (-0.272,-0.274) (-0.316,-0.281) (-0.360,-0.288) (-0.400,-0.292) (-0.447,-0.296) (-0.490,-0.298) (-0.540,-0.299) (-0.590,-0.297)};
+\addplot[gray!60, thin] coordinates {(-0.780,-0.421) (-0.840,-0.413) (-0.890,-0.403) (-0.940,-0.388) (-0.986,-0.369) (-1.027,-0.347) (-1.060,-0.324) (-1.092,-0.296) (-1.120,-0.264) (-1.144,-0.230) (-1.163,-0.193) (-1.180,-0.152) (-1.191,-0.113) (-1.200,-0.064) (-1.204,-0.017) (-1.203,0.034) (-1.198,0.078) (-1.189,0.122) (-1.175,0.166) (-1.159,0.203) (-1.138,0.239) (-1.110,0.276) (-1.082,0.305) (-1.050,0.332) (-1.011,0.357) (-0.970,0.377) (-0.924,0.393) (-0.870,0.408) (-0.820,0.417) (-0.760,0.423) (-0.690,0.426) (-0.620,0.425) (-0.560,0.421) (-0.497,0.415) (-0.438,0.408) (-0.380,0.399) (-0.320,0.389) (-0.269,0.379) (-0.210,0.366) (-0.160,0.354) (-0.110,0.342) (-0.057,0.327) (-0.007,0.313) (0.041,0.298) (0.090,0.282) (0.140,0.265) (0.188,0.247) (0.230,0.230) (0.275,0.210) (0.320,0.189) (0.360,0.167) (0.399,0.144) (0.430,0.122) (0.464,0.093) (0.490,0.062) (0.509,0.019) (0.509,-0.017) (0.490,-0.061) (0.466,-0.091) (0.433,-0.120) (0.400,-0.143) (0.360,-0.167) (0.320,-0.189) (0.280,-0.208) (0.230,-0.230) (0.190,-0.246) (0.140,-0.265) (0.092,-0.281) (0.047,-0.296) (0.000,-0.311) (-0.050,-0.325) (-0.104,-0.340) (-0.160,-0.354) (-0.210,-0.366) (-0.260,-0.377) (-0.320,-0.389) (-0.377,-0.399) (-0.430,-0.407) (-0.490,-0.415) (-0.552,-0.421) (-0.620,-0.425) (-0.690,-0.426) (-0.760,-0.423)};
+\addplot[gray!60, thin] coordinates {(-1.010,-0.605) (-1.090,-0.596) (-1.170,-0.579) (-1.240,-0.555) (-1.300,-0.524) (-1.350,-0.488) (-1.390,-0.449) (-1.429,-0.399) (-1.458,-0.347) (-1.480,-0.295) (-1.500,-0.230) (-1.513,-0.171) (-1.522,-0.105) (-1.527,-0.032) (-1.526,0.041) (-1.521,0.115) (-1.511,0.181) (-1.498,0.239) (-1.479,0.298) (-1.453,0.357) (-1.423,0.408) (-1.388,0.452) (-1.340,0.496) (-1.290,0.530) (-1.230,0.559) (-1.160,0.581) (-1.080,0.597) (-0.990,0.606) (-0.900,0.607) (-0.810,0.603) (-0.720,0.595) (-0.632,0.584) (-0.550,0.571) (-0.470,0.557) (-0.390,0.541) (-0.320,0.525) (-0.240,0.507) (-0.168,0.489) (-0.090,0.468) (-0.020,0.448) (0.050,0.428) (0.120,0.407) (0.190,0.384) (0.260,0.361) (0.330,0.336) (0.393,0.313) (0.460,0.286) (0.520,0.260) (0.582,0.232) (0.640,0.202) (0.700,0.167) (0.750,0.131) (0.792,0.093) (0.825,0.041) (0.831,-0.025) (0.805,-0.076) (0.764,-0.120) (0.715,-0.157) (0.660,-0.191) (0.600,-0.223) (0.540,-0.251) (0.480,-0.278) (0.417,-0.303) (0.350,-0.329) (0.280,-0.354) (0.213,-0.377) (0.145,-0.399) (0.074,-0.421) (0.000,-0.443) (-0.070,-0.462) (-0.140,-0.481) (-0.219,-0.501) (-0.290,-0.518) (-0.370,-0.536) (-0.449,-0.553) (-0.528,-0.567) (-0.610,-0.581) (-0.690,-0.592) (-0.780,-0.601) (-0.870,-0.606) (-0.970,-0.607)};
+\addplot[gray!60, thin] coordinates {(1.000,-0.238) (0.926,-0.274) (0.850,-0.308) (0.773,-0.340) (0.698,-0.369) (0.620,-0.399) (0.539,-0.428) (0.455,-0.457) (0.370,-0.486) (0.290,-0.512) (0.209,-0.538) (0.120,-0.566) (0.040,-0.590) (-0.050,-0.617) (-0.134,-0.641) (-0.220,-0.665) (-0.310,-0.689) (-0.400,-0.712) (-0.490,-0.735) (-0.580,-0.756) (-0.670,-0.776) (-0.762,-0.795) (-0.860,-0.813) (-0.960,-0.829) (-1.060,-0.842) (-1.170,-0.852) (-1.280,-0.856) (-1.390,-0.853) (-1.492,-0.839) (-1.580,-0.815) (-1.659,-0.780) (-1.720,-0.739) (-1.770,-0.692) (-1.814,-0.633) (-1.850,-0.567) (-1.876,-0.501) (-1.897,-0.428) (-1.913,-0.355) (-1.925,-0.274) (-1.933,-0.193) (-1.938,-0.105) (-1.940,-0.025) (-1.940,0.056) (-1.936,0.144) (-1.930,0.226) (-1.920,0.309) (-1.906,0.386) (-1.889,0.459) (-1.864,0.533) (-1.834,0.599) (-1.798,0.657) (-1.750,0.713) (-1.692,0.760) (-1.626,0.797) (-1.545,0.826) (-1.450,0.846) (-1.346,0.855) (-1.230,0.855) (-1.120,0.848) (-1.020,0.837) (-0.920,0.823) (-0.820,0.806) (-0.730,0.788) (-0.631,0.767) (-0.540,0.746) (-0.450,0.725) (-0.360,0.702) (-0.274,0.679) (-0.190,0.656) (-0.100,0.631) (-0.014,0.606) (0.070,0.581) (0.156,0.555) (0.240,0.528) (0.320,0.502) (0.406,0.474) (0.490,0.445) (0.570,0.417) (0.650,0.388) (0.730,0.357) (0.804,0.327) (0.880,0.295) (0.953,0.261)};
+\addplot[gray!60, thin] coordinates {(1.000,-0.454) (0.980,-0.461) (0.960,-0.468) (0.940,-0.476) (0.920,-0.483) (0.900,-0.490) (0.880,-0.497) (0.860,-0.504) (0.840,-0.511) (0.820,-0.518) (0.800,-0.525) (0.780,-0.532) (0.760,-0.539) (0.740,-0.546) (0.720,-0.553) (0.699,-0.560) (0.678,-0.567) (0.656,-0.575) (0.635,-0.582) (0.613,-0.589) (0.591,-0.597) (0.570,-0.604) (0.550,-0.610) (0.530,-0.617) (0.510,-0.624) (0.490,-0.630) (0.470,-0.637) (0.450,-0.643) (0.430,-0.650) (0.410,-0.656) (0.390,-0.663) (0.368,-0.670) (0.345,-0.677) (0.323,-0.685) (0.300,-0.692) (0.280,-0.698) (0.260,-0.705) (0.240,-0.711) (0.220,-0.717) (0.200,-0.724) (0.180,-0.730) (0.160,-0.736) (0.138,-0.743) (0.114,-0.751) (0.091,-0.758) (0.070,-0.765) (0.050,-0.771) (0.030,-0.777) (0.010,-0.783) (-0.010,-0.789) (-0.030,-0.795) (-0.052,-0.802) (-0.076,-0.809) (-0.100,-0.817) (-0.120,-0.823) (-0.140,-0.829) (-0.160,-0.835) (-0.180,-0.841) (-0.200,-0.847) (-0.222,-0.853) (-0.247,-0.861) (-0.270,-0.867) (-0.290,-0.873) (-0.310,-0.879) (-0.330,-0.885) (-0.350,-0.891) (-0.372,-0.897) (-0.398,-0.905) (-0.420,-0.911) (-0.440,-0.917) (-0.460,-0.922) (-0.480,-0.928) (-0.501,-0.934) (-0.527,-0.941) (-0.550,-0.948) (-0.570,-0.953) (-0.590,-0.959) (-0.610,-0.964) (-0.634,-0.971) (-0.660,-0.978) (-0.680,-0.983) (-0.700,-0.988) (-0.720,-0.994) (-0.744,-1.000)};
+\addplot[gray!60, thin] coordinates {(-2.000,1.151) (-1.960,1.160) (-1.920,1.166) (-1.878,1.171) (-1.830,1.174) (-1.780,1.176) (-1.730,1.175) (-1.680,1.173) (-1.635,1.171) (-1.590,1.167) (-1.550,1.163) (-1.500,1.157) (-1.460,1.152) (-1.420,1.146) (-1.380,1.140) (-1.340,1.133) (-1.300,1.126) (-1.260,1.119) (-1.220,1.111) (-1.180,1.103) (-1.140,1.095) (-1.100,1.086) (-1.060,1.077) (-1.020,1.068) (-0.988,1.061) (-0.950,1.052) (-0.910,1.042) (-0.870,1.032) (-0.838,1.024) (-0.800,1.014) (-0.760,1.004) (-0.724,0.995) (-0.690,0.986) (-0.650,0.975) (-0.615,0.965) (-0.580,0.956) (-0.540,0.945) (-0.508,0.936) (-0.470,0.925) (-0.430,0.914) (-0.400,0.905) (-0.360,0.894) (-0.329,0.885) (-0.290,0.873) (-0.254,0.863) (-0.220,0.853) (-0.180,0.841) (-0.150,0.832) (-0.110,0.820) (-0.080,0.811) (-0.040,0.798) (-0.010,0.789) (0.030,0.777) (0.061,0.767) (0.100,0.755) (0.132,0.745) (0.170,0.733) (0.201,0.723) (0.240,0.711) (0.271,0.701) (0.310,0.689) (0.340,0.679) (0.380,0.666) (0.410,0.656) (0.450,0.643) (0.480,0.633) (0.519,0.621) (0.550,0.610) (0.585,0.599) (0.620,0.587) (0.650,0.577) (0.690,0.563) (0.720,0.553) (0.758,0.540) (0.790,0.529) (0.821,0.518) (0.860,0.504) (0.890,0.494) (0.924,0.481) (0.960,0.468) (0.990,0.457)};
+        \addplot[red, thick, mark=*, mark size=1.2pt] coordinates {(-1.000,1.000) (-1.349,-0.648) (-0.913,0.508) (-0.828,-0.293) (-0.599,0.274) (-0.549,-0.187) (-0.490,0.124) (-0.441,-0.089) (-0.407,0.070) (-0.386,-0.058) (-0.376,0.018) (-0.364,-0.016) (-0.359,0.005) (-0.354,-0.005) (-0.351,0.004) (-0.349,-0.002) (-0.348,0.001) (-0.348,-0.001) (-0.347,0.000) (-0.347,-0.000) (-0.347,0.000) (-0.347,-0.000) (-0.347,0.000) (-0.347,-0.000) (-0.347,0.000) (-0.347,-0.000)};
+        \addlegendentry{gradient descent}
+        \addplot[blue, very thick, mark=square*, mark size=1.5pt] coordinates {(-1.000,1.000) (-0.052,0.354) (-0.106,0.106) (-0.318,0.025) (-0.345,0.001) (-0.347,0.000) (-0.347,0.000)};
+        \addlegendentry{Newton}
+        \addplot[only marks, mark=x, mark size=4pt, very thick, black] coordinates {(-0.3466,0)};
+        \addlegendentry{minimum $\vect x^*$}
+        \node[font=\scriptsize, anchor=south east] at (axis cs:-1.0,1.0) {$\vect x^{(0)}$};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Gradient descent vs.\ Newton's method on $f(\vect x)=e^{x_1+3x_2-0.1}+e^{x_1-3x_2-0.1}+e^{-x_1-0.1}$ (example from Boyd and Vandenberghe; gray: contour lines), both with backtracking line search ($\alpha=0.1$, $\beta=0.7$) from $\vect x^{(0)}=(-1,1)^T$. The contours are elongated, so the negative gradient does not point to the minimum and gradient descent zig-zags across the valley: after $10$ iterations the error $f(\vect x^{(k)})-f(\vect x^*)$ is still about $3\cdot10^{-3}$. Newton's method rescales the step with the inverse Hessian (steepest descent in the local quadratic norm $\|\cdot\|_{\nabla^2 f}$) and reaches an error of $10^{-11}$ after $5$ iterations.}
+    \label{fig:gd_vs_newton}
+  \end{figure}
   
   \subsubsection{Damped Newton's Method}
   
@@ -500,6 +552,48 @@ The \textbf{predicted label} of a feature vector $\vect x$ is
   \end{center}
   
 {\small where $\xi_i\geq 0$ is the slack variable of sample $\vect x_i$ (amount of margin violation), and $\mu>0$ is a user-chosen weight (meta-parameter) trading margin width against violations.}
+Figure~\ref{fig:svm_margin} shows the geometry of the hard- and the soft-margin solution.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.0cm}, width=6.3cm, height=6.3cm,
+          axis equal image, xmin=-2.6, xmax=2.6, ymin=-2.6, ymax=2.6, xtick={-2,0,2}, ytick={-2,0,2},
+          tick label style={font=\scriptsize}, title style={font=\small}]
+        \nextgroupplot[title={hard margin}]
+\addplot[only marks, mark=*, mark size=1.4pt, red!70] coordinates {(1.20,1.47) (1.53,1.33) (1.93,0.46) (0.92,0.41) (1.15,1.45) (1.19,1.22) (0.34,1.07) (0.79,1.80) (1.60,1.43) (1.17,1.28) (1.50,0.85) (0.98,0.95)};
+\addplot[only marks, mark=square*, mark size=1.3pt, blue!70] coordinates {(-1.27,-1.07) (-1.13,-1.13) (-0.66,-1.52) (-0.63,-1.08) (-1.25,-1.41) (-1.06,-0.91) (-0.91,-1.04) (-0.96,0.02) (-0.82,-1.06) (-0.57,-0.86) (-0.73,-0.52) (-1.18,-1.67)};
+\addplot[only marks, mark=o, mark size=3.6pt, thick, black] coordinates {(0.34,1.07) (-0.96,0.02)};
+\addplot[black, very thick] coordinates {(-1.969,2.600) (2.227,-2.600)};
+\addplot[red, dashed, thick] coordinates {(-0.897,2.600) (2.600,-1.734)};
+\addplot[blue, dashed, thick] coordinates {(-2.600,2.054) (1.155,-2.600)};
+\draw[{Stealth}-{Stealth}, thick, orange!90!black] (axis cs:-0.571,-0.461) -- (axis cs:0.727,0.587) node[pos=0.25, right, font=\scriptsize, fill=white, inner sep=1pt] {$\frac{2}{\|\vect\alpha\|_2}$};
+\draw[-{Stealth}, very thick, green!50!black] (axis cs:-0.487,0.763) -- (axis cs:0.058,1.203) node[right, font=\scriptsize] {$\vect n$};
+\draw[densely dotted, thick] (axis cs:0.011,0.146) -- (axis cs:1.599,1.427) node[pos=0.5, below right, font=\scriptsize, inner sep=1pt] {$\delta(\vect x)$};
+\node[font=\scriptsize, anchor=south west] at (axis cs:1.599,1.427) {$\vect x$};
+\node[font=\scriptsize, rotate=-51.1] at (axis cs:-1.7,2.447) {$f=0$};
+
+        \nextgroupplot[title={soft margin ($\mu=1$)}]
+\addplot[only marks, mark=*, mark size=1.4pt, red!70] coordinates {(1.20,1.47) (1.53,1.33) (1.93,0.46) (0.92,0.41) (1.15,1.45) (1.19,1.22) (0.34,1.07) (0.79,1.80) (1.60,1.43) (1.17,1.28) (1.50,0.85) (0.98,0.95) (0.00,0.30) (-0.60,0.50)};
+\addplot[only marks, mark=square*, mark size=1.3pt, blue!70] coordinates {(-1.27,-1.07) (-1.13,-1.13) (-0.66,-1.52) (-0.63,-1.08) (-1.25,-1.41) (-1.06,-0.91) (-0.91,-1.04) (-0.96,0.02) (-0.82,-1.06) (-0.57,-0.86) (-0.73,-0.52) (-1.18,-1.67) (0.70,-0.10)};
+\addplot[only marks, mark=o, mark size=3.6pt, thick, black] coordinates {(0.92,0.41) (-0.96,0.02) (-0.73,-0.52) (0.00,0.30) (-0.60,0.50) (0.70,-0.10)};
+\addplot[black, very thick] coordinates {(-2.600,0.871) (2.600,-0.925)};
+\addplot[red, dashed, thick] coordinates {(-2.600,1.621) (2.600,-0.175)};
+\addplot[blue, dashed, thick] coordinates {(-2.600,0.121) (2.600,-1.675)};
+\draw[thick, orange!90!black] (axis cs:-0.958,0.019) -- (axis cs:-1.101,-0.397);
+\node[font=\tiny, anchor=east, fill=white, inner sep=0.5pt] at (axis cs:-1.038,0.019) {$\xi=0.62$};
+\draw[thick, orange!90!black] (axis cs:0.000,0.300) -- (axis cs:0.130,0.678);
+\node[font=\tiny, anchor=west, fill=white, inner sep=0.5pt] at (axis cs:0.080,0.300) {$\xi=0.56$};
+\draw[thick, orange!90!black] (axis cs:-0.600,0.500) -- (axis cs:-0.467,0.884);
+\node[font=\tiny, anchor=west, fill=white, inner sep=0.5pt] at (axis cs:-0.520,0.500) {$\xi=0.57$};
+\draw[thick, orange!90!black] (axis cs:0.700,-0.100) -- (axis cs:0.416,-0.921);
+\node[font=\tiny, anchor=east, fill=white, inner sep=0.5pt] at (axis cs:0.620,-0.100) {$\xi=1.23$};
+
+      \end{groupplot}
+    \end{tikzpicture}
+    \caption{Geometry of the SVM (red circles: $y=+1$, blue squares: $y=-1$; computed with a QP solver). Left, hard margin: the decision boundary $f(\vect x)=\vect\alpha^T\vect x+\alpha_0=0$ (black) and the hyperplanes $f(\vect x)=\pm1$ (dashed) enclose a band of width $2/\|\vect\alpha\|_2$ (here $\approx1.67$) that contains no samples. Only the samples on the dashed lines (black rings, the \emph{support vectors}) determine the solution. $\vect n=\vect\alpha/\|\vect\alpha\|_2$ is the unit normal and $\delta(\vect x)=f(\vect x)/\|\vect\alpha\|_2$ the signed distance of $\vect x$ to the boundary. Right, soft margin after adding three overlapping samples: the slack $\xi_i$ (orange segments, length $\xi_i/\|\vect\alpha\|_2$) measures how far sample $i$ violates its margin. $0<\xi_i\le1$: inside the margin but correctly classified; $\xi_i>1$: misclassified.}
+    \label{fig:svm_margin}
+  \end{figure}
 
 \subsection{Lessons Learned}
   \begin{itemize}
@@ -620,6 +714,37 @@ This chapter follows the notation of Boyd \& Vandenberghe (\emph{Convex Optimiza
     g(\vect{\lambda},\vect{\nu}) \leq p^*
   \end{displaymath}
   \hfill $\blacksquare$
+  Figure~\ref{fig:duality} illustrates the lemma for a 1-D problem.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.3cm}, width=6.4cm, height=5.6cm,
+          tick label style={font=\scriptsize}, label style={font=\small}, title style={font=\small}]
+        \nextgroupplot[title={primal: $f_0$, $f_1$ and $\mathcal L(x,\lambda)$}, xmin=-1, xmax=5, ymin=-5, ymax=20, xlabel={$x$},
+            legend style={font=\scriptsize, at={(0.5,-0.25)}, anchor=north, draw=none}, legend cell align=left]
+          \fill[green!12] (axis cs:2,-5) rectangle (axis cs:4,20);
+          \addplot[black, very thick, domain=-1:5, samples=61] {x^2+1};
+          \addlegendentry{$f_0(x)=x^2+1$}
+          \addplot[red, thick, dashed, domain=-1:5, samples=61] {(x-2)*(x-4)};
+          \addlegendentry{$f_1(x)=(x-2)(x-4)$}
+          \addplot[blue!80!black, thin, domain=-1:5, samples=61] {x^2+1+1*(x-2)*(x-4)};
+          \addlegendentry{$\mathcal L(x,\lambda)$, $\lambda=1,2,3$}
+          \addplot[blue!80!black, thin, domain=-1:5, samples=61] {x^2+1+2*(x-2)*(x-4)};
+          \addplot[blue!80!black, thin, domain=-1:5, samples=61] {x^2+1+3*(x-2)*(x-4)};
+          \addplot[only marks, mark=*, mark size=2.2pt] coordinates {(2,5)};
+          \node[font=\scriptsize, anchor=north west] at (axis cs:2,4.6) {$p^*=5$};
+          \node[font=\scriptsize, green!40!black] at (axis cs:3,17.5) {feasible};
+        \nextgroupplot[title={dual function $g(\lambda)$}, xmin=0, xmax=4, ymin=0, ymax=7, xlabel={$\lambda$}]
+          \addplot[blue!80!black, very thick, domain=0:4, samples=81] {1+8*x-9*x^2/(1+x)};
+          \addplot[black, dashed] coordinates {(0,5) (4,5)} node[pos=0.85, above, font=\scriptsize] {$p^*$};
+          \addplot[only marks, mark=*, mark size=2.2pt, blue!80!black] coordinates {(2,5)};
+          \node[font=\scriptsize, anchor=north] at (axis cs:2,4.75) {$d^*=g(2)=5$};
+      \end{groupplot}
+    \end{tikzpicture}
+    \caption{Lagrange duality for the 1-D problem $\min x^2+1$ s.t.\ $(x-2)(x-4)\le0$ (adapted from Boyd and Vandenberghe, Sec.~5.1). Left: the feasible set is $[2,4]$ (green), and the optimum is $x^*=2$ with $p^*=5$. For every $\lambda\ge0$ the Lagrangian $\mathcal L(x,\lambda)=f_0(x)+\lambda f_1(x)$ (blue) lies \emph{below} $f_0$ on the feasible set, because $f_1\le0$ there; hence its minimum over all $x$, $g(\lambda)$, is a lower bound on $p^*$. Right: $g(\lambda)=1+8\lambda-\frac{9\lambda^2}{1+\lambda}$ is concave and stays below $p^*$ for all $\lambda\ge0$. The best lower bound is $d^*=g(2)=5=p^*$: the problem is convex and satisfies Slater's condition (e.\,g.\ $x=3$ is strictly feasible), so strong duality holds and the duality gap is zero.}
+    \label{fig:duality}
+  \end{figure}
  
 \subsubsection{The Lagrange Dual Problem}
 
@@ -882,6 +1007,39 @@ Let  ${p}^*$ be the optimal value of the primal problem and ${d}^*$ the optimal 
     \forall i: \quad \lambda_i \, \big(y_i\cdot (\vect \alpha^T\vect x_i + \alpha_0) - 1+\xi_i\big) = 0, \qquad \eta_i\,\xi_i=0~.
   \end{displaymath}
   With $\eta_i=\mu-\lambda_i$: if $0<\lambda_i<\mu$, then $\xi_i=0$ and $\vect x_i$ lies on a margin hyperplane; if $\lambda_i=\mu$, then $\xi_i\ge0$: $\vect x_i$ lies on the margin hyperplane ($\xi_i=0$), inside the margin ($0<\xi_i\le1$) or is misclassified ($\xi_i>1$); if $\lambda_i=0$, then $\xi_i=0$ and $\vect x_i$ is on the correct side of the margin. All $\vect x_i$ with $\lambda_i>0$ are support vectors.
+  The three cases are illustrated in Fig.~\ref{fig:svm_losses} (right), together with the hinge loss (left).
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[name=loss, width=6.4cm, height=5.6cm, xmin=-2.5, xmax=2.5, ymin=0, ymax=3.6, xlabel={$y_if(\vect x_i)$}, ylabel={loss},
+          title={losses}, title style={font=\small}, tick label style={font=\scriptsize}, label style={font=\small},
+          legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east}, legend cell align=left, grid=major, grid style={gray!15}]
+        \addplot[gray!60!black, very thick, const plot] coordinates {(-2.5,1) (0,0) (2.5,0)};
+        \addlegendentry{0-1 loss}
+        \addplot[red, very thick, domain=-2.5:2.5, samples=81] {max(0,1-x)};
+        \addlegendentry{hinge $\max(0,1-y_if)$}
+        \addplot[blue, very thick, domain=-2.5:2.5, samples=81] {ln(1+exp(-x))/ln(2)};
+        \addlegendentry{logistic $\log_2(1+e^{-y_if})$}
+      \end{axis}
+      \begin{axis}[at={(loss.east)}, anchor=west, xshift=1.3cm, width=6.4cm, height=6.4cm, axis equal image, xmin=-2.6, xmax=2.6, ymin=-2.6, ymax=2.6,
+          xtick={-2,0,2}, ytick={-2,0,2}, tick label style={font=\scriptsize}, title={multipliers, $\mu=1$}, title style={font=\small}]
+\addplot[only marks, mark=*, red!70, mark size=1.2pt, opacity=0.45, forget plot] coordinates {(1.20,1.47) (1.53,1.33) (1.93,0.46) (1.15,1.45) (1.19,1.22) (0.34,1.07) (0.79,1.80) (1.60,1.43) (1.17,1.28) (1.50,0.85) (0.98,0.95)};
+\addplot[only marks, mark=square*, blue!70, mark size=1.2pt, opacity=0.45, forget plot] coordinates {(-1.27,-1.07) (-1.13,-1.13) (-0.66,-1.52) (-0.63,-1.08) (-1.25,-1.41) (-1.06,-0.91) (-0.91,-1.04) (-0.82,-1.06) (-0.57,-0.86) (-1.18,-1.67)};
+\addplot[only marks, mark=*, red!70, mark size=2.2pt, forget plot] coordinates {(0.92,0.41)};
+\addplot[only marks, mark=square*, blue!70, mark size=2.2pt, forget plot] coordinates {(-0.73,-0.52)};
+\addplot[only marks, mark=o, mark size=4pt, thick, black, forget plot] coordinates {(0.92,0.41) (-0.73,-0.52)};
+\addplot[only marks, mark=*, red!70, mark size=2.2pt, forget plot] coordinates {(0.00,0.30) (-0.60,0.50)};
+\addplot[only marks, mark=square*, blue!70, mark size=2.2pt, forget plot] coordinates {(-0.96,0.02) (0.70,-0.10)};
+\addplot[only marks, mark=diamond, mark size=5pt, thick, orange!90!black, forget plot] coordinates {(-0.96,0.02) (0.00,0.30) (-0.60,0.50) (0.70,-0.10)};
+        \addplot[black, very thick] coordinates {(-2.600,0.871) (2.600,-0.925)};
+        \addplot[red, dashed, thick] coordinates {(-2.600,1.621) (2.600,-0.175)};
+        \addplot[blue, dashed, thick] coordinates {(-2.600,0.121) (2.600,-1.675)};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Left: the hinge loss of the soft-margin SVM, $\xi_i=\max(0,1-y_if(\vect x_i))$, is a convex upper bound of the 0-1 loss. It is zero for samples beyond the margin ($y_if\ge1$) and grows linearly for margin violations; the logistic loss of logistic regression is a smooth alternative. Right: the soft-margin solution of Fig.~\ref{fig:svm_margin} with the Lagrange multipliers $\lambda_i$ from the dual problem. Faint samples: $\lambda_i=0$ (correct side of the margin, no influence on the solution). Black rings: $0<\lambda_i<\mu$ (exactly on a margin hyperplane, $\xi_i=0$). Orange diamonds: $\lambda_i=\mu$ (bounded support vectors, here margin violations with $\xi_i>0$). Only samples with $\lambda_i>0$ contribute to $\vect\alpha=\sum_i\lambda_iy_i\vect x_i$.}
+    \label{fig:svm_losses}
+  \end{figure}
 
   \textbf{Conclusion:} \\
  

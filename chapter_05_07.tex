@@ -307,7 +307,34 @@ Naive Bayes is still widely and successfully used despite its extreme simplicity
     Prototypes: the (transformed) class means, one per class.
     \item The feature transform $\phi$ does not change the dimension of features.
   \end{itemize}
-   \textbf{2 classes} $y\in\{0,1\}$: insights from geometrical analysis of sphered data. the most common case is to have only two classes, so throughout the document, we focus on 2 class cases. It is clear from the slides, that in the 2 class case, the angle can tell us if the sample belongs to one class or the other. so just 1D information can seperate the samples in a 2 class case. 
+   \textbf{2 classes} $y\in\{0,1\}$: insights from geometrical analysis of sphered data. the most common case is to have only two classes, so throughout the document, we focus on 2 class cases. It is clear from Fig.~\ref{fig:lda_sphering} that in the 2 class case, the angle can tell us if the sample belongs to one class or the other. so just 1D information can seperate the samples in a 2 class case. 
+
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.2cm}, width=6.2cm, height=6.2cm,
+          axis equal image, tick label style={font=\scriptsize}, title style={font=\small}, label style={font=\small}]
+        \nextgroupplot[title={original features $\vect x$}, xmin=-4.5, xmax=4.5, ymin=-4.5, ymax=4.5, xlabel={$x_1$}, ylabel={$x_2$}]
+          \addplot[only marks, mark=*, mark size=0.9pt, blue!60] coordinates {(0.39,0.80) (-0.82,1.00) (-2.43,-0.39) (-0.08,0.79) (-2.41,0.58) (-0.96,-0.15) (-0.31,2.13) (-0.73,-0.29) (-0.55,0.20) (-0.08,0.98) (-0.29,1.48) (-0.74,0.42) (-1.75,0.56) (1.10,2.00) (0.26,1.43) (0.58,1.79) (-0.86,0.51) (0.41,1.40) (0.75,1.05) (-0.94,-0.06) (-2.65,-0.18) (1.37,2.54) (0.34,1.62) (-0.45,-0.25) (-0.64,0.71) (-1.82,-0.76) (-1.57,-0.52) (-0.34,0.56) (-2.95,-0.49) (-4.18,-1.36) (-2.29,0.17) (-0.23,1.13) (-2.54,-0.80) (-1.23,0.42) (-1.64,-0.10) (-0.89,0.84) (-0.87,0.15) (-1.71,-0.75) (0.86,1.18) (-2.08,-0.43) (0.54,1.03) (-1.20,-0.21) (0.38,2.01) (0.57,1.56) (-0.86,0.43) (-1.34,1.19) (0.02,0.56) (1.32,2.20) (-0.65,1.03) (-0.29,0.83) (0.04,1.05) (-1.08,0.30) (-1.70,1.28) (-1.11,-0.48) (-3.23,-0.84) (-0.12,1.83) (-0.84,0.33) (0.08,0.78) (-1.38,0.99) (-0.73,1.07) (-2.94,-1.61) (-1.22,0.24) (0.61,1.15) (-1.11,0.79) (-0.36,1.11) (-1.98,0.06) (-2.21,-0.01) (-2.15,0.90) (-1.80,0.08) (-1.59,-0.42)};
+          \addplot[only marks, mark=triangle*, mark size=1.2pt, red!60] coordinates {(1.38,0.43) (-0.04,-0.15) (1.63,-0.80) (-1.52,-1.54) (2.08,1.33) (1.71,-0.97) (1.87,-0.02) (-0.51,-1.98) (1.60,-0.08) (1.94,-0.22) (0.61,0.04) (0.71,-1.15) (2.58,0.90) (2.26,0.19) (2.67,2.13) (0.37,-1.43) (-0.32,-0.49) (4.30,1.76) (1.48,0.42) (1.42,-0.18) (0.71,0.61) (-1.29,-2.39) (1.52,1.74) (2.58,0.46) (1.01,-0.04) (-0.18,-0.98) (2.12,0.80) (0.33,0.33) (1.62,-0.73) (2.05,1.34) (2.50,-0.56) (1.91,0.33) (0.05,-1.70) (0.14,-0.49) (2.12,0.36) (-1.49,-1.12) (0.05,-0.85) (-0.16,-1.30) (1.58,-0.46) (1.22,-0.24) (-2.15,-2.81) (-0.76,-0.83) (1.08,0.45) (3.85,1.83) (0.87,-1.96) (2.30,1.29) (1.85,-0.41) (1.82,-0.08) (0.17,-0.68) (1.75,-0.21) (0.87,0.39) (0.58,-0.26) (1.78,-0.59) (1.88,0.71) (1.35,-0.66) (3.15,1.32) (1.72,-0.03) (1.52,0.22) (0.55,-0.08) (-0.34,-0.51) (0.31,-1.07) (1.12,0.05) (1.42,0.31) (0.02,-1.58) (3.01,1.90) (0.96,0.07) (2.31,1.72) (0.33,-0.93) (1.60,0.17) (1.49,-0.16)};
+          \draw[blue, thick, rotate around={-142.7:(axis cs:-0.876,0.558)}] (axis cs:-0.876,0.558) ellipse [x radius=1.439, y radius=0.489];
+          \draw[red, thick, rotate around={-142.7:(axis cs:1.157,-0.130)}] (axis cs:1.157,-0.130) ellipse [x radius=1.439, y radius=0.489];
+          \addplot[black, very thick] coordinates {(-2.845,-2.448) (3.126,2.876)};
+          \addplot[only marks, mark=x, mark size=4pt, very thick, black] coordinates {(-0.876,0.558) (1.157,-0.130)};
+        \nextgroupplot[title={sphered features $\phi(\vect x)=\mat D^{-\frac12}\mat U^T\vect x$}, xmin=-5, xmax=5, ymin=-5, ymax=5, xlabel={$x'_1$}, ylabel={$x'_2$}]
+          \addplot[only marks, mark=*, mark size=0.9pt, blue!60] coordinates {(-0.82,-0.55) (-2.64,0.03) (-2.37,1.51) (-1.38,-0.28) (-3.93,1.09) (-0.95,0.60) (-3.84,-0.73) (-0.43,0.52) (-1.01,0.22) (-1.69,-0.37) (-2.76,-0.46) (-1.60,0.24) (-3.09,0.73) (-1.89,-1.45) (-2.00,-0.74) (-2.19,-1.07) (-1.90,0.26) (-1.77,-0.81) (-0.78,-0.86) (-1.08,0.54) (-3.00,1.54) (-2.43,-1.83) (-2.21,-0.87) (-0.16,0.35) (-1.94,0.05) (-1.03,1.33) (-1.10,1.09) (-1.33,-0.05) (-2.85,1.84) (-2.96,2.89) (-3.11,1.20) (-2.12,-0.34) (-1.85,1.74) (-2.20,0.50) (-1.86,0.95) (-2.46,0.14) (-1.32,0.41) (-0.90,1.26) (-0.85,-0.97) (-1.88,1.33) (-1.01,-0.73) (-1.14,0.75) (-2.81,-1.06) (-1.84,-0.97) (-1.75,0.30) (-3.60,0.24) (-0.89,-0.24) (-1.94,-1.65) (-2.48,-0.08) (-1.70,-0.19) (-1.65,-0.46) (-1.83,0.47) (-4.19,0.40) (-0.60,0.82) (-2.63,2.14) (-3.12,-0.70) (-1.58,0.32) (-1.17,-0.37) (-3.32,0.35) (-2.64,-0.05) (-1.02,2.30) (-1.91,0.58) (-1.12,-0.82) (-2.66,0.28) (-2.25,-0.27) (-2.55,1.07) (-2.72,1.22) (-4.12,0.81) (-2.37,0.96) (-1.29,1.06)};
+          \addplot[only marks, mark=triangle*, mark size=1.2pt, red!60] coordinates {(1.00,-0.94) (0.19,0.09) (3.33,-0.56) (0.62,1.49) (0.42,-1.71) (3.69,-0.54) (2.35,-1.02) (2.58,1.12) (2.11,-0.85) (2.77,-0.98) (0.69,-0.35) (2.75,0.09) (1.73,-1.80) (2.49,-1.33) (-0.15,-2.37) (2.79,0.40) (0.39,0.38) (2.46,-3.12) (1.15,-0.99) (2.06,-0.71) (-0.10,-0.65) (2.28,1.72) (-0.94,-1.58) (2.44,-1.62) (1.31,-0.54) (1.37,0.51) (1.32,-1.51) (-0.14,-0.32) (3.20,-0.59) (0.35,-1.70) (4.01,-1.15) (1.83,-1.20) (2.82,0.69) (0.97,0.13) (2.03,-1.32) (-0.03,1.30) (1.44,0.33) (1.92,0.63) (2.71,-0.68) (1.90,-0.57) (1.92,2.37) (0.40,0.77) (0.61,-0.78) (1.79,-2.90) (4.27,0.34) (0.76,-1.82) (2.96,-0.85) (2.39,-0.97) (1.32,0.19) (2.51,-0.88) (0.44,-0.64) (1.14,-0.21) (3.15,-0.73) (1.16,-1.34) (2.74,-0.47) (1.75,-2.30) (2.19,-0.94) (1.53,-0.93) (0.81,-0.27) (0.40,0.40) (2.13,0.28) (1.30,-0.64) (1.25,-0.91) (2.60,0.65) (0.64,-2.47) (1.08,-0.56) (0.06,-2.00) (1.92,0.21) (1.71,-0.95) (2.11,-0.76)};
+          \draw[blue, thick] (axis cs:-1.995,0.250) circle [radius=1];
+          \draw[red, thick] (axis cs:1.645,-0.585) circle [radius=1];
+          \addplot[black, very thick] coordinates {(-1.292,-5.041) (0.942,4.706)};
+          \addplot[gray, thick, dashed] coordinates {(-1.995,0.250) (1.645,-0.585)};
+          \addplot[only marks, mark=x, mark size=4pt, very thick, black] coordinates {(-1.995,0.250) (1.645,-0.585)};
+      \end{groupplot}
+    \end{tikzpicture}
+    \caption{LDA as sphering plus nearest class mean (two classes, $70$ samples each, shared covariance; ellipses: $1\sigma$ contours of the pooled estimate $\widehat{\mat\Sigma}$; crosses: class means). Left: in the original space the classes are elongated and correlated, and the Euclidean distance to the means is misleading. Right: after the common transform $\phi(\vect x)=\mat D^{-\frac12}\mat U^T\vect x$ the pooled covariance is the identity (circles). The decision rule is then the nearest transformed class mean, so the boundary (black) is the perpendicular bisector of the dashed line between $\phi(\hat{\vect\mu}_0)$ and $\phi(\hat{\vect\mu}_1)$. In the original space it is the corresponding (non-perpendicular) hyperplane.}
+    \label{fig:lda_sphering}
+  \end{figure}
    
   \begin{itemize}
     \item Angle between $\phi(\vect x)$ and $(\phi(\hat{\vect \mu}_1)-\phi(\hat{\vect \mu}_0))$ can be used 
@@ -477,6 +504,35 @@ Now we compute the \textbf{partial derivatives} (using the matrix-calculus rule 
 			      \end{displaymath}
 			\item Classify by applying a threshold to $x_i^{\mathrm{proj}}$
 		\end{itemize}
+	Figure~\ref{fig:fisher_vs_pca} shows why the class labels matter for the choice of the projection direction.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[name=sc, width=6.6cm, height=6.6cm, axis equal image, xmin=-4, xmax=4, ymin=-4, ymax=4,
+          xlabel={$x_1$}, ylabel={$x_2$}, tick label style={font=\scriptsize}, label style={font=\small},
+          legend style={font=\scriptsize, at={(0.02,0.98)}, anchor=north west}, legend cell align=left]
+        \addplot[only marks, mark=*, mark size=0.9pt, blue!60, forget plot] coordinates {(1.43,1.99) (0.04,0.66) (0.32,-0.27) (-0.73,0.03) (0.42,0.87) (1.30,1.73) (1.22,0.90) (1.26,1.40) (-1.00,-0.25) (2.06,2.26) (1.37,1.92) (0.22,0.41) (0.87,1.31) (-1.30,-0.24) (-1.82,0.48) (0.54,0.39) (1.85,1.05) (1.10,0.91) (1.88,1.93) (4.17,2.42) (-3.22,-0.80) (-0.87,0.30) (-2.76,-0.75) (0.12,0.12) (0.25,0.42) (1.20,0.97) (0.13,0.53) (-1.05,-0.60) (-0.11,1.37) (-0.29,0.97) (-1.96,0.06) (-0.84,-0.50) (0.47,0.70) (2.41,1.79) (2.20,1.12) (-0.31,0.40) (1.22,0.88) (0.89,0.94) (0.62,0.94) (0.58,1.11) (-0.85,0.27) (1.11,0.97) (-0.61,0.16) (0.55,-0.20) (3.98,3.05) (-0.76,0.78) (-1.12,0.05) (0.25,0.11) (-1.21,-0.37) (-0.79,0.23) (-0.58,0.66) (0.81,0.89) (1.36,1.21) (-2.43,-0.96) (-1.94,-0.15) (-1.25,0.24) (1.45,1.60) (-2.25,-1.01) (0.20,0.41) (-0.27,-0.04) (-2.34,-0.92) (1.97,2.54) (-1.56,-0.07) (-0.73,0.02) (0.19,1.04) (-1.56,0.12) (-0.23,0.26) (0.07,1.14) (-2.09,-0.76) (0.47,1.43) (-1.22,0.21) (2.04,1.61) (0.73,1.12) (2.28,2.49) (-0.53,0.49) (1.78,1.62) (-1.70,-1.08) (-0.59,0.57) (0.88,1.47) (0.26,1.30)};
+        \addplot[only marks, mark=triangle*, mark size=1.2pt, red!60, forget plot] coordinates {(-0.83,-0.98) (-3.17,-2.06) (-1.73,-2.13) (0.81,0.24) (-1.35,-1.40) (-0.96,-1.63) (-0.10,-1.17) (-0.42,-1.06) (0.95,-0.03) (-2.53,-2.51) (0.70,0.28) (0.29,0.36) (-0.35,-0.76) (-0.87,-0.33) (-1.08,-0.99) (-0.08,-1.34) (1.04,0.66) (-1.33,-1.14) (-0.85,-1.33) (-0.33,-1.19) (-0.45,-1.18) (0.23,-0.26) (0.36,-0.10) (-0.75,-0.87) (-1.70,-2.24) (2.28,0.99) (-1.80,-0.74) (-1.30,-0.98) (1.18,0.42) (-0.81,-1.54) (1.37,0.14) (0.14,-1.84) (-0.15,-0.58) (0.21,-0.36) (-0.49,-1.33) (-0.58,-1.04) (1.38,0.29) (-1.95,-2.38) (2.80,0.28) (-2.92,-2.40) (0.24,-0.81) (1.80,-0.47) (-0.31,-0.66) (3.17,0.76) (1.12,0.04) (-0.58,-0.43) (-2.25,-1.42) (-1.79,-2.15) (0.61,0.26) (-0.44,-0.84) (3.33,0.49) (-1.16,-1.12) (0.52,-0.48) (2.52,1.02) (-1.87,-0.95) (-0.03,-0.71) (1.41,0.76) (-2.44,-2.28) (-0.45,-0.82) (1.34,-0.94) (0.43,-0.08) (2.33,0.37) (4.68,2.67) (-0.76,-1.02) (0.53,-0.58) (0.18,-0.64) (0.38,-0.40) (-0.49,-0.19) (2.12,0.74) (1.16,-0.44) (3.43,1.65) (1.63,0.00) (-0.48,-1.37) (-0.01,-0.64) (-1.38,-0.95) (1.14,0.46) (0.14,-0.47) (0.19,-0.15) (1.78,0.54) (-1.69,-1.71)};
+        \addplot[orange!90!black, very thick, dashed] coordinates {(-3.136,-2.146) (3.136,2.146)};
+        \addlegendentry{PCA direction}
+        \addplot[green!50!black, very thick] coordinates {(1.831,-3.330) (-1.831,3.330)};
+        \addlegendentry{Fisher direction $\vect r^*$}
+      \end{axis}
+      \begin{axis}[at={(sc.east)}, anchor=north west, xshift=1.2cm, yshift=2.6cm, width=5.6cm, height=3.4cm, ybar, bar width=0.28, bar shift=0pt,
+          xmin=-4, xmax=4, ymin=0, title={projection on PCA direction}, title style={font=\scriptsize}, tick label style={font=\tiny}, ytick=\empty]
+        \addplot[fill=blue!40, draw=blue, opacity=0.7] coordinates {(-3.833,0) (-3.500,0) (-3.167,1) (-2.833,1) (-2.500,3) (-2.167,2) (-1.833,1) (-1.500,1) (-1.167,6) (-0.833,5) (-0.500,6) (-0.167,7) (0.167,4) (0.500,7) (0.833,6) (1.167,6) (1.500,7) (1.833,2) (2.167,5) (2.500,4) (2.833,2) (3.167,2) (3.500,0) (3.833,0)};
+        \addplot[fill=red!40, draw=red, opacity=0.7] coordinates {(-3.833,2) (-3.500,1) (-3.167,1) (-2.833,3) (-2.500,3) (-2.167,1) (-1.833,5) (-1.500,5) (-1.167,7) (-0.833,10) (-0.500,5) (-0.167,4) (0.167,7) (0.500,3) (0.833,5) (1.167,6) (1.500,2) (1.833,1) (2.167,2) (2.500,3) (2.833,0) (3.167,2) (3.500,0) (3.833,1)};
+      \end{axis}
+      \begin{axis}[at={(sc.east)}, anchor=north west, xshift=1.2cm, yshift=-0.9cm, width=5.6cm, height=3.4cm, ybar, bar width=0.18, bar shift=0pt,
+          xmin=-2.5, xmax=2.5, ymin=0, title={projection on Fisher direction $\vect r^*$}, title style={font=\scriptsize}, tick label style={font=\tiny}, ytick=\empty]
+        \addplot[fill=blue!40, draw=blue, opacity=0.7] coordinates {(-2.396,0) (-2.188,0) (-1.979,0) (-1.771,0) (-1.562,0) (-1.354,0) (-1.146,0) (-0.937,0) (-0.729,0) (-0.521,1) (-0.312,1) (-0.104,5) (0.104,8) (0.313,20) (0.521,12) (0.729,15) (0.938,12) (1.146,3) (1.354,3) (1.563,0) (1.771,0) (1.979,0) (2.188,0) (2.396,0)};
+        \addplot[fill=red!40, draw=red, opacity=0.7] coordinates {(-2.396,0) (-2.188,0) (-1.979,0) (-1.771,1) (-1.562,1) (-1.354,1) (-1.146,5) (-0.937,11) (-0.729,13) (-0.521,16) (-0.312,15) (-0.104,10) (0.104,6) (0.313,1) (0.521,0) (0.729,0) (0.938,0) (1.146,0) (1.354,0) (1.563,0) (1.771,0) (1.979,0) (2.188,0) (2.396,0)};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Fisher direction vs.\ PCA direction for two elongated, parallel classes ($80$ samples each). PCA ignores the labels and picks the direction of largest total variance (dashed), along which both classes overlap completely (top histogram). The Fisher direction $\vect r^*\propto\mat S_{\mathsf W}^{-1}(\vect\mu_1-\vect\mu_2)$ maximizes the ratio of between-class to within-class scatter and separates the projected classes almost perfectly (bottom histogram). For these data, $R(\vect r^*)$ is about $40$ times larger than $R$ of the PCA direction.}
+    \label{fig:fisher_vs_pca}
+  \end{figure}
 	\textbf{Finding $\vect{r}^*$}
 
 	\begin{enumerate}

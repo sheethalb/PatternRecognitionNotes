@@ -445,6 +445,47 @@ The perceptron, developed by Frank Rosenblatt in 1957, is considered the first m
     \STATE \structure{Output:} $\alpha_0^{(k)}$ and $\vect \alpha^{(k)}$
   \end{algorithmic}
 
+Figure~\ref{fig:perceptron_updates} shows the algorithm on a small example.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{groupplot}[group style={group size=2 by 2, horizontal sep=0.9cm, vertical sep=1.1cm}, width=5.6cm, height=5.6cm,
+          axis equal image, xmin=-2.8, xmax=2.8, ymin=-2.8, ymax=2.8, xtick={-2,0,2}, ytick={-2,0,2},
+          tick label style={font=\scriptsize}, title style={font=\small}]
+        \nextgroupplot[title={after update $k=1$}]
+\addplot[only marks, mark=*, mark size=1.3pt, red!70] coordinates {(0.51,0.30) (1.90,0.80) (0.53,0.49) (-0.06,0.55) (1.04,1.35) (1.09,0.71) (0.00,1.75) (-0.25,1.06) (0.70,-0.13) (0.51,-0.00) (1.13,0.33) (1.79,-0.70) (0.90,-0.14) (1.37,-0.87)};
+\addplot[only marks, mark=square*, mark size=1.2pt, blue!70] coordinates {(-0.81,-0.37) (-1.49,0.09) (-0.49,0.10) (-0.02,-1.09) (-1.08,-0.62) (-0.15,0.01) (-1.03,-0.86) (-1.08,-0.85) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-1.17,-0.72) (-0.59,-0.04) (-1.39,0.32) (-0.81,-0.40)};
+\addplot[only marks, mark=o, mark size=3pt, thick, orange!90!black] coordinates {(-0.81,-0.37) (-1.49,0.09) (-0.49,0.10) (-0.02,-1.09) (-1.08,-0.62) (-0.15,0.01) (-1.03,-0.86) (-1.08,-0.85) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-1.17,-0.72) (-0.59,-0.04) (-1.39,0.32) (-0.81,-0.40)};
+\addplot[only marks, mark=diamond, mark size=4pt, very thick, black] coordinates {(0.51,-0.00)};
+\addplot[black, very thick] coordinates {(-1.993,-2.800) (-1.958,2.800)};
+\draw[-{Stealth}, thick, green!50!black] (axis cs:-1.976,0.000) -- (axis cs:-1.176,-0.005) node[above, font=\scriptsize] {$\vect\alpha^{(k)}$};
+        \nextgroupplot[title={after update $k=3$}]
+\addplot[only marks, mark=*, mark size=1.3pt, red!70] coordinates {(0.51,0.30) (1.90,0.80) (0.53,0.49) (-0.06,0.55) (1.04,1.35) (1.09,0.71) (0.00,1.75) (-0.25,1.06) (0.70,-0.13) (0.51,-0.00) (1.13,0.33) (1.79,-0.70) (0.90,-0.14) (1.37,-0.87)};
+\addplot[only marks, mark=square*, mark size=1.2pt, blue!70] coordinates {(-0.81,-0.37) (-1.49,0.09) (-0.49,0.10) (-0.02,-1.09) (-1.08,-0.62) (-0.15,0.01) (-1.03,-0.86) (-1.08,-0.85) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-1.17,-0.72) (-0.59,-0.04) (-1.39,0.32) (-0.81,-0.40)};
+\addplot[only marks, mark=o, mark size=3pt, thick, orange!90!black] coordinates {(-0.81,-0.37) (-0.49,0.10) (-0.02,-1.09) (-0.15,0.01) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-0.59,-0.04) (-0.81,-0.40)};
+\addplot[only marks, mark=diamond, mark size=4pt, very thick, black] coordinates {(1.37,-0.87)};
+\addplot[black, very thick] coordinates {(-0.967,-2.800) (-0.650,2.800)};
+\draw[-{Stealth}, thick, green!50!black] (axis cs:-0.808,0.000) -- (axis cs:-0.010,-0.045) node[above, font=\scriptsize] {$\vect\alpha^{(k)}$};
+        \nextgroupplot[title={after update $k=6$}]
+\addplot[only marks, mark=*, mark size=1.3pt, red!70] coordinates {(0.51,0.30) (1.90,0.80) (0.53,0.49) (-0.06,0.55) (1.04,1.35) (1.09,0.71) (0.00,1.75) (-0.25,1.06) (0.70,-0.13) (0.51,-0.00) (1.13,0.33) (1.79,-0.70) (0.90,-0.14) (1.37,-0.87)};
+\addplot[only marks, mark=square*, mark size=1.2pt, blue!70] coordinates {(-0.81,-0.37) (-1.49,0.09) (-0.49,0.10) (-0.02,-1.09) (-1.08,-0.62) (-0.15,0.01) (-1.03,-0.86) (-1.08,-0.85) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-1.17,-0.72) (-0.59,-0.04) (-1.39,0.32) (-0.81,-0.40)};
+\addplot[only marks, mark=o, mark size=3pt, thick, orange!90!black] coordinates {(-0.25,1.06) (0.63,-0.80)};
+\addplot[only marks, mark=diamond, mark size=4pt, very thick, black] coordinates {(1.37,-0.87)};
+\addplot[black, very thick] coordinates {(-0.457,2.800) (0.457,-2.800)};
+\draw[-{Stealth}, thick, green!50!black] (axis cs:0.000,0.000) -- (axis cs:0.790,0.129) node[above, font=\scriptsize] {$\vect\alpha^{(k)}$};
+        \nextgroupplot[title={after update $k=11$ (converged)}]
+\addplot[only marks, mark=*, mark size=1.3pt, red!70] coordinates {(0.51,0.30) (1.90,0.80) (0.53,0.49) (-0.06,0.55) (1.04,1.35) (1.09,0.71) (0.00,1.75) (-0.25,1.06) (0.70,-0.13) (0.51,-0.00) (1.13,0.33) (1.79,-0.70) (0.90,-0.14) (1.37,-0.87)};
+\addplot[only marks, mark=square*, mark size=1.2pt, blue!70] coordinates {(-0.81,-0.37) (-1.49,0.09) (-0.49,0.10) (-0.02,-1.09) (-1.08,-0.62) (-0.15,0.01) (-1.03,-0.86) (-1.08,-0.85) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-1.17,-0.72) (-0.59,-0.04) (-1.39,0.32) (-0.81,-0.40)};
+\addplot[only marks, mark=diamond, mark size=4pt, very thick, black] coordinates {(0.63,-0.80)};
+\addplot[black, very thick] coordinates {(-1.936,2.800) (2.674,-2.800)};
+\draw[-{Stealth}, thick, green!50!black] (axis cs:0.369,0.000) -- (axis cs:0.987,0.508) node[above, font=\scriptsize] {$\vect\alpha^{(k)}$};
+      \end{groupplot}
+    \end{tikzpicture}
+    \caption{Perceptron learning on a linearly separable toy set (red circles: $y=+1$, blue squares: $y=-1$), zero initialization, learning rate $1$. Each update adds $y_i(1,\vect x_i^T)^T$ of the currently visited misclassified sample (black diamond) to $(\alpha_0,\vect\alpha^T)^T$, which rotates and shifts the boundary $\vect\alpha^T\vect x+\alpha_0=0$ (black; the green arrow is the normal $\vect\alpha^{(k)}$ pointing to the $\hat y=+1$ side). Orange rings mark the samples that are still misclassified. Here the algorithm stops after $11$ updates, well below the Novikoff bound (Fig.~\ref{fig:perceptron_margin}).}
+    \label{fig:perceptron_updates}
+  \end{figure}
+
 \subsection{Remarks on Perceptron Learning}
 
   \begin{itemize}
@@ -479,6 +520,28 @@ Then the perceptron learning algorithm with zero initialization makes at most $k
     \begin{displaymath}
       k \leq \frac{(\alpha_0^{*2}+1)(1+R^2)}{\rho^2}.
     \end{displaymath}
+    The quantities $\rho$ and $R$ are illustrated in Fig.~\ref{fig:perceptron_margin}.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[width=7.2cm, height=7.2cm, axis equal image, xmin=-2.9, xmax=2.9, ymin=-2.9, ymax=2.9,
+          xtick={-2,0,2}, ytick={-2,0,2}, tick label style={font=\scriptsize}, clip=false]
+        \fill[gray!12] (axis cs:-2.320,2.800) -- (axis cs:2.800,-2.320) -- (axis cs:2.659,-2.800) -- (axis cs:-2.800,2.659) -- cycle;
+        \draw[gray!60, dashed] (axis cs:0,0) circle [radius=2.058];
+        \addplot[only marks, mark=*, mark size=1.3pt, red!70] coordinates {(0.51,0.30) (1.90,0.80) (0.53,0.49) (-0.06,0.55) (1.04,1.35) (1.09,0.71) (0.00,1.75) (-0.25,1.06) (0.70,-0.13) (0.51,-0.00) (1.13,0.33) (1.79,-0.70) (0.90,-0.14) (1.37,-0.87)};
+        \addplot[only marks, mark=square*, mark size=1.2pt, blue!70] coordinates {(-0.81,-0.37) (-1.49,0.09) (-0.49,0.10) (-0.02,-1.09) (-1.08,-0.62) (-0.15,0.01) (-1.03,-0.86) (-1.08,-0.85) (-0.74,-0.58) (0.63,-0.80) (-0.77,-0.22) (-1.17,-0.72) (-0.59,-0.04) (-1.39,0.32) (-0.81,-0.40)};
+        \addplot[black, very thick] coordinates {(-2.630,2.800) (2.800,-2.630)};
+        \addplot[black, dashed] coordinates {(-2.320,2.800) (2.800,-2.320)};
+        \addplot[black, dashed] coordinates {(-2.800,2.659) (2.659,-2.800)};
+        \draw[{Stealth}-{Stealth}, thick, orange!90!black] (axis cs:-0.151,0.011) -- (axis cs:0.004,0.166) node[midway, right, font=\scriptsize] {$\rho$};
+        \draw[-{Stealth}, thick, gray!50!black] (axis cs:0,0) -- (axis cs:1.898,0.795) node[pos=0.55, above left, font=\scriptsize] {$R$};
+        \fill (axis cs:0,0) circle (1.2pt);
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Quantities in the convergence theorem of Rosenblatt and Novikoff for the data of Fig.~\ref{fig:perceptron_updates}. A unit-norm separator $(\alpha_0^*,\vect\alpha^*)$ (black) classifies every sample with $y_i(\vect x_i^T\vect\alpha^*+\alpha_0^*)\ge\rho$, i.\,e.\ every sample lies at least the distance $\rho$ from the boundary (gray band). $R=\max_i\|\vect x_i\|_2$ is the radius of the smallest origin-centered circle containing all samples (dashed). The number of updates is at most $(\alpha_0^{*2}+1)(1+R^2)/\rho^2$: small margins or large radii allow more updates. Here, for the largest-margin separator, $\rho\approx0.22$, $R\approx2.06$, and the bound is about $110$ updates.}
+    \label{fig:perceptron_margin}
+  \end{figure}
   Let us look at the estimated parameters after $k$ updates and how the parameters change with each update. The $k$-th update is made with a sample $(\vect x_i,y_i)$ that is misclassified by $(\alpha_0^{(k-1)},\vect\alpha^{(k-1)})$. Using the assumption and induction from $(\alpha_0^{(0)},\vect\alpha^{(0)})=\vect 0$:
 
   \begin{eqnarray*}
@@ -583,6 +646,76 @@ Abstracting the neuron to a computational unit that sums weighted inputs, subtra
   y_j^{(l)} = f(\text{net}_j^{(l)})
 \end{displaymath}
 {\small The threshold $w_{0j}^{(l)}$ enters with a negative sign: neuron $j$ ``fires'' if the weighted input exceeds $w_{0j}^{(l)}$ (equivalently: a constant input $y_0^{(l-1)}=-1$ with weight $w_{0j}^{(l)}$).}
+Figure~\ref{fig:mlp_topology} illustrates the notation, and Fig.~\ref{fig:mlp_activations} shows common activation functions $f$.
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=0.86, transform shape, >={Stealth}, font=\small,
+        neu/.style={circle, draw, thick, minimum size=7mm, inner sep=0pt},
+        inp/.style={neu, fill=gray!15}, hid/.style={neu, fill=blue!12}, outn/.style={neu, fill=red!12}]
+      % layer 0
+      \foreach \i in {1,2,3} {\node[inp] (x\i) at (0,-1.1*\i) {$x_{\i}$};}
+      % layer 1
+      \foreach \j in {1,2,3,4} {\node[hid] (h\j) at (2.6,-1.1*\j+0.55) {};}
+      % layer 2
+      \foreach \k in {1,2} {\node[outn] (o\k) at (5.2,-1.1*\k-0.55) {};}
+      \foreach \i in {1,2,3} \foreach \j in {1,2,3,4} {\draw[->, gray!70] (x\i) -- (h\j);}
+      \foreach \j in {1,2,3,4} \foreach \k in {1,2} {\draw[->, gray!70] (h\j) -- (o\k);}
+      \draw[->, very thick, orange!90!black] (x2) -- node[above, sloped, font=\scriptsize, pos=0.45] {$w_{23}^{(1)}$} (h3);
+      \foreach \k in {1,2} {\draw[->, thick] (o\k) -- ++(1.1,0) node[right] {$\hat y_{\k}=y_{\k}^{(2)}$};}
+      \node[font=\scriptsize, align=center] at (0,0.1) {layer $0$\\(input)};
+      \node[font=\scriptsize, align=center] at (2.6,0.65) {layer $1$\\(hidden)};
+      \node[font=\scriptsize, align=center] at (5.2,-0.55) {layer $L=2$\\(output)};
+      \node[font=\scriptsize] at (0,-4.0) {$M^{(0)}=3$};
+      \node[font=\scriptsize] at (2.6,-4.0) {$M^{(1)}=4$};
+      \node[font=\scriptsize] at (5.2,-4.0) {$M^{(2)}=2$};
+      % zoom: single neuron
+      \begin{scope}[xshift=9.4cm, yshift=-2.2cm]
+        \node[hid, minimum size=13mm] (s) at (0,0) {$\Sigma$};
+        \node[draw, thick, rounded corners, minimum size=8mm, right=0.7cm of s] (f) {$f$};
+        \foreach \i/\yy/\lab in {1/1.2/{y_1^{(l-1)}}, 2/0.4/{y_2^{(l-1)}}, 3/-0.6/{\vdots}, 4/-1.3/{y_{M}^{(l-1)}}} {
+          \node[anchor=east, font=\scriptsize] (in\i) at (-1.6,\yy) {$\lab$};}
+        \draw[->] (in1) -- node[above, font=\tiny, sloped] {$w_{1j}^{(l)}$} (s);
+        \draw[->] (in2) -- node[above, font=\tiny, sloped] {$w_{2j}^{(l)}$} (s);
+        \draw[->] (in4) -- node[below, font=\tiny, sloped] {$w_{Mj}^{(l)}$} (s);
+        \draw[->] (0,-1.5) node[below, font=\scriptsize] {$-w_{0j}^{(l)}$} -- (s);
+        \draw[->, thick] (s) -- node[above, font=\scriptsize] {$\text{net}_j^{(l)}$} (f);
+        \draw[->, thick] (f) -- ++(1.1,0) node[right, font=\scriptsize] {$y_j^{(l)}$};
+        \node[font=\scriptsize] at (0.3,1.75) {neuron $j$ in layer $l$};
+      \end{scope}
+    \end{tikzpicture}
+    \caption{Left: topology of an MLP with one hidden layer ($L=2$ non-input layers, $M^{(0)}=3$ inputs, $M^{(1)}=4$ hidden neurons, $M^{(2)}=2$ outputs). Each neuron is connected to all neurons of the previous layer; the highlighted connection carries the weight $w_{23}^{(1)}$ from neuron $2$ of layer $0$ to neuron $3$ of layer $1$. Right: a single neuron computes the net input $\text{net}_j^{(l)}=\sum_i y_i^{(l-1)}w_{ij}^{(l)}-w_{0j}^{(l)}$ and outputs $y_j^{(l)}=f(\text{net}_j^{(l)})$ (here $M=M^{(l-1)}$).}
+    \label{fig:mlp_topology}
+  \end{figure}
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+      \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.3cm}, width=6.3cm, height=4.8cm,
+          xmin=-4, xmax=4, xlabel={$\text{net}$}, tick label style={font=\scriptsize}, label style={font=\small}, title style={font=\small},
+          grid=major, grid style={gray!15}]
+        \nextgroupplot[title={activation $f(\text{net})$}, ymin=-1.2, ymax=2.2, legend to name=actleg, legend columns=4,
+            legend style={font=\scriptsize, draw=none}]
+          \addplot[gray!60!black, very thick, const plot] coordinates {(-4,0) (0,1) (4,1)};
+          \addlegendentry{step (Heaviside)}
+          \addplot[red, very thick, domain=-4:4, samples=81] {1/(1+exp(-x))};
+          \addlegendentry{sigmoid $\frac{1}{1+e^{-\text{net}}}$}
+          \addplot[blue, very thick, domain=-4:4, samples=81] {tanh(x)};
+          \addlegendentry{$\tanh(\text{net})$}
+          \addplot[green!50!black, very thick, domain=-4:4, samples=81] {max(0,x)};
+          \addlegendentry{ReLU $\max(0,\text{net})$}
+        \nextgroupplot[title={derivative $f'(\text{net})$}, ymin=-0.1, ymax=1.2]
+          \addplot[red, very thick, domain=-4:4, samples=81] {exp(-x)/(1+exp(-x))^2};
+          \addplot[blue, very thick, domain=-4:4, samples=81] {1-tanh(x)^2};
+          \addplot[green!50!black, very thick, const plot] coordinates {(-4,0) (0,1) (4,1)};
+          \draw[gray!60!black, very thick] (axis cs:-4,0) -- (axis cs:4,0);
+      \end{groupplot}
+    \end{tikzpicture}
+
+    \ref*{actleg}
+    \caption{Common activation functions (left) and their derivatives (right). The step function of Rosenblatt's perceptron has derivative $0$ almost everywhere, so it cannot be trained by gradient descent. The sigmoid and $\tanh$ are smooth, but their derivatives vanish for large $|\text{net}|$ (the sigmoid derivative is at most $\frac14$), which slows down backpropagation through many layers (vanishing gradients). ReLU has derivative $1$ for all positive inputs.}
+    \label{fig:mlp_activations}
+  \end{figure}
 
 \subsection{Backpropagation Algorithm}
 
