@@ -521,3 +521,12 @@ Not imported, because they are errors or artefacts in the md files:
   - `fig:swissroll` (14.2.1): Euclidean distance vs. distance along the manifold.
   - `fig:lapsvm_gammaI` (14.3): boundary for γ_I = 0, 0.005, 0.05, 1, plus one sentence on how the boundaries were computed (λ → β → β₀).
 - Label `sec:lapsvm` added to 14.3.
+
+## Figures for "see slides" gaps (13 Nov)
+- [x] §4.2 Naive Bayes (`fig:naive_bayes_gauss`): correlated 2-D Gaussians, full-covariance boundary vs. Naive Bayes boundary (error rate 9.6 % vs. 11.5 %, Monte Carlo).
+- [x] §6.5 Unit balls (`fig:unitballs`): L_0.5, L_1, L_2, L_∞, L_P.
+- [x] §6.6.5 (`fig:ridge_lasso`): LS contours touching the L_2 ball (solution 0.59, 0.80) and the L_1 ball (corner 0, 1). Solutions computed numerically.
+- [x] §9.7 (`fig:steepest_descent`): steepest descent direction for L_2, L_1, L_∞, L_P with the same gradient. "See slides" in the L_1/L_∞ subsections now points to the figures.
+- [x] §15.3 EM for GMM (`fig:em_gmm`): K = 3, m = 300; snapshots j = 0, 1, 5, 60 and the log-likelihood curve (monotone). Label `sec:em_monotonicity` added.
+- [x] §17.7.1 Kurtosis (`fig:kurtosis_densities`): uniform / Gaussian / Laplace (−1.2 / 0 / 3), linear and log scale.
+- [x] §19 Viola–Jones: Haar feature types (`fig:vj_haar`); integral image with four look-ups (`fig:vj_integral`); cascade with a worked example of the rates (`fig:vj_cascade`).
